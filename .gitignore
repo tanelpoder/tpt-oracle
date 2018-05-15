@@ -3,6 +3,8 @@
 *.tmp
 logs/*
 tmp/*
+!tmp/.gitkeep 
+!logs/.gitkeep 
 
 # build files
 *.pyc
