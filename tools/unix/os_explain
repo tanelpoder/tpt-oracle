@@ -35,6 +35,9 @@
 ##              on Metalink note 175982.1 (google for it, it's gone from the
 ##              Oracle site)
 ##
+##              On Solaris you may need to replace awk with nawk in this script
+##              I don't remember why anymore, but for some reason I used it
+##
 ################################################################################
 
 # LIFO line reverser
