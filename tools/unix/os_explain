@@ -1,0 +1,187 @@
+#!/bin/bash
+################################################################################
+## Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
+## Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
+##
+## File name:   os_explain (version 1.1)
+## Purpose:     Script to explain the currently active branch of SQL plan
+##              execution from Oracle server process stack trace
+##
+## Author:      Tanel Poder
+## Copyright:   (c) http://www.tanelpoder.com
+##
+## Usage:       1) Take a stack trace of an Oracle process (either by using a
+##                 a debugger, pstack or extract the stack from a corefile,
+##                 save it to a file (pstack.txt for example)
+##              2) run ./os_explain <stack_trace_file>
+##                 For example: ./os_explain pstack.txt
+##
+##
+##
+##              Alternatively you can pipe pstack output directly to os_explain
+##              STDIN:
+##
+##                 pstack <SPID> | ./os_explain
+##
+## Other:       Get stack using pstack on Solaris and Linux, using procstack
+##              on AIX and by using pstack on recent versions of HP-UX.
+##              Older HP-UX versions may require a debugger for getting stack
+##              from OS. As an alternative (especially on Windows) you could
+##              use ORADEBUG DUMP ERRORSTACK for dumping stack of a process.
+##              Note that ORADEBUG's stack dump mechanism is not 100% safe
+##              on active processes
+##
+##              Most of Oracle kernel function prefix translations are based
+##              on Metalink note 175982.1 (google for it, it's gone from the
+##              Oracle site)
+##
+################################################################################
+
+# LIFO line reverser
+f_lifo() {
+
+        #echo Entering f_lifo()
+
+        MAX_ARRAY=1023 # Max stack array depth. You can use 4095 here but older linuxes and hp-ux shell may not like it 
+
+        i=$MAX_ARRAY
+
+        IFS=^
+        while read input ; do
+            array[i]=$input
+            ((i=i-1))
+        done
+
+        i=1
+
+        for output in ${array[@]} ;  do
+
+            if test "$1" = "-n" ; then
+                 printf "%4d %s\n" $i $output
+            else
+                 printf "%s\n" $output
+            fi
+            ((i=i+1))
+        done
+
+}
+
+
+TRANSLATION_STRING='
+/-----------------  lwp# 2/,$d;
+s/(.*//;
+s/ [[0-9][a-f]]{16} /./;
+s/qerae/AND-EQUAL: /g;
+s/qerba/BITMAP INDEXAND : /g;
+s/qerbc/BITMAP INDEX COMPACTION: /g;
+s/qerbi/BITMAP INDEX CREATION: /g;
+s/qerbm/MINUS: /g;
+s/qerbo/BITMAP INDEX OR: /g;
+s/qerbt/BITMAP CONVERT: /g;
+s/qerbu/BITMAP INDEX UNLIMITED-OR: /g;
+s/qerbx/BITMAP INDEX ACCESS: /g;
+s/qercb/CONNECT BY: /g;
+s/qercbi/SUPPORT FOR CONNECT BY: /g;
+s/qerco/COUNT: /g;
+s/qerdl/DELETE: /g;
+s/qerep/EXPLOSION: /g;
+s/qerff/FIFO BUFFER: /g;
+s/qerfi/FIRST ROW: /g;
+s/qerfl/FILTER DEFINITION: /g;
+s/qerfu/UPDATE: /g;
+s/qerfx/FIXED TABLE: /g;
+s/qergi/GRANULE ITERATOR: /g;
+s/qergr/GROUP BY ROLLUP: /g;
+s/qergs/GROUP BY SORT: /g;
+s/qerhc/HASH CLUSTERS: /g;
+s/qerhj/HASH JOIN: /g;
+s/qeril/IN-LIST: /g;
+s/qerim/INDEX MAINTENANCE: /g;
+s/qerix/INDEX: /g;
+s/qerjot/NESTED LOOP JOIN: /g;
+s/qerjo/NESTED LOOP OUTER: /g;
+s/qerle/LINEAR EXECUTION  IMPLEMENTATION: /g;
+s/qerli/PARALLEL CREATE INDEX: /g;
+s/qerlt/LOAD TABLE: /g;
+s/qerns/GROUP BY NO SORT: /g;
+s/qeroc/OBJECT COLLECTION ITERATOR: /g;
+s/qeroi/EXTENSIBLE INDEXING QUERY COMPONENT: /g;
+s/qerpa/PARTITION: /g;
+s/qerpf/QUERY EXECUTION PREFETCH: /g;
+s/qerpx/PARALLELIZER: /g;
+s/qerrm/REMOTE: /g;
+s/qerse/SET IMPLEMENTATION: /g;
+s/qerso/SORT: /g;
+s/qersq/SEQUENCE NUMBER: /g;
+s/qerst/QUERY EXECUTION STATISTICS: /g;
+s/qertb/TABLE ACCESS: /g;
+s/qertq/TABLE QUEUE: /g;
+s/qerua/UNION-ALL: /g;
+s/qerup/UPDATE: /g;
+s/qerus/UPSERT: /g;
+s/qervw/VIEW: /g;
+s/qerwn/WINDOW: /g;
+s/qerxt/EXTERNAL TABLE FETCH : /g;
+s/opifch2/SELECT FETCH: /g
+s/qergh/HASH GROUP BY: /g
+'
+
+# main()
+
+case `uname -s` in
+        Linux)
+                FUNCPOS=4
+                ;;
+        SunOS)
+                FUNCPOS=2
+                ;;
+        *)
+                FUNCPOS=2
+                ;;
+esac
+
+if [ "$1X" == "-aX" ] ; then
+        FILTER="^\$|oracle|----------"
+        INDENT=" "
+        shift
+else
+        FILTER="^\$|\?\?|oracle|----------"
+        TRANSLATION_STRING="/opifch /,\$d;/opiefn0/,\$d;/opiodr/,\$d;/opiexe/,\$d; $TRANSLATION_STRING"
+        INDENT=" "
+fi
+
+if [ "$1X" == "-kX" ] ; then
+        FUNCPOS=2 # this is for linux kernel stack samples from /proc/PID/stack
+        TRANSLATION_STRING="s/+.*//g; $TRANSLATION_STRING"
+        shift
+fi
+
+if [ $# -eq 0 ] ; then
+
+                      sed -e "$TRANSLATION_STRING" \
+                    | egrep -v "$FILTER" \
+                    | sed 's/^ *//g;s/__PGOSF[0-9]*_//' \
+                    | awk -F" " "{ for (f=$FUNCPOS; f <= NF; f++) { printf \"%s \", \$f }; printf \"\n\" }" \
+                    | f_lifo \
+                    | awk "
+                           BEGIN{ option=\"  \" } /rwsfcd/{ option=\"* \" } !/rwsfcd/{ pref=(pref \"$INDENT\") ;
+                           print pref option \$0 ; option=\"  \" }
+                      "
+else
+
+        for i in $* ; do
+                sed -e "$TRANSLATION_STRING" < $i \
+                    | egrep -v "$FILTER" \
+                    | sed 's/^ *//g;s/__PGOSF[0-9]*_//' \
+                    | awk -F" " "{ for (f=$FUNCPOS; f <= NF; f++) { printf \"%s \", \$f }; printf \"\n\" }" \
+                    | f_lifo \
+                    | awk "
+                           BEGIN{ option=\"  \" } /rwsfcd/{ option=\"* \" } !/rwsfcd/{ pref=(pref \"$INDENT\") ;
+                           print pref option \$0 ; option=\"  \" }
+                      "
+        done
+
+fi
+
+# that's all!
+

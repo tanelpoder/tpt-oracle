@@ -1,0 +1,32 @@
+-- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
+-- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
+
+DROP TABLE tcoal;
+DROP SEQUENCE scoal;
+CREATE TABLE tcoal (id NUMBER, a VARCHAR2(100), b VARCHAR2(100)) TABLESPACE users;
+CREATE INDEX icoal1 ON tcoal(id)   TABLESPACE users;
+CREATE INDEX icoal2 ON tcoal(id,a) TABLESPACE users;
+CREATE INDEX icoal3 ON tcoal(b)    TABLESPACE users;
+CREATE SEQUENCE scoal CACHE 10000;
+
+BEGIN FOR i IN 1..100 LOOP
+    INSERT INTO tcoal SELECT scoal.NEXTVAL, DBMS_RANDOM.STRING('a', 20), DBMS_RANDOM.STRING('a', 20)
+    FROM dual CONNECT BY LEVEL <= 10000;
+    COMMIT;
+    DBMS_STATS.GATHER_INDEX_STATS(user, 'ICOAL1');
+    DBMS_STATS.GATHER_INDEX_STATS(user, 'ICOAL2');
+    DBMS_STATS.GATHER_INDEX_STATS(user, 'ICOAL3');
+END LOOP; END;
+/
+
+BEGIN FOR i in 1..100 LOOP
+    DELETE FROM tcoal WHERE MOD(id,100)!=0 AND rownum <= 10000;
+    INSERT INTO tcoal SELECT scoal.NEXTVAL, DBMS_RANDOM.STRING('a', 20), DBMS_RANDOM.STRING('a', 20)
+    FROM dual CONNECT BY LEVEL <= 10000;
+
+    DBMS_STATS.GATHER_INDEX_STATS(user, 'ICOAL1');
+    DBMS_STATS.GATHER_INDEX_STATS(user, 'ICOAL2');
+    DBMS_STATS.GATHER_INDEX_STATS(user, 'ICOAL3');
+END LOOP; END;
+/
+

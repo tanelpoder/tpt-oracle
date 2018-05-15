@@ -1,0 +1,224 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+| Id  | Operation                                                | Name                          | Rows  | Bytes | Cost (%CPU)| Time     | Pstart| Pstop |
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                                         |                               |       |       |  2121K(100)|          |       |       |
+|   1 |  SORT ORDER BY                                           |                               |     3 |  6675 |  2121K  (1)| 01:21:11 |       |       |
+|*  2 |   HASH JOIN                                              |                               |     3 |  6675 |  2121K  (1)| 01:21:11 |       |       |
+|*  3 |    HASH JOIN OUTER                                       |                               |     1 |  2213 |  2121K  (1)| 01:21:11 |       |       |
+|   4 |     VIEW                                                 |                               |     1 |  2116 |  2121K  (1)| 01:21:11 |       |       |
+|   5 |      NESTED LOOPS OUTER                                  |                               |     1 |  1306 |  2121K  (1)| 01:21:11 |       |       |
+|   6 |       NESTED LOOPS OUTER                                 |                               |     1 |  1248 |  2121K  (1)| 01:21:11 |       |       |
+|   7 |        NESTED LOOPS                                      |                               |     1 |  1190 |  2121K  (1)| 01:21:11 |       |       |
+|*  8 |         HASH JOIN                                        |                               |     1 |  1090 |  2121K  (1)| 01:21:11 |       |       |
+|   9 |          VIEW                                            |                               |     7 |  7329 |  2121K  (1)| 01:21:11 |       |       |
+|  10 |           UNION-ALL                                      |                               |       |       |            |          |       |       |
+|  11 |            NESTED LOOPS OUTER                            |                               |     1 |   648 | 31348   (2)| 00:01:12 |       |       |
+|  12 |             NESTED LOOPS                                 |                               |     1 |   613 | 31347   (2)| 00:01:12 |       |       |
+|  13 |              NESTED LOOPS OUTER                          |                               |     1 |   513 | 31346   (2)| 00:01:12 |       |       |
+|  14 |               NESTED LOOPS OUTER                         |                               |     1 |   475 | 31345   (2)| 00:01:12 |       |       |
+|  15 |                NESTED LOOPS OUTER                        |                               |     1 |   412 | 31344   (2)| 00:01:12 |       |       |
+|  16 |                 NESTED LOOPS                             |                               |     1 |   312 | 31343   (2)| 00:01:12 |       |       |
+|  17 |                  VIEW                                    |                               |     2 |   424 | 31341   (2)| 00:01:12 |       |       |
+|  18 |                   UNION-ALL                              |                               |       |       |            |          |       |       |
+|  19 |                    PARTITION LIST ITERATOR               |                               |     1 |   100 | 18711   (1)| 00:00:43 |   KEY |   KEY |
+|  20 |                     INLIST ITERATOR                      |                               |       |       |            |          |       |       |
+|* 21 |                      TABLE ACCESS BY LOCAL INDEX ROWID   | TABLE_A                       |     1 |   100 | 18711   (1)| 00:00:43 |   KEY |   KEY |
+|* 22 |                       INDEX RANGE SCAN                   | TABLE_A_PK                    |   335K|       |  3751   (2)| 00:00:09 |   KEY |   KEY |
+|* 23 |                    TABLE ACCESS BY LOCAL INDEX ROWID     | TABLE_B                       |     1 |   100 | 12628   (2)| 00:00:29 |     1 |     1 |
+|  24 |                     NESTED LOOPS                         |                               |     1 |   150 | 12630   (2)| 00:00:29 |       |       |
+|  25 |                      INLIST ITERATOR                     |                               |       |       |            |          |       |       |
+|* 26 |                       TABLE ACCESS BY INDEX ROWID        | TABLE_C                       |     1 |    50 |     1   (0)| 00:00:01 |       |       |
+|* 27 |                        INDEX RANGE SCAN                  | TABLE_C_PK                    |     3 |       |     1   (0)| 00:00:01 |       |       |
+|  28 |                      PARTITION RANGE INLIST              |                               | 36582 |       |  6799   (4)| 00:00:16 | KEY(I | KEY(I |
+|  29 |                       PARTITION LIST ITERATOR            |                               | 36582 |       |  6799   (4)| 00:00:16 |   KEY |   KEY |
+|* 30 |                        INDEX RANGE SCAN                  | TABLE_D_PK                    | 36582 |       |  6799   (4)| 00:00:16 | KEY(I | KEY(I |
+|  31 |                  PARTITION RANGE INLIST                  |                               |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+|  32 |                   INLIST ITERATOR                        |                               |       |       |            |          |       |       |
+|  33 |                    PARTITION LIST ITERATOR               |                               |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+|* 34 |                     TABLE ACCESS BY LOCAL INDEX ROWID    | TABLE_E                       |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+|* 35 |                      INDEX RANGE SCAN                    | TABLE_E_PK                    |     1 |       |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+|  36 |                 PARTITION RANGE ITERATOR                 |                               |     1 |   100 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|  37 |                  PARTITION LIST ITERATOR                 |                               |     1 |   100 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|  38 |                   TABLE ACCESS BY LOCAL INDEX ROWID      | TABLE_F                       |     1 |   100 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|* 39 |                    INDEX UNIQUE SCAN                     | TABLE_F_PK                    |     1 |       |     0   (0)|          |   KEY |   KEY |
+|  40 |                PARTITION RANGE ITERATOR                  |                               |     1 |    63 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|  41 |                 PARTITION LIST ITERATOR                  |                               |     1 |    63 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|  42 |                  TABLE ACCESS BY LOCAL INDEX ROWID       | TABLE_G                       |     1 |    63 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|* 43 |                   INDEX UNIQUE SCAN                      | TABLE_G_PK                    |     1 |       |     0   (0)|          |   KEY |   KEY |
+|  44 |               PARTITION RANGE ITERATOR                   |                               |     1 |    38 |     0   (0)|          |   KEY |   KEY |
+|  45 |                PARTITION LIST ITERATOR                   |                               |     1 |    38 |     0   (0)|          |   KEY |   KEY |
+|* 46 |                 INDEX UNIQUE SCAN                        | TABLE_H_PK                    |     1 |    38 |     0   (0)|          |   KEY |   KEY |
+|  47 |              PARTITION RANGE ITERATOR                    |                               |     1 |   100 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|* 48 |               TABLE ACCESS BY LOCAL INDEX ROWID          | TABLE_I                       |     1 |   100 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|* 49 |                INDEX UNIQUE SCAN                         | TABLE_I_PK                    |     1 |       |     0   (0)|          |   KEY |   KEY |
+|  50 |             PARTITION RANGE ITERATOR                     |                               |     1 |    35 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|  51 |              PARTITION LIST ITERATOR                     |                               |     1 |    35 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|* 52 |               INDEX RANGE SCAN                           | TABLE_J_PK                    |     1 |    35 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|  53 |            VIEW                                          |                               |     2 |  2076 |  2089K  (1)| 01:19:58 |       |       |
+|  54 |             UNION-ALL                                    |                               |       |       |            |          |       |       |
+|  55 |              NESTED LOOPS OUTER                          |                               |     1 |   547 |  4574  (91)| 00:00:11 |       |       |
+|  56 |               NESTED LOOPS OUTER                         |                               |     1 |   447 |  4573  (91)| 00:00:11 |       |       |
+|  57 |                NESTED LOOPS OUTER                        |                               |     1 |   430 |  4572  (91)| 00:00:11 |       |       |
+|  58 |                 NESTED LOOPS OUTER                       |                               |     1 |   413 |  4572  (91)| 00:00:11 |       |       |
+|  59 |                  NESTED LOOPS                            |                               |     1 |   396 |  4571  (91)| 00:00:11 |       |       |
+|  60 |                   NESTED LOOPS                           |                               |     1 |   300 |  4570  (91)| 00:00:11 |       |       |
+|* 61 |                    HASH JOIN                             |                               |     1 |   200 |  4569  (91)| 00:00:11 |       |       |
+|  62 |                     INLIST ITERATOR                      |                               |       |       |            |          |       |       |
+|  63 |                      PARTITION RANGE ITERATOR            |                               |     1 |   100 |   156   (4)| 00:00:01 | KEY(I | KEY(I |
+|  64 |                       INLIST ITERATOR                    |                               |       |       |            |          |       |       |
+|  65 |                        PARTITION LIST ITERATOR           |                               |     1 |   100 |   156   (4)| 00:00:01 | KEY(I | KEY(I |
+|* 66 |                         TABLE ACCESS BY LOCAL INDEX ROWID| TABLE_E                       |     1 |   100 |   156   (4)| 00:00:01 | KEY(I | KEY(I |
+|* 67 |                          INDEX RANGE SCAN                | TABLE_E_UQ                    |    37 |       |   282   (5)| 00:00:01 | KEY(I | KEY(I |
+|  68 |                     PARTITION LIST ALL                   |                               |     5 |   500 |  4411  (94)| 00:00:11 |     1 |    26 |
+|* 69 |                      TABLE ACCESS FULL                   | TABLE_A                       |     5 |   500 |  4411  (94)| 00:00:11 |     1 |    26 |
+|  70 |                    PARTITION RANGE INLIST                |                               |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+|* 71 |                     TABLE ACCESS BY LOCAL INDEX ROWID    | TABLE_I                       |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+|* 72 |                      INDEX UNIQUE SCAN                   | TABLE_I_PK                    |     1 |       |     0   (0)|          | KEY(I | KEY(I |
+|  73 |                   TABLE ACCESS BY GLOBAL INDEX ROWID     | TABLE_K                       |     1 |    96 |     1   (0)| 00:00:01 | ROW L | ROW L |
+|* 74 |                    INDEX UNIQUE SCAN                     | TABLE_K_PK                    |     1 |       |     0   (0)|          |       |       |
+|  75 |                  PARTITION RANGE ITERATOR                |                               |     6 |   102 |     0   (0)|          |   KEY |   KEY |
+|* 76 |                   INDEX UNIQUE SCAN                      | TABLE_I_PK                    |     6 |   102 |     0   (0)|          |   KEY |   KEY |
+|  77 |                 PARTITION RANGE ITERATOR                 |                               |     6 |   102 |     4  (50)| 00:00:01 |   KEY |   KEY |
+|* 78 |                  INDEX FAST FULL SCAN                    | TABLE_I_PK                    |     6 |   102 |     4  (50)| 00:00:01 |   KEY |   KEY |
+|  79 |                PARTITION RANGE ITERATOR                  |                               |     6 |   102 |     4  (50)| 00:00:01 |   KEY |   KEY |
+|* 80 |                 INDEX FAST FULL SCAN                     | TABLE_I_PK                    |     6 |   102 |     4  (50)| 00:00:01 |   KEY |   KEY |
+|  81 |               PARTITION RANGE ITERATOR                   |                               |     1 |   100 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|  82 |                PARTITION LIST ITERATOR                   |                               |     1 |   100 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|  83 |                 TABLE ACCESS BY LOCAL INDEX ROWID        | TABLE_L                       |     1 |   100 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|* 84 |                  INDEX UNIQUE SCAN                       | TABLE_L_PK                    |     1 |       |     0   (0)|          |   KEY |   KEY |
+|  85 |              NESTED LOOPS OUTER                          |                               |     1 |   570 |  2085K  (1)| 01:19:48 |       |       |
+|  86 |               NESTED LOOPS OUTER                         |                               |     1 |   470 |  2085K  (1)| 01:19:48 |       |       |
+|  87 |                NESTED LOOPS OUTER                        |                               |     1 |   453 |  2085K  (1)| 01:19:48 |       |       |
+|  88 |                 NESTED LOOPS OUTER                       |                               |     1 |   436 |  2085K  (1)| 01:19:48 |       |       |
+|  89 |                  NESTED LOOPS                            |                               |     1 |   419 |  2085K  (1)| 01:19:48 |       |       |
+|  90 |                   NESTED LOOPS                           |                               |     1 |   323 |  2085K  (1)| 01:19:48 |       |       |
+|  91 |                    NESTED LOOPS                          |                               |     1 |   223 |  2085K  (1)| 01:19:48 |       |       |
+|  92 |                     NESTED LOOPS                         |                               |    55 |  6765 |  2085K  (1)| 01:19:48 |       |       |
+|  93 |                      INLIST ITERATOR                     |                               |       |       |            |          |       |       |
+|* 94 |                       INDEX RANGE SCAN                   | TABLE_C_PK                    |    89 |  2047 |     1   (0)| 00:00:01 |       |       |
+|  95 |                      INLIST ITERATOR                     |                               |       |       |            |          |       |       |
+|  96 |                       PARTITION RANGE ITERATOR           |                               |     1 |   100 | 23427   (1)| 00:00:54 | KEY(I | KEY(I |
+|  97 |                        PARTITION LIST INLIST             |                               |     1 |   100 | 23427   (1)| 00:00:54 | KEY(I | KEY(I |
+|* 98 |                         TABLE ACCESS BY LOCAL INDEX ROWID| TABLE_E                       |     1 |   100 | 23427   (1)| 00:00:54 | KEY(I | KEY(I |
+|* 99 |                          INDEX RANGE SCAN                | TABLE_E_PK                    | 60462 |       |   748   (8)| 00:00:02 | KEY(I | KEY(I |
+| 100 |                     PARTITION RANGE INLIST               |                               |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+| 101 |                      PARTITION LIST ITERATOR             |                               |     1 |   100 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|*102 |                       TABLE ACCESS BY LOCAL INDEX ROWID  | TABLE_B                       |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+|*103 |                        INDEX RANGE SCAN                  | TABLE_D_PK                    |     1 |       |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+| 104 |                    PARTITION RANGE INLIST                |                               |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+|*105 |                     TABLE ACCESS BY LOCAL INDEX ROWID    | TABLE_I                       |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+|*106 |                      INDEX UNIQUE SCAN                   | TABLE_I_PK                    |     1 |       |     0   (0)|          | KEY(I | KEY(I |
+| 107 |                   TABLE ACCESS BY GLOBAL INDEX ROWID     | TABLE_K                       |     1 |    96 |     1   (0)| 00:00:01 | ROW L | ROW L |
+|*108 |                    INDEX UNIQUE SCAN                     | TABLE_K_PK                    |     1 |       |     0   (0)|          |       |       |
+| 109 |                  PARTITION RANGE ITERATOR                |                               |     6 |   102 |     0   (0)|          |   KEY |   KEY |
+|*110 |                   INDEX UNIQUE SCAN                      | TABLE_I_PK                    |     6 |   102 |     0   (0)|          |   KEY |   KEY |
+| 111 |                 PARTITION RANGE ITERATOR                 |                               |     6 |   102 |     4  (50)| 00:00:01 |   KEY |   KEY |
+|*112 |                  INDEX FAST FULL SCAN                    | TABLE_I_PK                    |     6 |   102 |     4  (50)| 00:00:01 |   KEY |   KEY |
+| 113 |                PARTITION RANGE ITERATOR                  |                               |     6 |   102 |     4  (50)| 00:00:01 |   KEY |   KEY |
+|*114 |                 INDEX FAST FULL SCAN                     | TABLE_I_PK                    |     6 |   102 |     4  (50)| 00:00:01 |   KEY |   KEY |
+| 115 |               PARTITION RANGE ITERATOR                   |                               |     1 |   100 |     1   (0)| 00:00:01 |   KEY |   KEY |
+| 116 |                PARTITION LIST ITERATOR                   |                               |     1 |   100 |     1   (0)| 00:00:01 |   KEY |   KEY |
+| 117 |                 TABLE ACCESS BY LOCAL INDEX ROWID        | TABLE_L                       |     1 |   100 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|*118 |                  INDEX UNIQUE SCAN                       | TABLE_L_PK                    |     1 |       |     0   (0)|          |   KEY |   KEY |
+| 119 |            VIEW                                          |                               |     2 |  2054 |   147   (2)| 00:00:01 |       |       |
+| 120 |             UNION-ALL                                    |                               |       |       |            |          |       |       |
+| 121 |              NESTED LOOPS                                |                               |     1 |   362 |    74   (2)| 00:00:01 |       |       |
+| 122 |               NESTED LOOPS                               |                               |     1 |   262 |    73   (2)| 00:00:01 |       |       |
+| 123 |                NESTED LOOPS                              |                               |     1 |   200 |    72   (2)| 00:00:01 |       |       |
+| 124 |                 INLIST ITERATOR                          |                               |       |       |            |          |       |       |
+| 125 |                  PARTITION RANGE ITERATOR                |                               |     1 |   100 |    71   (2)| 00:00:01 | KEY(I | KEY(I |
+| 126 |                   INLIST ITERATOR                        |                               |       |       |            |          |       |       |
+| 127 |                    PARTITION LIST ITERATOR               |                               |     1 |   100 |    71   (2)| 00:00:01 | KEY(I | KEY(I |
+|*128 |                     TABLE ACCESS BY LOCAL INDEX ROWID    | TABLE_E                       |     1 |   100 |    71   (2)| 00:00:01 | KEY(I | KEY(I |
+|*129 |                      INDEX RANGE SCAN                    | TABLE_E_UQ                    |     6 |       |   137   (2)| 00:00:01 | KEY(I | KEY(I |
+| 130 |                 PARTITION RANGE INLIST                   |                               |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+| 131 |                  PARTITION LIST ALL                      |                               |     1 |   100 |     1   (0)| 00:00:01 |     1 |     9 |
+|*132 |                   TABLE ACCESS BY LOCAL INDEX ROWID      | TABLE_B                       |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+|*133 |                    INDEX RANGE SCAN                      | TABLE_D_PK                    |     1 |       |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+| 134 |                TABLE ACCESS BY GLOBAL INDEX ROWID        | TABLE_K                       |     1 |    62 |     1   (0)| 00:00:01 | ROW L | ROW L |
+|*135 |                 INDEX UNIQUE SCAN                        | TABLE_K_PK                    |     1 |       |     0   (0)|          |       |       |
+| 136 |               PARTITION RANGE INLIST                     |                               |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+|*137 |                TABLE ACCESS BY LOCAL INDEX ROWID         | TABLE_I                       |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+|*138 |                 INDEX UNIQUE SCAN                        | TABLE_I_PK                    |     1 |       |     0   (0)|          | KEY(I | KEY(I |
+|*139 |              FILTER                                      |                               |       |       |            |          |       |       |
+|*140 |               TABLE ACCESS BY LOCAL INDEX ROWID          | TABLE_B                       |     1 |   100 |     1   (0)| 00:00:01 |     1 |     1 |
+| 141 |                NESTED LOOPS                              |                               |     1 |   200 |    72   (2)| 00:00:01 |       |       |
+| 142 |                 INLIST ITERATOR                          |                               |       |       |            |          |       |       |
+| 143 |                  PARTITION RANGE ITERATOR                |                               |     1 |   100 |    71   (2)| 00:00:01 | KEY(I | KEY(I |
+| 144 |                   INLIST ITERATOR                        |                               |       |       |            |          |       |       |
+| 145 |                    PARTITION LIST ITERATOR               |                               |     1 |   100 |    71   (2)| 00:00:01 | KEY(I | KEY(I |
+|*146 |                     TABLE ACCESS BY LOCAL INDEX ROWID    | TABLE_E                       |     1 |   100 |    71   (2)| 00:00:01 | KEY(I | KEY(I |
+|*147 |                      INDEX RANGE SCAN                    | TABLE_E_UQ                    |     6 |       |   137   (2)| 00:00:01 | KEY(I | KEY(I |
+| 148 |                 PARTITION RANGE INLIST                   |                               |     1 |       |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+| 149 |                  PARTITION LIST ALL                      |                               |     1 |       |     1   (0)| 00:00:01 |     1 |     9 |
+|*150 |                   INDEX RANGE SCAN                       | TABLE_D_PK                    |     1 |       |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+| 151 |            NESTED LOOPS OUTER                            |                               |     1 |   426 |    76   (2)| 00:00:01 |       |       |
+| 152 |             NESTED LOOPS                                 |                               |     1 |   358 |    75   (2)| 00:00:01 |       |       |
+| 153 |              NESTED LOOPS OUTER                          |                               |     1 |   313 |    74   (2)| 00:00:01 |       |       |
+| 154 |               NESTED LOOPS OUTER                         |                               |     1 |   275 |    73   (2)| 00:00:01 |       |       |
+| 155 |                NESTED LOOPS                              |                               |     1 |   200 |    72   (2)| 00:00:01 |       |       |
+| 156 |                 INLIST ITERATOR                          |                               |       |       |            |          |       |       |
+| 157 |                  PARTITION RANGE ITERATOR                |                               |     1 |   100 |    71   (2)| 00:00:01 | KEY(I | KEY(I |
+| 158 |                   INLIST ITERATOR                        |                               |       |       |            |          |       |       |
+| 159 |                    PARTITION LIST ITERATOR               |                               |     1 |   100 |    71   (2)| 00:00:01 | KEY(I | KEY(I |
+|*160 |                     TABLE ACCESS BY LOCAL INDEX ROWID    | TABLE_E                       |     1 |   100 |    71   (2)| 00:00:01 | KEY(I | KEY(I |
+|*161 |                      INDEX RANGE SCAN                    | TABLE_E_UQ                    |     6 |       |   137   (2)| 00:00:01 | KEY(I | KEY(I |
+| 162 |                 PARTITION RANGE INLIST                   |                               |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+| 163 |                  PARTITION LIST SINGLE                   |                               |     1 |   100 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|*164 |                   TABLE ACCESS BY LOCAL INDEX ROWID      | TABLE_B                       |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+|*165 |                    INDEX RANGE SCAN                      | TABLE_D_PK                    |     1 |       |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+| 166 |                PARTITION RANGE ITERATOR                  |                               |     1 |    75 |     1   (0)| 00:00:01 |   KEY |   KEY |
+| 167 |                 PARTITION LIST ITERATOR                  |                               |     1 |    75 |     1   (0)| 00:00:01 |   KEY |   KEY |
+| 168 |                  TABLE ACCESS BY LOCAL INDEX ROWID       | TABLE_G                       |     1 |    75 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|*169 |                   INDEX UNIQUE SCAN                      | TABLE_G_PK                    |     1 |       |     0   (0)|          |   KEY |   KEY |
+| 170 |               PARTITION RANGE ITERATOR                   |                               |     1 |    38 |     0   (0)|          |   KEY |   KEY |
+| 171 |                PARTITION LIST ITERATOR                   |                               |     1 |    38 |     0   (0)|          |   KEY |   KEY |
+|*172 |                 INDEX UNIQUE SCAN                        | TABLE_H_PK                    |     1 |    38 |     0   (0)|          |   KEY |   KEY |
+| 173 |              PARTITION RANGE ITERATOR                    |                               |     1 |    45 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|*174 |               TABLE ACCESS BY LOCAL INDEX ROWID          | TABLE_I                       |     1 |    45 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|*175 |                INDEX UNIQUE SCAN                         | TABLE_I_PK                    |     1 |       |     0   (0)|          |   KEY |   KEY |
+| 176 |             PARTITION RANGE ITERATOR                     |                               |     1 |    68 |     1   (0)| 00:00:01 |   KEY |   KEY |
+| 177 |              PARTITION LIST SINGLE                       |                               |     1 |    68 |     1   (0)| 00:00:01 |       |       |
+| 178 |               TABLE ACCESS BY LOCAL INDEX ROWID          | TABLE_F                       |     1 |    68 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|*179 |                INDEX UNIQUE SCAN                         | TABLE_F_PK                    |     1 |       |     0   (0)|          |   KEY |   KEY |
+| 180 |            NESTED LOOPS OUTER                            |                               |     1 |   423 |    76   (2)| 00:00:01 |       |       |
+| 181 |             NESTED LOOPS                                 |                               |     1 |   355 |    75   (2)| 00:00:01 |       |       |
+| 182 |              NESTED LOOPS OUTER                          |                               |     1 |   310 |    74   (2)| 00:00:01 |       |       |
+| 183 |               NESTED LOOPS OUTER                         |                               |     1 |   272 |    73   (2)| 00:00:01 |       |       |
+| 184 |                NESTED LOOPS                              |                               |     1 |   200 |    72   (2)| 00:00:01 |       |       |
+| 185 |                 INLIST ITERATOR                          |                               |       |       |            |          |       |       |
+| 186 |                  PARTITION RANGE ITERATOR                |                               |     1 |   100 |    71   (2)| 00:00:01 | KEY(I | KEY(I |
+| 187 |                   INLIST ITERATOR                        |                               |       |       |            |          |       |       |
+| 188 |                    PARTITION LIST ITERATOR               |                               |     1 |   100 |    71   (2)| 00:00:01 | KEY(I | KEY(I |
+|*189 |                     TABLE ACCESS BY LOCAL INDEX ROWID    | TABLE_E                       |     1 |   100 |    71   (2)| 00:00:01 | KEY(I | KEY(I |
+|*190 |                      INDEX RANGE SCAN                    | TABLE_E_UQ                    |     6 |       |   137   (2)| 00:00:01 | KEY(I | KEY(I |
+| 191 |                 PARTITION RANGE INLIST                   |                               |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+| 192 |                  PARTITION LIST SINGLE                   |                               |     1 |   100 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|*193 |                   TABLE ACCESS BY LOCAL INDEX ROWID      | TABLE_B                       |     1 |   100 |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+|*194 |                    INDEX RANGE SCAN                      | TABLE_D_PK                    |     1 |       |     1   (0)| 00:00:01 | KEY(I | KEY(I |
+| 195 |                PARTITION RANGE ITERATOR                  |                               |     1 |    72 |     1   (0)| 00:00:01 |   KEY |   KEY |
+| 196 |                 PARTITION LIST ITERATOR                  |                               |     1 |    72 |     1   (0)| 00:00:01 |   KEY |   KEY |
+| 197 |                  TABLE ACCESS BY LOCAL INDEX ROWID       | TABLE_G                       |     1 |    72 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|*198 |                   INDEX UNIQUE SCAN                      | TABLE_G_PK                    |     1 |       |     0   (0)|          |   KEY |   KEY |
+| 199 |               PARTITION RANGE ITERATOR                   |                               |     1 |    38 |     0   (0)|          |   KEY |   KEY |
+| 200 |                PARTITION LIST ITERATOR                   |                               |     1 |    38 |     0   (0)|          |   KEY |   KEY |
+|*201 |                 INDEX UNIQUE SCAN                        | TABLE_H_PK                    |     1 |    38 |     0   (0)|          |   KEY |   KEY |
+| 202 |              PARTITION RANGE ITERATOR                    |                               |     1 |    45 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|*203 |               TABLE ACCESS BY LOCAL INDEX ROWID          | TABLE_I                       |     1 |    45 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|*204 |                INDEX UNIQUE SCAN                         | TABLE_I_PK                    |     1 |       |     0   (0)|          |   KEY |   KEY |
+| 205 |             PARTITION RANGE ITERATOR                     |                               |     1 |    68 |     1   (0)| 00:00:01 |   KEY |   KEY |
+| 206 |              PARTITION LIST SINGLE                       |                               |     1 |    68 |     1   (0)| 00:00:01 |       |       |
+| 207 |               TABLE ACCESS BY LOCAL INDEX ROWID          | TABLE_F                       |     1 |    68 |     1   (0)| 00:00:01 |   KEY |   KEY |
+|*208 |                INDEX UNIQUE SCAN                         | TABLE_F_PK                    |     1 |       |     0   (0)|          |   KEY |   KEY |
+| 209 |          TABLE ACCESS FULL                               | TABLE_M                       |   252 | 10836 |     2   (0)| 00:00:01 |       |       |
+| 210 |         TABLE ACCESS BY INDEX ROWID                      | TABLE_N                       |     1 |   100 |     1   (0)| 00:00:01 |       |       |
+|*211 |          INDEX UNIQUE SCAN                               | TABLE_N_PK                    |     1 |       |     0   (0)|          |       |       |
+| 212 |        TABLE ACCESS BY INDEX ROWID                       | TABLE_O                       |     1 |    58 |     1   (0)| 00:00:01 |       |       |
+|*213 |         INDEX RANGE SCAN                                 | TABLE_O_PK                    |     1 |       |     0   (0)|          |       |       |
+| 214 |       TABLE ACCESS BY INDEX ROWID                        | TABLE_P                       |     1 |    58 |     1   (0)| 00:00:01 |       |       |
+|*215 |        INDEX RANGE SCAN                                  | TABLE_P_IDX                   |     1 |       |     0   (0)|          |       |       |
+| 216 |     TABLE ACCESS FULL                                    | TABLE_Q                       |   227 | 22019 |     2   (0)| 00:00:01 |       |       |
+| 217 |    VIEW                                                  |                               |   252 |  3024 |     3  (34)| 00:00:01 |       |       |
+| 218 |     SORT UNIQUE                                          |                               |   252 |  3024 |     3  (34)| 00:00:01 |       |       |
+| 219 |      TABLE ACCESS FULL                                   | TABLE_M                       |   252 |  3024 |     2   (0)| 00:00:01 |       |       |
+----------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,669 @@
+-------------------------------------------------------------------------------------------
+-- 
+-- File name:   inmemory_cpu_counters.txt
+-- Purpose:     Experiment log showing different memory access patterns for row-oriented vs.
+--              column-oriented memory structures (using Oracle Database 12c In-Memory Option
+--              as an example)
+--
+-- Author:      Tanel Poder
+-- Source:      http://blog.tanelpoder.com/2015/08/10/ram-is-the-new-disk-and-how-to-measure-its-performance-part-2
+--
+-------------------------------------------------------------------------------------------
+
+===========================================================================================
+-- INDEX RANGE SCAN BAD CLUSTERING FACTOR:
+===========================================================================================
+
+SELECT /*+ MONITOR INDEX(c(cust_postal_code)) */ COUNT(cust_valid) FROM customers_nopart c WHERE cust_postal_code > '0'
+
+Global Information
+------------------------------
+ Status              :  DONE (ALL ROWS)
+ Instance ID         :  1
+ Session             :  TANEL (1090:40133)
+ SQL ID              :  gk9f8nzq8dvy0
+ SQL Execution ID    :  16777219
+ Execution Started   :  11/01/2014 20:47:45
+ First Refresh Time  :  11/01/2014 20:47:45
+ Last Refresh Time   :  11/01/2014 20:49:49
+ Duration            :  124s
+ Module/Action       :  SQL*Plus/-
+ Service             :  dw
+ Program             :  sqlplus@mac01 (TNS V1-V3)
+ Fetch Calls         :  1
+
+Global Stats
+=================================================
+| Elapsed |   Cpu   |  Other   | Fetch | Buffer |
+| Time(s) | Time(s) | Waits(s) | Calls |  Gets  |
+=================================================
+|     124 |     123 |     0.41 |     1 |    70M |
+=================================================
+
+SQL Plan Monitoring Details (Plan Hash Value=562509776)
+===============================================================================================================================================================
+| Id |               Operation                |          Name           |  Rows   | Cost |   Time    | Start  | Execs |   Rows   | Activity | Activity Detail |
+|    |                                        |                         | (Estim) |      | Active(s) | Active |       | (Actual) |   (%)    |   (# samples)   |
+===============================================================================================================================================================
+|  0 | SELECT STATEMENT                       |                         |         |      |       123 |     +2 |     1 |        1 |          |                 |
+|  1 |   SORT AGGREGATE                       |                         |       1 |      |       123 |     +2 |     1 |        1 |          |                 |
+|  2 |    TABLE ACCESS BY INDEX ROWID BATCHED | CUSTOMERS_NOPART        |     70M |  70M |       123 |     +2 |     1 |      70M |          |                 |
+|  3 |     INDEX RANGE SCAN                   | CUSTOMERS_NP_POSTALCODE |     70M | 185K |       123 |     +2 |     1 |      70M |          |                 |
+===============================================================================================================================================================
+
+-- Session Snapper v4.15 BETA - by Tanel Poder ( http://blog.tanelpoder.com ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ SID @INST, USERNAME  , TYPE, STATISTIC                                                 ,         DELTA, HDELTA/SEC,    %TIME, GRAPH       , NUM_WAITS,  WAITS/SEC,   AVERAGES
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  1090  @1, TANEL     , STAT, Requests to/from client                                   ,             1,        .01,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, user calls                                                ,             1,        .01,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, pinned cursors current                                    ,            -1,       -.01,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, session logical reads                                     ,      64245093,    491.59k,         ,             ,          ,           ,    128.24M total buffer visits
+  1090  @1, TANEL     , STAT, CPU used when call started                                ,         12343,      94.45,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, CPU used by this session                                  ,         12343,      94.45,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, DB time                                                   ,         12381,      94.74,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, non-idle wait count                                       ,             1,        .01,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, consistent gets                                           ,      64243699,    491.58k,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, consistent gets from cache                                ,      64243681,    491.58k,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, consistent gets pin                                       ,      64243662,    491.58k,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, consistent gets pin (fastpath)                            ,      64243643,    491.58k,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, logical read bytes from cache                             ,  526283096064,      4.03G,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, calls to kcmgcs                                           ,             1,        .01,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, no work - consistent read gets                            ,      64227578,    491.46k,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, Cached Commit SCN referenced                              ,      64055061,    490.14k,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, table fetch by rowid                                      ,      64042000,    490.04k,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, buffer is pinned count                                    ,      63997504,     489.7k,         ,             ,          ,           ,       49.9 % buffer gets avoided thanks to buffer pin caching
+  1090  @1, TANEL     , STAT, buffer is not pinned count                                ,      63997201,    489.69k,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , STAT, bytes sent via SQL*Net to client                          ,           346,       2.65,         ,             ,          ,           ,        173 bytes per roundtrip
+  1090  @1, TANEL     , STAT, bytes received via SQL*Net from client                    ,            11,        .08,         ,             ,          ,           ,        5.5 bytes per roundtrip
+  1090  @1, TANEL     , STAT, SQL*Net roundtrips to/from client                         ,             2,        .02,         ,             ,          ,           ,          ~ per execution
+  1090  @1, TANEL     , TIME, DB CPU                                                    ,     113788701,   870.69ms,    87.1%, [@@@@@@@@@ ],          ,           ,
+  1090  @1, TANEL     , TIME, sql execute elapsed time                                  ,     114166251,   873.58ms,    87.4%, [######### ],          ,           ,
+  1090  @1, TANEL     , TIME, DB time                                                   ,     114166302,   873.58ms,    87.4%, [######### ],          ,           ,       -.44 % unaccounted time
+  1090  @1, TANEL     , WAIT, SQL*Net message to client                                 ,             3,      .02us,      .0%, [          ],         1,        .01,        3us average wait
+  1090  @1, TANEL     , WAIT, SQL*Net message from client                               ,      17099937,   130.85ms,    13.1%, [WW        ],         1,        .01,      17.1s average wait
+
+--  End of Stats snap 1, end=2014-11-01 20:50:06, seconds=130.7
+
+ Performance counter stats for process id '34783':
+
+     123439.521472 task-clock                #    0.950 CPUs utilized          
+   391,579,324,969 cycles                    #    3.172 GHz                     [33.33%]
+   288,941,288,284 instructions              #    0.74  insns per cycle        
+                                             #    1.01  stalled cycles per insn [39.99%]
+    58,376,159,852 branches                  #  472.913 M/sec                   [39.98%]
+       175,115,325 branch-misses             #    0.30% of all branches         [39.99%]
+   292,420,163,881 stalled-cycles-frontend   #   74.68% frontend cycles idle    [40.00%]
+   203,595,215,084 stalled-cycles-backend    #   51.99% backend  cycles idle    [40.00%]
+     1,538,720,017 cache-references          #   12.465 M/sec                   [26.67%]
+     1,231,807,162 cache-misses              #   80.054 % of all cache refs     [26.67%]
+     1,314,782,881 LLC-loads                 #   10.651 M/sec                   [26.67%]
+     1,117,647,753 LLC-load-misses           #   85.01% of all LL-cache hits    [ 6.67%]
+       428,372,373 LLC-stores                #    3.470 M/sec                   [ 6.67%]
+       112,819,593 LLC-store-misses          #    0.914 M/sec                   [ 6.67%]
+    88,635,191,682 L1-dcache-loads           #  718.045 M/sec                   [13.33%]
+     2,381,219,491 L1-dcache-load-misses     #    2.69% of all L1-dcache hits   [20.00%]
+       124,654,979 L1-dcache-prefetches      #    1.010 M/sec                   [26.66%]
+
+     130.000627586 seconds time elapsed
+
+
+
+===========================================================================================
+-- INDEX RANGE SCAN GOOD CLUSTERING FACTOR
+===========================================================================================
+
+SELECT /*+ MONITOR INDEX(c(cust_id)) */ COUNT(cust_valid) FROM customers_nopart c WHERE cust_id > 0
+
+Global Information
+------------------------------
+ Status              :  DONE (ALL ROWS)
+ Instance ID         :  1
+ Session             :  TANEL (1090:40133)
+ SQL ID              :  4kx4gus4sb2cu
+ SQL Execution ID    :  16777219
+ Execution Started   :  11/01/2014 21:05:44
+ First Refresh Time  :  11/01/2014 21:05:44
+ Last Refresh Time   :  11/01/2014 21:06:23
+ Duration            :  39s
+ Module/Action       :  SQL*Plus/-
+ Service             :  dw
+ Program             :  sqlplus@mac01 (TNS V1-V3)
+ Fetch Calls         :  1
+
+Global Stats
+=================================================
+| Elapsed |   Cpu   |  Other   | Fetch | Buffer |
+| Time(s) | Time(s) | Waits(s) | Calls |  Gets  |
+=================================================
+|      39 |      39 |     0.27 |     1 |    10M |
+=================================================
+
+SQL Plan Monitoring Details (Plan Hash Value=740244311)
+========================================================================================================================================================
+| Id |               Operation                |       Name       |  Rows   | Cost |   Time    | Start  | Execs |   Rows   | Activity | Activity Detail |
+|    |                                        |                  | (Estim) |      | Active(s) | Active |       | (Actual) |   (%)    |   (# samples)   |
+========================================================================================================================================================
+|  0 | SELECT STATEMENT                       |                  |         |      |        38 |     +2 |     1 |        1 |          |                 |
+|  1 |   SORT AGGREGATE                       |                  |       1 |      |        38 |     +2 |     1 |        1 |          |                 |
+|  2 |    TABLE ACCESS BY INDEX ROWID BATCHED | CUSTOMERS_NOPART |     70M |  10M |        40 |     +1 |     1 |      70M |    89.74 | Cpu (35)        |
+|  3 |     INDEX RANGE SCAN                   | CUSTOMERS_NP_ID  |     70M | 169K |        38 |     +2 |     1 |      70M |    10.26 | Cpu (4)         |
+========================================================================================================================================================
+
+-- Session Snapper v4.15 BETA - by Tanel Poder ( http://blog.tanelpoder.com ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ SID @INST, USERNAME  , TYPE, STATISTIC                                                 ,         DELTA, HDELTA/SEC,    %TIME, GRAPH       , NUM_WAITS,  WAITS/SEC,   AVERAGES
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  1090  @1, TANEL     , STAT, Requests to/from client                                   ,             2,        .04,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , STAT, opened cursors cumulative                                 ,             1,        .02,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, user calls                                                ,             3,        .06,         ,             ,          ,           ,          3 per execution
+  1090  @1, TANEL     , STAT, session logical reads                                     ,      10224446,    205.83k,         ,             ,          ,           ,    139.45M total buffer visits
+  1090  @1, TANEL     , STAT, CPU used when call started                                ,          3884,      78.19,         ,             ,          ,           ,      3.88k per execution
+  1090  @1, TANEL     , STAT, CPU used by this session                                  ,          3884,      78.19,         ,             ,          ,           ,      3.88k per execution
+  1090  @1, TANEL     , STAT, DB time                                                   ,          3911,      78.73,         ,             ,          ,           ,      3.91k per execution
+  1090  @1, TANEL     , STAT, non-idle wait count                                       ,             2,        .04,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , STAT, consistent gets                                           ,      10224446,    205.83k,         ,             ,          ,           ,     10.22M per execution
+  1090  @1, TANEL     , STAT, consistent gets from cache                                ,      10224446,    205.83k,         ,             ,          ,           ,     10.22M per execution
+  1090  @1, TANEL     , STAT, consistent gets pin                                       ,      10224444,    205.83k,         ,             ,          ,           ,     10.22M per execution
+  1090  @1, TANEL     , STAT, consistent gets pin (fastpath)                            ,      10224444,    205.83k,         ,             ,          ,           ,     10.22M per execution
+  1090  @1, TANEL     , STAT, consistent gets examination                               ,             2,        .04,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , STAT, consistent gets examination (fastpath)                    ,             2,        .04,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , STAT, logical read bytes from cache                             ,   83758661632,      1.69G,         ,             ,          ,           ,     83.76G per execution
+  1090  @1, TANEL     , STAT, calls to kcmgcs                                           ,             1,        .02,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, calls to get snapshot scn: kcmgss                         ,             1,        .02,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, no work - consistent read gets                            ,      10224444,    205.83k,         ,             ,          ,           ,     10.22M per execution
+  1090  @1, TANEL     , STAT, Cached Commit SCN referenced                              ,      10055979,    202.44k,         ,             ,          ,           ,     10.06M per execution
+  1090  @1, TANEL     , STAT, table fetch by rowid                                      ,      69642625,       1.4M,         ,             ,          ,           ,     69.64M per execution
+  1090  @1, TANEL     , STAT, index scans kdiixs1                                       ,             1,        .02,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, session cursor cache hits                                 ,             1,        .02,         ,             ,          ,           ,          0 softparses avoided thanks to cursor cache
+  1090  @1, TANEL     , STAT, session cursor cache count                                ,            -1,       -.02,         ,             ,          ,           ,         -1 per execution
+  1090  @1, TANEL     , STAT, buffer is pinned count                                    ,     129229109,       2.6M,         ,             ,          ,           ,      92.67 % buffer gets avoided thanks to buffer pin caching
+  1090  @1, TANEL     , STAT, buffer is not pinned count                                ,      10056142,    202.45k,         ,             ,          ,           ,     10.06M per execution
+  1090  @1, TANEL     , STAT, parse count (total)                                       ,             1,        .02,         ,             ,          ,           ,          ~ softparses per hardparse
+  1090  @1, TANEL     , STAT, execute count                                             ,             1,        .02,         ,             ,          ,           ,          1 executions per parse
+  1090  @1, TANEL     , STAT, bytes sent via SQL*Net to client                          ,           347,       6.99,         ,             ,          ,           ,      173.5 bytes per roundtrip
+  1090  @1, TANEL     , STAT, bytes received via SQL*Net from client                    ,           234,       4.71,         ,             ,          ,           ,        117 bytes per roundtrip
+  1090  @1, TANEL     , STAT, SQL*Net roundtrips to/from client                         ,             2,        .04,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , TIME, parse time elapsed                                        ,            22,      .44us,      .0%, [          ],          ,           ,
+  1090  @1, TANEL     , TIME, DB CPU                                                    ,      38844095,   781.99ms,    78.2%, [@@@@@@@@  ],          ,           ,
+  1090  @1, TANEL     , TIME, sql execute elapsed time                                  ,      39112343,    787.4ms,    78.7%, [########  ],          ,           ,
+  1090  @1, TANEL     , TIME, DB time                                                   ,      39112520,    787.4ms,    78.7%, [########  ],          ,           ,       1.07 % unaccounted time
+  1090  @1, TANEL     , WAIT, SQL*Net message to client                                 ,             6,      .12us,      .0%, [          ],         2,        .04,        3us average wait
+  1090  @1, TANEL     , WAIT, SQL*Net message from client                               ,      10029538,   201.91ms,    20.2%, [WW        ],         2,        .04,      5.01s average wait
+
+--  End of Stats snap 1, end=2014-11-01 21:06:33, seconds=49.7
+
+
+ Performance counter stats for process id '34783':
+
+      38808.299326 task-clock                #    0.776 CPUs utilized          
+   121,801,871,718 cycles                    #    3.139 GHz                     [33.33%]
+   151,255,447,172 instructions              #    1.24  insns per cycle        
+                                             #    0.49  stalled cycles per insn [40.00%]
+    30,293,259,230 branches                  #  780.587 M/sec                   [39.97%]
+        49,678,230 branch-misses             #    0.16% of all branches         [39.96%]
+    74,585,632,121 stalled-cycles-frontend   #   61.24% frontend cycles idle    [39.96%]
+    44,415,389,634 stalled-cycles-backend    #   36.47% backend  cycles idle    [39.97%]
+       328,576,324 cache-references          #    8.467 M/sec                   [26.67%]
+       245,481,047 cache-misses              #   74.711 % of all cache refs     [26.66%]
+       284,245,214 LLC-loads                 #    7.324 M/sec                   [26.66%]
+       241,085,971 LLC-load-misses           #   84.82% of all LL-cache hits    [ 6.68%]
+        33,948,502 LLC-stores                #    0.875 M/sec                   [ 6.67%]
+         3,964,463 LLC-store-misses          #    0.102 M/sec                   [ 6.68%]
+    43,834,061,296 L1-dcache-loads           # 1129.502 M/sec                   [13.36%]
+       515,048,945 L1-dcache-load-misses     #    1.17% of all L1-dcache hits   [20.03%]
+        73,912,228 L1-dcache-prefetches      #    1.905 M/sec                   [26.69%]
+
+      50.000646188 seconds time elapsed
+
+
+
+===========================================================================================
+-- FULL TABLE SCAN BUFFER CACHE (NO INMEMORY)
+===========================================================================================
+SELECT /*+ MONITOR FULL(c) NO_INMEMORY */ COUNT(cust_valid) FROM customers_nopart c WHERE cust_id > 0
+
+Global Information
+------------------------------
+ Status              :  DONE (ALL ROWS)
+ Instance ID         :  1
+ Session             :  TANEL (1090:40133)
+ SQL ID              :  avvyqpkjthqwd
+ SQL Execution ID    :  16777224
+ Execution Started   :  11/01/2014 21:13:37
+ First Refresh Time  :  11/01/2014 21:13:37
+ Last Refresh Time   :  11/01/2014 21:14:05
+ Duration            :  28s
+ Module/Action       :  SQL*Plus/-
+ Service             :  dw
+ Program             :  sqlplus@mac01 (TNS V1-V3)
+ Fetch Calls         :  1
+
+Global Stats
+=================================================
+| Elapsed |   Cpu   |  Other   | Fetch | Buffer |
+| Time(s) | Time(s) | Waits(s) | Calls |  Gets  |
+=================================================
+|      27 |      27 |     0.09 |     1 |     2M |
+=================================================
+
+SQL Plan Monitoring Details (Plan Hash Value=874904094)
+===============================================================================================================================================
+| Id |          Operation           |       Name       |  Rows   | Cost  |   Time    | Start  | Execs |   Rows   | Activity | Activity Detail |
+|    |                              |                  | (Estim) |       | Active(s) | Active |       | (Actual) |   (%)    |   (# samples)   |
+===============================================================================================================================================
+|  0 | SELECT STATEMENT             |                  |         |       |        27 |     +2 |     1 |        1 |          |                 |
+|  1 |   SORT AGGREGATE             |                  |       1 |       |        27 |     +2 |     1 |        1 |          |                 |
+|  2 |    TABLE ACCESS STORAGE FULL | CUSTOMERS_NOPART |     70M | 25410 |        28 |     +1 |     1 |      70M |   100.00 | Cpu (27)        |
+===============================================================================================================================================
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ SID @INST, USERNAME  , TYPE, STATISTIC                                                 ,         DELTA, HDELTA/SEC,    %TIME, GRAPH       , NUM_WAITS,  WAITS/SEC,   AVERAGES
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  1090  @1, TANEL     , STAT, Requests to/from client                                   ,             2,        .07,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , STAT, opened cursors cumulative                                 ,             1,        .03,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, user calls                                                ,             3,         .1,         ,             ,          ,           ,          3 per execution
+  1090  @1, TANEL     , STAT, session logical reads                                     ,       1611874,     54.55k,         ,             ,          ,           ,      1.61M total buffer visits
+  1090  @1, TANEL     , STAT, CPU used when call started                                ,          2737,      92.62,         ,             ,          ,           ,      2.74k per execution
+  1090  @1, TANEL     , STAT, CPU used by this session                                  ,          2737,      92.62,         ,             ,          ,           ,      2.74k per execution
+  1090  @1, TANEL     , STAT, DB time                                                   ,          2745,      92.89,         ,             ,          ,           ,      2.75k per execution
+  1090  @1, TANEL     , STAT, non-idle wait count                                       ,             2,        .07,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , STAT, consistent gets                                           ,       1611874,     54.55k,         ,             ,          ,           ,      1.61M per execution
+  1090  @1, TANEL     , STAT, consistent gets from cache                                ,       1611874,     54.55k,         ,             ,          ,           ,      1.61M per execution
+  1090  @1, TANEL     , STAT, consistent gets pin                                       ,       1611874,     54.55k,         ,             ,          ,           ,      1.61M per execution
+  1090  @1, TANEL     , STAT, consistent gets pin (fastpath)                            ,       1611874,     54.55k,         ,             ,          ,           ,      1.61M per execution
+  1090  @1, TANEL     , STAT, logical read bytes from cache                             ,   13204471808,    446.85M,         ,             ,          ,           ,      13.2G per execution
+  1090  @1, TANEL     , STAT, calls to kcmgcs                                           ,            83,       2.81,         ,             ,          ,           ,         83 per execution
+  1090  @1, TANEL     , STAT, calls to get snapshot scn: kcmgss                         ,             1,        .03,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, no work - consistent read gets                            ,       1611792,     54.54k,         ,             ,          ,           ,      1.61M per execution
+  1090  @1, TANEL     , STAT, Cached Commit SCN referenced                              ,       1609962,     54.48k,         ,             ,          ,           ,      1.61M per execution
+  1090  @1, TANEL     , STAT, table scans (cache partitions)                            ,             1,        .03,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, table scan rows gotten                                    ,      69642625,      2.36M,         ,             ,          ,           ,     69.64M per execution
+  1090  @1, TANEL     , STAT, table scan disk non-IMC rows gotten                       ,      69642625,      2.36M,         ,             ,          ,           ,     69.64M per execution
+  1090  @1, TANEL     , STAT, table scan blocks gotten                                  ,       1611792,     54.54k,         ,             ,          ,           ,      1.61M per execution
+  1090  @1, TANEL     , STAT, IM scan segments disk                                     ,             1,        .03,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, session cursor cache hits                                 ,             1,        .03,         ,             ,          ,           ,          0 softparses avoided thanks to cursor cache
+  1090  @1, TANEL     , STAT, parse count (total)                                       ,             1,        .03,         ,             ,          ,           ,          ~ softparses per hardparse
+  1090  @1, TANEL     , STAT, execute count                                             ,             1,        .03,         ,             ,          ,           ,          1 executions per parse
+  1090  @1, TANEL     , STAT, bytes sent via SQL*Net to client                          ,           347,      11.74,         ,             ,          ,           ,      173.5 bytes per roundtrip
+  1090  @1, TANEL     , STAT, bytes received via SQL*Net from client                    ,           236,       7.99,         ,             ,          ,           ,        118 bytes per roundtrip
+  1090  @1, TANEL     , STAT, SQL*Net roundtrips to/from client                         ,             2,        .07,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , TIME, parse time elapsed                                        ,            23,      .78us,      .0%, [          ],          ,           ,
+  1090  @1, TANEL     , TIME, DB CPU                                                    ,      27370839,   926.25ms,    92.6%, [@@@@@@@@@@],          ,           ,
+  1090  @1, TANEL     , TIME, sql execute elapsed time                                  ,      27462662,   929.36ms,    92.9%, [##########],          ,           ,
+  1090  @1, TANEL     , TIME, DB time                                                   ,      27462864,   929.36ms,    92.9%, [##########],          ,           ,        -.5 % unaccounted time
+  1090  @1, TANEL     , WAIT, SQL*Net message to client                                 ,             7,      .24us,      .0%, [          ],         2,        .07,      3.5us average wait
+  1090  @1, TANEL     , WAIT, SQL*Net message from client                               ,       2236160,    75.67ms,     7.6%, [W         ],         2,        .07,      1.12s average wait
+
+--  End of Stats snap 1, end=2014-11-01 21:14:06, seconds=29.6
+
+ Performance counter stats for process id '34783':
+
+      27373.819908 task-clock                #    0.912 CPUs utilized          
+    86,428,653,040 cycles                    #    3.157 GHz                     [33.33%]
+    32,115,412,877 instructions              #    0.37  insns per cycle        
+                                             #    2.39  stalled cycles per insn [40.00%]
+     7,386,220,210 branches                  #  269.828 M/sec                   [39.99%]
+        22,056,397 branch-misses             #    0.30% of all branches         [40.00%]
+    76,697,049,420 stalled-cycles-frontend   #   88.74% frontend cycles idle    [40.00%]
+    58,627,393,395 stalled-cycles-backend    #   67.83% backend  cycles idle    [40.00%]
+       256,440,384 cache-references          #    9.368 M/sec                   [26.67%]
+       222,036,981 cache-misses              #   86.584 % of all cache refs     [26.66%]
+       234,361,189 LLC-loads                 #    8.562 M/sec                   [26.66%]
+       218,570,294 LLC-load-misses           #   93.26% of all LL-cache hits    [ 6.67%]
+        18,493,582 LLC-stores                #    0.676 M/sec                   [ 6.67%]
+         3,233,231 LLC-store-misses          #    0.118 M/sec                   [ 6.67%]
+     7,324,946,042 L1-dcache-loads           #  267.589 M/sec                   [13.33%]
+       305,276,341 L1-dcache-load-misses     #    4.17% of all L1-dcache hits   [20.00%]
+        36,890,302 L1-dcache-prefetches      #    1.348 M/sec                   [26.66%]
+
+      30.000601214 seconds time elapsed
+
+
+
+
+=====================================================================
+-- full table scan IN MEMORY with WHERE cust_id > 0
+=====================================================================
+
+SELECT /*+ MONITOR FULL(c) INMEMORY */ COUNT(cust_valid) FROM customers_nopart c WHERE cust_id > 0
+
+Global Information
+------------------------------
+ Status              :  DONE (ALL ROWS)
+ Instance ID         :  1
+ Session             :  TANEL (1090:40133)
+ SQL ID              :  3s5ur1b0pg42x
+ SQL Execution ID    :  16777227
+ Execution Started   :  11/01/2014 21:16:32
+ First Refresh Time  :  11/01/2014 21:16:32
+ Last Refresh Time   :  11/01/2014 21:16:33
+ Duration            :  1s
+ Module/Action       :  SQL*Plus/-
+ Service             :  dw
+ Program             :  sqlplus@mac01 (TNS V1-V3)
+ Fetch Calls         :  1
+
+Global Stats
+=================================================
+| Elapsed |   Cpu   |  Other   | Fetch | Buffer |
+| Time(s) | Time(s) | Waits(s) | Calls |  Gets  |
+=================================================
+|    1.58 |    1.58 |     0.01 |     1 |      4 |
+=================================================
+
+SQL Plan Monitoring Details (Plan Hash Value=874904094)
+================================================================================================================================================
+| Id |           Operation           |       Name       |  Rows   | Cost  |   Time    | Start  | Execs |   Rows   | Activity | Activity Detail |
+|    |                               |                  | (Estim) |       | Active(s) | Active |       | (Actual) |   (%)    |   (# samples)   |
+================================================================================================================================================
+|  0 | SELECT STATEMENT              |                  |         |       |         1 |     +1 |     1 |        1 |          |                 |
+|  1 |   SORT AGGREGATE              |                  |       1 |       |         1 |     +1 |     1 |        1 |          |                 |
+|  2 |    TABLE ACCESS INMEMORY FULL | CUSTOMERS_NOPART |     70M | 21023 |         1 |     +1 |     1 |      70M |   100.00 | in memory (1)   |
+================================================================================================================================================
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ SID @INST, USERNAME  , TYPE, STATISTIC                                                 ,         DELTA, HDELTA/SEC,    %TIME, GRAPH       , NUM_WAITS,  WAITS/SEC,   AVERAGES
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  1090  @1, TANEL     , STAT, Requests to/from client                                   ,             2,        .44,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , STAT, opened cursors cumulative                                 ,             1,        .22,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, user calls                                                ,             3,        .65,         ,             ,          ,           ,          3 per execution
+  1090  @1, TANEL     , STAT, session logical reads                                     ,       1611796,    351.88k,         ,             ,          ,           ,      1.61M total buffer visits
+  1090  @1, TANEL     , STAT, CPU used when call started                                ,           157,      34.28,         ,             ,          ,           ,        157 per execution
+  1090  @1, TANEL     , STAT, CPU used by this session                                  ,           157,      34.28,         ,             ,          ,           ,        157 per execution
+  1090  @1, TANEL     , STAT, DB time                                                   ,           159,      34.71,         ,             ,          ,           ,        159 per execution
+  1090  @1, TANEL     , STAT, non-idle wait count                                       ,             2,        .44,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , STAT, consistent gets                                           ,             4,        .87,         ,             ,          ,           ,          4 per execution
+  1090  @1, TANEL     , STAT, consistent gets from cache                                ,             4,        .87,         ,             ,          ,           ,          4 per execution
+  1090  @1, TANEL     , STAT, consistent gets pin                                       ,             4,        .87,         ,             ,          ,           ,          4 per execution
+  1090  @1, TANEL     , STAT, consistent gets pin (fastpath)                            ,             4,        .87,         ,             ,          ,           ,          4 per execution
+  1090  @1, TANEL     , STAT, logical read bytes from cache                             ,         32768,      7.15k,         ,             ,          ,           ,     32.77k per execution
+  1090  @1, TANEL     , STAT, calls to kcmgcs                                           ,             5,       1.09,         ,             ,          ,           ,          5 per execution
+  1090  @1, TANEL     , STAT, calls to get snapshot scn: kcmgss                         ,             1,        .22,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, table scans (IM)                                          ,             1,        .22,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, table scans (cache partitions)                            ,             1,        .22,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, table scan rows gotten                                    ,      69642625,      15.2M,         ,             ,          ,           ,     69.64M per execution
+  1090  @1, TANEL     , STAT, IM scan CUs memcompress for query low                     ,           132,      28.82,         ,             ,          ,           ,        132 per execution
+  1090  @1, TANEL     , STAT, session logical reads - IM                                ,       1611792,    351.88k,         ,             ,          ,           ,      1.61M per execution
+  1090  @1, TANEL     , STAT, IM scan bytes in-memory                                   ,    6119772418,      1.34G,         ,             ,          ,           ,      6.12G per execution
+  1090  @1, TANEL     , STAT, IM scan bytes uncompressed                                ,   12430227889,      2.71G,         ,             ,          ,           ,     12.43G per execution
+  1090  @1, TANEL     , STAT, IM scan CUs columns accessed                              ,           264,      57.63,         ,             ,          ,           ,        264 per execution
+  1090  @1, TANEL     , STAT, IM scan CUs columns theoretical max                       ,          3036,      662.8,         ,             ,          ,           ,      3.04k per execution
+  1090  @1, TANEL     , STAT, IM scan rows                                              ,      69642625,      15.2M,         ,             ,          ,           ,     69.64M per execution
+  1090  @1, TANEL     , STAT, IM scan rows valid                                        ,      69642625,      15.2M,         ,             ,          ,           ,     69.64M per execution
+  1090  @1, TANEL     , STAT, IM scan rows projected                                    ,      69642625,      15.2M,         ,             ,          ,           ,     69.64M per execution
+  1090  @1, TANEL     , STAT, IM scan CUs split pieces                                  ,           133,      29.04,         ,             ,          ,           ,        133 per execution
+  1090  @1, TANEL     , STAT, IM scan CUs predicates received                           ,           132,      28.82,         ,             ,          ,           ,        132 per execution
+  1090  @1, TANEL     , STAT, IM scan CUs predicates applied                            ,           132,      28.82,         ,             ,          ,           ,        132 per execution
+  1090  @1, TANEL     , STAT, IM scan CUs predicates optimized                          ,           132,      28.82,         ,             ,          ,           ,        132 per execution
+  1090  @1, TANEL     , STAT, IM scan CUs optimized read                                ,           132,      28.82,         ,             ,          ,           ,        132 per execution
+  1090  @1, TANEL     , STAT, IM scan segments minmax eligible                          ,           132,      28.82,         ,             ,          ,           ,        132 per execution
+  1090  @1, TANEL     , STAT, session cursor cache hits                                 ,             1,        .22,         ,             ,          ,           ,          0 softparses avoided thanks to cursor cache
+  1090  @1, TANEL     , STAT, parse count (total)                                       ,             1,        .22,         ,             ,          ,           ,          ~ softparses per hardparse
+  1090  @1, TANEL     , STAT, execute count                                             ,             1,        .22,         ,             ,          ,           ,          1 executions per parse
+  1090  @1, TANEL     , STAT, bytes sent via SQL*Net to client                          ,           347,      75.75,         ,             ,          ,           ,      173.5 bytes per roundtrip
+  1090  @1, TANEL     , STAT, bytes received via SQL*Net from client                    ,           233,      50.87,         ,             ,          ,           ,      116.5 bytes per roundtrip
+  1090  @1, TANEL     , STAT, SQL*Net roundtrips to/from client                         ,             2,        .44,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , TIME, parse time elapsed                                        ,            24,     5.24us,      .0%, [          ],          ,           ,
+  1090  @1, TANEL     , TIME, DB CPU                                                    ,       1577759,   344.45ms,    34.4%, [@@@@      ],          ,           ,
+  1090  @1, TANEL     , TIME, sql execute elapsed time                                  ,       1582071,   345.39ms,    34.5%, [####      ],          ,           ,
+  1090  @1, TANEL     , TIME, DB time                                                   ,       1582277,   345.43ms,    34.5%, [####      ],          ,           ,     -18.05 % unaccounted time
+  1090  @1, TANEL     , WAIT, SQL*Net message to client                                 ,             7,     1.53us,      .0%, [          ],         2,        .44,      3.5us average wait
+  1090  @1, TANEL     , WAIT, SQL*Net message from client                               ,       3825232,    835.1ms,    83.5%, [WWWWWWWWW ],         2,        .44,      1.91s average wait
+
+--  End of Stats snap 1, end=2014-11-01 21:16:37, seconds=4.6
+
+ Performance counter stats for process id '34783':
+
+       1577.838461 task-clock                #    0.316 CPUs utilized          
+     4,573,793,724 cycles                    #    2.899 GHz                     [33.36%]
+     7,080,326,242 instructions              #    1.55  insns per cycle        
+                                             #    0.32  stalled cycles per insn [40.06%]
+       940,579,984 branches                  #  596.119 M/sec                   [40.09%]
+         4,637,243 branch-misses             #    0.49% of all branches         [40.14%]
+     2,251,325,295 stalled-cycles-frontend   #   49.22% frontend cycles idle    [40.17%]
+     1,328,333,827 stalled-cycles-backend    #   29.04% backend  cycles idle    [40.21%]
+        11,507,915 cache-references          #    7.293 M/sec                   [26.81%]
+         7,316,366 cache-misses              #   63.577 % of all cache refs     [26.77%]
+         9,712,269 LLC-loads                 #    6.155 M/sec                   [26.71%]
+         7,272,805 LLC-load-misses           #   74.88% of all LL-cache hits    [ 6.64%]
+         1,697,666 LLC-stores                #    1.076 M/sec                   [ 6.69%]
+            27,797 LLC-store-misses          #    0.018 M/sec                   [ 6.68%]
+     1,069,917,316 L1-dcache-loads           #  678.091 M/sec                   [13.35%]
+        85,368,159 L1-dcache-load-misses     #    7.98% of all L1-dcache hits   [20.02%]
+        25,169,253 L1-dcache-prefetches      #   15.952 M/sec                   [26.67%]
+
+       5.000649098 seconds time elapsed
+
+
+
+
+====================================================================================
+-- full table scan IN MEMORY without WHERE clause
+====================================================================================
+
+SELECT /*+ MONITOR FULL(c) INMEMORY */ COUNT(cust_valid) FROM customers_nopart c
+
+Global Information
+------------------------------
+ Status              :  DONE (ALL ROWS)
+ Instance ID         :  1
+ Session             :  TANEL (1090:40133)
+ SQL ID              :  8gz633m1gsjk9
+ SQL Execution ID    :  16777237
+ Execution Started   :  11/01/2014 21:25:39
+ First Refresh Time  :  11/01/2014 21:25:39
+ Last Refresh Time   :  11/01/2014 21:25:39
+ Duration            :  .478062s
+ Module/Action       :  SQL*Plus/-
+ Service             :  dw
+ Program             :  sqlplus@mac01 (TNS V1-V3)
+ Fetch Calls         :  1
+
+Global Stats
+=================================================
+| Elapsed |   Cpu   |  Other   | Fetch | Buffer |
+| Time(s) | Time(s) | Waits(s) | Calls |  Gets  |
+=================================================
+|    0.48 |    0.48 |     0.00 |     1 |      4 |
+=================================================
+
+SQL Plan Monitoring Details (Plan Hash Value=874904094)
+================================================================================================================================================
+| Id |           Operation           |       Name       |  Rows   | Cost  |   Time    | Start  | Execs |   Rows   | Activity | Activity Detail |
+|    |                               |                  | (Estim) |       | Active(s) | Active |       | (Actual) |   (%)    |   (# samples)   |
+================================================================================================================================================
+|  0 | SELECT STATEMENT              |                  |         |       |         1 |     +0 |     1 |        1 |          |                 |
+|  1 |   SORT AGGREGATE              |                  |       1 |       |         1 |     +0 |     1 |        1 |          |                 |
+|  2 |    TABLE ACCESS INMEMORY FULL | CUSTOMERS_NOPART |     70M | 20615 |         1 |     +0 |     1 |      70M |   100.00 | in memory (1)   |
+================================================================================================================================================
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ SID @INST, USERNAME  , TYPE, STATISTIC                                                 ,         DELTA, HDELTA/SEC,    %TIME, GRAPH       , NUM_WAITS,  WAITS/SEC,   AVERAGES
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  1090  @1, TANEL     , STAT, Requests to/from client                                   ,             2,        .42,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , STAT, opened cursors cumulative                                 ,             1,        .21,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, user calls                                                ,             3,        .63,         ,             ,          ,           ,          3 per execution
+  1090  @1, TANEL     , STAT, session logical reads                                     ,       1611796,    339.65k,         ,             ,          ,           ,      1.61M total buffer visits
+  1090  @1, TANEL     , STAT, CPU used when call started                                ,            48,      10.11,         ,             ,          ,           ,         48 per execution
+  1090  @1, TANEL     , STAT, CPU used by this session                                  ,            48,      10.11,         ,             ,          ,           ,         48 per execution
+  1090  @1, TANEL     , STAT, DB time                                                   ,            48,      10.11,         ,             ,          ,           ,         48 per execution
+  1090  @1, TANEL     , STAT, non-idle wait count                                       ,             2,        .42,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , STAT, consistent gets                                           ,             4,        .84,         ,             ,          ,           ,          4 per execution
+  1090  @1, TANEL     , STAT, consistent gets from cache                                ,             4,        .84,         ,             ,          ,           ,          4 per execution
+  1090  @1, TANEL     , STAT, consistent gets pin                                       ,             4,        .84,         ,             ,          ,           ,          4 per execution
+  1090  @1, TANEL     , STAT, consistent gets pin (fastpath)                            ,             4,        .84,         ,             ,          ,           ,          4 per execution
+  1090  @1, TANEL     , STAT, logical read bytes from cache                             ,         32768,      6.91k,         ,             ,          ,           ,     32.77k per execution
+  1090  @1, TANEL     , STAT, calls to kcmgcs                                           ,             5,       1.05,         ,             ,          ,           ,          5 per execution
+  1090  @1, TANEL     , STAT, calls to get snapshot scn: kcmgss                         ,             1,        .21,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, table scans (IM)                                          ,             1,        .21,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, table scans (cache partitions)                            ,             1,        .21,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, table scan rows gotten                                    ,      69642625,     14.68M,         ,             ,          ,           ,     69.64M per execution
+  1090  @1, TANEL     , STAT, IM scan CUs memcompress for query low                     ,           132,      27.82,         ,             ,          ,           ,        132 per execution
+  1090  @1, TANEL     , STAT, session logical reads - IM                                ,       1611792,    339.65k,         ,             ,          ,           ,      1.61M per execution
+  1090  @1, TANEL     , STAT, IM scan bytes in-memory                                   ,    6119772418,      1.29G,         ,             ,          ,           ,      6.12G per execution
+  1090  @1, TANEL     , STAT, IM scan bytes uncompressed                                ,   12430227889,      2.62G,         ,             ,          ,           ,     12.43G per execution
+  1090  @1, TANEL     , STAT, IM scan CUs columns accessed                              ,           132,      27.82,         ,             ,          ,           ,        132 per execution
+  1090  @1, TANEL     , STAT, IM scan CUs columns theoretical max                       ,          3036,     639.77,         ,             ,          ,           ,      3.04k per execution
+  1090  @1, TANEL     , STAT, IM scan rows                                              ,      69642625,     14.68M,         ,             ,          ,           ,     69.64M per execution
+  1090  @1, TANEL     , STAT, IM scan rows valid                                        ,      69642625,     14.68M,         ,             ,          ,           ,     69.64M per execution
+  1090  @1, TANEL     , STAT, IM scan rows projected                                    ,      69642625,     14.68M,         ,             ,          ,           ,     69.64M per execution
+  1090  @1, TANEL     , STAT, IM scan CUs split pieces                                  ,           133,      28.03,         ,             ,          ,           ,        133 per execution
+  1090  @1, TANEL     , STAT, session cursor cache hits                                 ,             1,        .21,         ,             ,          ,           ,          0 softparses avoided thanks to cursor cache
+  1090  @1, TANEL     , STAT, parse count (total)                                       ,             1,        .21,         ,             ,          ,           ,          ~ softparses per hardparse
+  1090  @1, TANEL     , STAT, execute count                                             ,             1,        .21,         ,             ,          ,           ,          1 executions per parse
+  1090  @1, TANEL     , STAT, bytes sent via SQL*Net to client                          ,           347,      73.12,         ,             ,          ,           ,      173.5 bytes per roundtrip
+  1090  @1, TANEL     , STAT, bytes received via SQL*Net from client                    ,           215,      45.31,         ,             ,          ,           ,      107.5 bytes per roundtrip
+  1090  @1, TANEL     , STAT, SQL*Net roundtrips to/from client                         ,             2,        .42,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , TIME, parse time elapsed                                        ,            21,     4.43us,      .0%, [          ],          ,           ,
+  1090  @1, TANEL     , TIME, DB CPU                                                    ,        476928,    100.5ms,    10.1%, [@         ],          ,           ,
+  1090  @1, TANEL     , TIME, sql execute elapsed time                                  ,        478095,   100.75ms,    10.1%, [#         ],          ,           ,
+  1090  @1, TANEL     , TIME, DB time                                                   ,        478272,   100.78ms,    10.1%, [#         ],          ,           ,     -18.03 % unaccounted time
+  1090  @1, TANEL     , WAIT, SQL*Net message to client                                 ,             6,     1.26us,      .0%, [          ],         2,        .42,        3us average wait
+  1090  @1, TANEL     , WAIT, SQL*Net message from client                               ,       5122919,      1.08s,   108.0%, [WWWWWWWWWW],         2,        .42,      2.56s average wait
+
+--  End of Stats snap 1, end=2014-11-01 21:25:42, seconds=4.7
+
+ Performance counter stats for process id '34783':
+
+        476.914715 task-clock                #    0.095 CPUs utilized          
+     1,387,831,994 cycles                    #    2.910 GHz                     [33.12%]
+     2,999,496,677 instructions              #    2.16  insns per cycle        
+                                             #    0.11  stalled cycles per insn [39.81%]
+       416,320,816 branches                  #  872.946 M/sec                   [39.80%]
+         1,734,734 branch-misses             #    0.42% of all branches         [39.81%]
+       341,458,256 stalled-cycles-frontend   #   24.60% frontend cycles idle    [39.91%]
+       229,309,595 stalled-cycles-backend    #   16.52% backend  cycles idle    [40.76%]
+           799,091 cache-references          #    1.676 M/sec                   [27.13%]
+           175,382 cache-misses              #   21.948 % of all cache refs     [27.08%]
+           259,840 LLC-loads                 #    0.545 M/sec                   [27.02%]
+           157,113 LLC-load-misses           #   60.47% of all LL-cache hits    [ 6.74%]
+           413,950 LLC-stores                #    0.868 M/sec                   [ 6.70%]
+             6,508 LLC-store-misses          #    0.014 M/sec                   [ 6.71%]
+       415,639,079 L1-dcache-loads           #  871.517 M/sec                   [13.39%]
+         9,117,936 L1-dcache-load-misses     #    2.19% of all L1-dcache hits   [19.97%]
+         8,209,431 L1-dcache-prefetches      #   17.214 M/sec                   [26.45%]
+
+       5.000654510 seconds time elapsed
+
+
+==============================================================================
+-- full table scan via BUFFER CACHE of HCC QUERY LOW columnar-compressed table
+==============================================================================
+
+SELECT /*+ MONITOR */ COUNT(cust_valid) FROM CUSTOMERS_NOPART_HCC_QL WHERE cust_id > 0
+
+Global Information
+------------------------------
+ Status              :  DONE (ALL ROWS)
+ Instance ID         :  1
+ Session             :  TANEL (1090:40133)
+ SQL ID              :  4zks7jfwnuvuc
+ SQL Execution ID    :  16777217
+ Execution Started   :  11/02/2014 00:38:52
+ First Refresh Time  :  11/02/2014 00:38:52
+ Last Refresh Time   :  11/02/2014 00:38:57
+ Duration            :  5s
+ Module/Action       :  SQL*Plus/-
+ Service             :  dw
+ Program             :  sqlplus@mac01 (TNS V1-V3)
+ Fetch Calls         :  1
+
+Global Stats
+=================================================
+| Elapsed |   Cpu   |  Other   | Fetch | Buffer |
+| Time(s) | Time(s) | Waits(s) | Calls |  Gets  |
+=================================================
+|    4.91 |    4.90 |     0.02 |     1 |     1M |
+=================================================
+
+SQL Plan Monitoring Details (Plan Hash Value=1201118828)
+======================================================================================================================================================
+| Id |          Operation           |          Name           |  Rows   | Cost  |   Time    | Start  | Execs |   Rows   | Activity | Activity Detail |
+|    |                              |                         | (Estim) |       | Active(s) | Active |       | (Actual) |   (%)    |   (# samples)   |
+======================================================================================================================================================
+|  0 | SELECT STATEMENT             |                         |         |       |         4 |     +2 |     1 |        1 |          |                 |
+|  1 |   SORT AGGREGATE             |                         |       1 |       |         4 |     +2 |     1 |        1 |          |                 |
+|  2 |    TABLE ACCESS STORAGE FULL | CUSTOMERS_NOPART_HCC_QL |     70M | 12725 |         5 |     +2 |     1 |      70M |   100.00 | Cpu (5)         |
+======================================================================================================================================================
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ SID @INST, USERNAME  , TYPE, STATISTIC                                                 ,         DELTA, HDELTA/SEC,    %TIME, GRAPH       , NUM_WAITS,  WAITS/SEC,   AVERAGES
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  1090  @1, TANEL     , STAT, Requests to/from client                                   ,             2,        .21,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , STAT, opened cursors cumulative                                 ,             1,        .11,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, user calls                                                ,             3,        .32,         ,             ,          ,           ,          3 per execution
+  1090  @1, TANEL     , STAT, session logical reads                                     ,       1266446,    133.11k,         ,             ,          ,           ,      1.27M total buffer visits
+  1090  @1, TANEL     , STAT, CPU used when call started                                ,           490,       51.5,         ,             ,          ,           ,        490 per execution
+  1090  @1, TANEL     , STAT, CPU used by this session                                  ,           490,       51.5,         ,             ,          ,           ,        490 per execution
+  1090  @1, TANEL     , STAT, DB time                                                   ,           492,      51.71,         ,             ,          ,           ,        492 per execution
+  1090  @1, TANEL     , STAT, non-idle wait count                                       ,             2,        .21,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , STAT, global enqueue gets sync                                  ,             2,        .21,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , STAT, global enqueue releases                                   ,             2,        .21,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , STAT, consistent gets                                           ,       1266446,    133.11k,         ,             ,          ,           ,      1.27M per execution
+  1090  @1, TANEL     , STAT, consistent gets from cache                                ,       1266446,    133.11k,         ,             ,          ,           ,      1.27M per execution
+  1090  @1, TANEL     , STAT, consistent gets pin                                       ,       1266446,    133.11k,         ,             ,          ,           ,      1.27M per execution
+  1090  @1, TANEL     , STAT, consistent gets pin (fastpath)                            ,       1266446,    133.11k,         ,             ,          ,           ,      1.27M per execution
+  1090  @1, TANEL     , STAT, logical read bytes from cache                             ,   10374725632,      1.09G,         ,             ,          ,           ,     10.37G per execution
+  1090  @1, TANEL     , STAT, calls to kcmgcs                                           ,            45,       4.73,         ,             ,          ,           ,         45 per execution
+  1090  @1, TANEL     , STAT, calls to get snapshot scn: kcmgss                         ,             1,        .11,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, no work - consistent read gets                            ,       1266402,     133.1k,         ,             ,          ,           ,      1.27M per execution
+  1090  @1, TANEL     , STAT, table scans (cache partitions)                            ,             1,        .11,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, table scan rows gotten                                    ,      69642625,      7.32M,         ,             ,          ,           ,     69.64M per execution
+  1090  @1, TANEL     , STAT, table scan disk non-IMC rows gotten                       ,      69642625,      7.32M,         ,             ,          ,           ,     69.64M per execution
+  1090  @1, TANEL     , STAT, table scan blocks gotten                                  ,        819991,     86.18k,         ,             ,          ,           ,    819.99k per execution
+  1090  @1, TANEL     , STAT, table fetch continued row                                 ,        238565,     25.07k,         ,             ,          ,           ,    238.57k per execution
+  1090  @1, TANEL     , STAT, EHCC CUs Decompressed                                     ,        212824,     22.37k,         ,             ,          ,           ,    212.82k per execution
+  1090  @1, TANEL     , STAT, EHCC Query Low CUs Decompressed                           ,        212824,     22.37k,         ,             ,          ,           ,    212.82k per execution
+  1090  @1, TANEL     , STAT, EHCC Compressed Length Decompressed                       ,    6466648292,    679.67M,         ,             ,          ,           ,      6.47G per execution
+  1090  @1, TANEL     , STAT, EHCC Decompressed Length Decompressed                     ,   12430226086,      1.31G,         ,             ,          ,           ,     12.43G per execution
+  1090  @1, TANEL     , STAT, EHCC Columns Decompressed                                 ,        425648,     44.74k,         ,             ,          ,           ,    425.65k per execution
+  1090  @1, TANEL     , STAT, EHCC Total Columns for Decompression                      ,       4894952,    514.48k,         ,             ,          ,           ,      4.89M per execution
+  1090  @1, TANEL     , STAT, EHCC Total Rows for Decompression                         ,      69642615,      7.32M,         ,             ,          ,           ,     69.64M per execution
+  1090  @1, TANEL     , STAT, EHCC Pieces Buffered for Decompression                    ,        451390,     47.44k,         ,             ,          ,           ,    451.39k per execution
+  1090  @1, TANEL     , STAT, EHCC Total Pieces for Decompression                       ,        998343,    104.93k,         ,             ,          ,           ,    998.34k per execution
+  1090  @1, TANEL     , STAT, EHCC Turbo Scan CUs Decompressed                          ,        212824,     22.37k,         ,             ,          ,           ,    212.82k per execution
+  1090  @1, TANEL     , STAT, cursor authentications                                    ,             1,        .11,         ,             ,          ,           ,          1 per execution
+  1090  @1, TANEL     , STAT, buffer is not pinned count                                ,        238566,     25.07k,         ,             ,          ,           ,    238.57k per execution
+  1090  @1, TANEL     , STAT, parse count (total)                                       ,             1,        .11,         ,             ,          ,           ,          ~ softparses per hardparse
+  1090  @1, TANEL     , STAT, execute count                                             ,             1,        .11,         ,             ,          ,           ,          1 executions per parse
+  1090  @1, TANEL     , STAT, bytes sent via SQL*Net to client                          ,           347,      36.47,         ,             ,          ,           ,      173.5 bytes per roundtrip
+  1090  @1, TANEL     , STAT, bytes received via SQL*Net from client                    ,           221,      23.23,         ,             ,          ,           ,      110.5 bytes per roundtrip
+  1090  @1, TANEL     , STAT, SQL*Net roundtrips to/from client                         ,             2,        .21,         ,             ,          ,           ,          2 per execution
+  1090  @1, TANEL     , TIME, parse time elapsed                                        ,           131,    13.77us,      .0%, [          ],          ,           ,
+  1090  @1, TANEL     , TIME, DB CPU                                                    ,       4896255,   514.62ms,    51.5%, [@@@@@@    ],          ,           ,
+  1090  @1, TANEL     , TIME, sql execute elapsed time                                  ,       4912118,   516.29ms,    51.6%, [######    ],          ,           ,
+  1090  @1, TANEL     , TIME, DB time                                                   ,       4912417,   516.32ms,    51.6%, [######    ],          ,           ,      -1.99 % unaccounted time
+  1090  @1, TANEL     , WAIT, SQL*Net message to client                                 ,             5,      .53us,      .0%, [          ],         2,        .21,      2.5us average wait
+  1090  @1, TANEL     , WAIT, SQL*Net message from client                               ,       4791196,   503.58ms,    50.4%, [WWWWW     ],         2,        .21,       2.4s average wait
+
+--  End of Stats snap 1, end=2014-11-02 00:39:02, seconds=9.5
+
+ Performance counter stats for process id '34783':
+
+       4897.166720 task-clock                #    0.490 CPUs utilized          
+    15,001,366,058 cycles                    #    3.063 GHz                     [33.32%]
+    21,298,907,978 instructions              #    1.42  insns per cycle        
+                                             #    0.31  stalled cycles per insn [39.99%]
+     4,354,197,461 branches                  #  889.126 M/sec                   [40.00%]
+        58,231,834 branch-misses             #    1.34% of all branches         [40.03%]
+     6,700,565,245 stalled-cycles-frontend   #   44.67% frontend cycles idle    [40.04%]
+     4,930,717,330 stalled-cycles-backend    #   32.87% backend  cycles idle    [40.09%]
+        48,367,880 cache-references          #    9.877 M/sec                   [26.73%]
+        15,253,634 cache-misses              #   31.537 % of all cache refs     [26.70%]
+        22,233,999 LLC-loads                 #    4.540 M/sec                   [26.68%]
+        13,804,662 LLC-load-misses           #   62.09% of all LL-cache hits    [ 6.66%]
+        14,738,894 LLC-stores                #    3.010 M/sec                   [ 6.67%]
+         1,368,665 LLC-store-misses          #    0.279 M/sec                   [ 6.67%]
+     4,491,195,871 L1-dcache-loads           #  917.101 M/sec                   [13.33%]
+       227,727,782 L1-dcache-load-misses     #    5.07% of all L1-dcache hits   [19.99%]
+        44,843,477 L1-dcache-prefetches      #    9.157 M/sec                   [26.65%]
+
+
+

@@ -1,0 +1,135 @@
+> cellsrvstat -list
+Statistic Groups:
+io                  Input/Output related stats                        
+mem                 Memory related stats                              
+exec                Execution related stats                           
+net                 Network related stats                             
+smartio             SmartIO related stats                             
+
+Statistics:
+[ * - Absolute values. Indicates no delta computation in tabular format]
+
+io_nbiorr_hdd       Number of hard disk block IO read requests 
+io_nbiowr_hdd       Number of hard disk block IO write requests 
+io_nbiorb_hdd       Hard disk block IO reads (KB) 
+io_nbiowb_hdd       Hard disk block IO writes (KB) 
+io_nbiorr_flash     Number of flash disk block IO read requests 
+io_nbiowr_flash     Number of flash disk block IO write requests 
+io_nbiorb_flash     Flash disk block IO reads (KB) 
+io_nbiowb_flash     Flash disk block IO writes (KB) 
+io_ndioerr          Number of disk IO errors 
+io_nrfc             Number of reads from flash cache 
+io_nwfc             Number of writes to flash cache 
+io_fcrb             Flash cache reads (KB) 
+io_fcwb             Flash cache writes (KB) 
+io_nfioerr          Number of flash cache IO errors 
+io_nbpfce           Size of eviction from flash cache (KB) 
+io_nolfio           Number of outstanding large flash IOs 
+io_ltow             Number of latency threshold warnings during job 
+io_ltcw             Number of latency threshold warnings by checker 
+io_ltsiow           Number of latency threshold warnings for smart IO 
+io_ltrlw            Number of latency threshold warnings for redo log writes 
+io_bcrti            Current read block IO to be issued (KB) *
+io_btrti            Total read block IO to be issued (KB) 
+io_bcwti            Current write block IO to be issued (KB) *
+io_btwti            Total write block IO to be issued (KB) 
+io_bcrii            Current read blocks in IO (KB) *
+io_btrii            Total read block IO issued (KB) 
+io_bcwii            Current write blocks in IO (KB) *
+io_btwii            Total write block IO issued (KB) 
+io_bcrsi            Current read block IO in network send (KB) *
+io_btrsi            Total read block IO in network send (KB) 
+io_bcwsi            Current write block IO in network send (KB) *
+io_btwsi            Total write block IO in network send (KB) 
+io_bcfp             Current block IO being populated in flash (KB) *
+io_btfp             Total block IO KB populated in flash (KB) 
+mem_sgahu           SGA heap used - kgh statistics (KB) 
+mem_sgahf           SGA heap free - cellsrv statistics (KB) 
+mem_sgaos           OS memory allocated to SGA (KB) 
+mem_sgahuc          SGA heap used - cellsrv statistics - KB 
+mem_pgaos           OS memory allocated to PGA (KB) 
+mem_pgahuc          PGA heap used - cellsrv statistics (KB) 
+mem_allos           OS memory allocated to cellsrv (KB) 
+mem_sgatop          Top 5 SGA consumers (KB) *
+mem_sgasubtop       Top 5 SGA subheap consumers (KB) *
+mem_halfkaf         Number of allocation failures in 512 bytes pool 
+mem_2kaf            Number of allocation failures in 2KB pool 
+mem_4kaf            Number of allocation failures in 4KB pool 
+mem_8kaf            Number of allocation failures in 8KB pool 
+mem_16kaf           Number of allocation failures in 16KB pool 
+mem_32kaf           Number of allocation failures in 32KB pool 
+mem_64kaf           Number of allocation failures in 64KB pool 
+mem_1maf            Number of allocation failures in 1MB pool 
+mem_halfkhwm        Allocation hwm in 512 bytes pool 
+mem_2khwm           Allocation hwm in 2KB pool 
+mem_4khwm           Allocation hwm in 4KB pool 
+mem_8khwm           Allocation hwm in 8KB pool 
+mem_16khwm          Allocation hwm in 16KB pool 
+mem_32khwm          Allocation hwm in 32KB pool 
+mem_64khwm          Allocation hwm in 64KB pool 
+mem_1mhwm           Allocation hwm in 1MB pool 
+mem_lmtf            Number of low memory threshold failures 
+mem_nmtf            Number of no memory threshold failures 
+mem_dynar           Dynamic buffer allocation requests 
+mem_dynaf           Dynamic buffer allocation failures 
+mem_dynafl          Dynamic buffer allocation failures due to low mem 
+mem_dynam           Dynamic buffer allocated size (KB) 
+mem_dynamh          Dynamic buffer allocation hwm (KB) 
+exec_incno          Incarnation number *
+exec_versf          Number of module version failures *
+exec_ntwork         Number of threads working *
+exec_ntnetwait      Number of threads waiting for network *
+exec_ntreswait      Number of threads waiting for resource *
+exec_ntmutexwait    Number of threads waiting for a mutex *
+exec_njx            Number of Jobs executed for each job type 
+exec_topcpusqlid    SQL ids consuming the most CPU 
+net_rxb             Total bytes received from the network 
+net_txb             Total bytes transmitted to the network 
+net_rtxb            Total bytes retransmitted to the network 
+net_sps             Number of active sendports 
+net_sph             Hwm of active sendports 
+net_rois            Number of active remote open infos 
+net_roih            HWM of remote open infos 
+sio_ns              Number of active smart IO sessions *
+sio_hs              High water mark of smart IO sessions *
+sio_ncs             Number of completed smart IO sessions 
+sio_oe              Smart IO offload efficiency (percentage) *
+sio_sis             Size of IO avoided due to storage index (KB) 
+sio_ctb             Current smart IO to be issued (KB) *
+sio_ttb             Total smart IO to be issued (KB) 
+sio_cii             Current smart IO in IO (KB) *
+sio_tii             Total smart IO in IO (KB) 
+sio_cfp             Current smart IO being cached in flash (KB) *
+sio_tfp             Total smart IO being cached in flash (KB) 
+sio_cic             Current smart IO with IO completed (KB) *
+sio_tic             Total smart IO with IO completed (KB) 
+sio_cif             Current smart IO being filtered (KB) *
+sio_tif             Total smart IO being filtered (KB) 
+sio_cfc             Current smart IO filtering completed (KB) *
+sio_tfc             Total smart IO filtering completed (KB) 
+sio_cfo             Current smart IO filtered size (KB) *
+sio_tfo             Total smart IO filtered (KB) 
+sio_tcpo            Total cpu passthru output IO size (KB) 
+sio_tpo             Total passthru output IO size (KB) 
+sio_cis             Current smart IO with results in send (KB) *
+sio_tis             Total smart IO with results in send (KB) 
+sio_ciso            Current smart IO filtered in send (KB) *
+sio_tiso            Total smart IO filtered in send (KB) 
+sio_fcr             Total smart IO read from flash (KB) 
+sio_fcw             Total smart IO initiated flash population (KB) 
+sio_hdr             Total smart IO read from hard disk (KB) 
+sio_hdw             Total smart IO writes (fcre) to hard disk (KB) 
+sio_n512kb          Number of smart IO requests < 512KB 
+sio_n1mb            Number of smart IO requests >= 512KB and < 1MB 
+sio_n2mb            Number of smart IO requests >= 1MB and < 2MB 
+sio_n4mb            Number of smart IO requests >= 2MB and < 4MB 
+sio_n8mb            Number of smart IO requests >= 4MB and < 8MB 
+sio_ngt8mb          Number of smart IO requests >= 8MB 
+sio_nbrf            Number of times smart IO buffer reserve failures 
+sio_nrm             Number of times smart IO request misses 
+sio_ncio            Number of times IO for smart IO not allowed to be issued 
+sio_nplr            Number of times smart IO prefetch limit was reached 
+sio_nssuo           Number of times smart scan used unoptimized mode 
+sio_nfcuo           Number of times smart fcre used unoptimized mode 
+sio_nsbuo           Number of times smart backup used unoptimized mode 
+

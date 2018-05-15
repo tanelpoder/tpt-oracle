@@ -1,0 +1,189 @@
+SQL> @sw 152                                                                                                                                                                                           
+                                                                                                                                                                                                       
+    SID STATE   EVENT                                          SEQ# SEC_IN_WAIT         P1         P2         P3 P1TRANSL                                                                              
+------- ------- ---------------------------------------- ---------- ----------- ---------- ---------- ---------- ------------------------------------------                                            
+    152 WAITING enq: TX - row lock contention                    21           3 1415053318     393221       6000 0x54580006: TX mode 6                                                                 
+                                                                                                                                                                                                       
+SQL> select obj, tch, file#, dbablk                                                                                                                                                                    
+  2  from x$bh                                                                                                                                                                                         
+  3  where bitand(flag,8)=8;                                                                                                                                                                           
+                                                                                                                                                                                                       
+no rows selected                                                                                                                                                                                       
+                                                                                                                                                                                                       
+SQL>                                                                                                                                                                                                   
+SQL>                                                                                                                                                                                                   
+SQL>                                                                                                                                                                                                   
+SQL>                                                                                                                                                                                                   
+SQL>                                                                                                                                                                                                   
+SQL> desc v$transaction                                                                                                                                                                                
+           Name                                                                                                   Null?    Type                                                                        
+           ------------------------------------------------------------------------------------------------------ -------- ----------------------------------------------------------------------------
+    1      ADDR                                                                                                            RAW(8)                                                                      
+    2      XIDUSN                                                                                                          NUMBER                                                                      
+    3      XIDSLOT                                                                                                         NUMBER                                                                      
+    4      XIDSQN                                                                                                          NUMBER                                                                      
+    5      UBAFIL                                                                                                          NUMBER                                                                      
+    6      UBABLK                                                                                                          NUMBER                                                                      
+    7      UBASQN                                                                                                          NUMBER                                                                      
+    8      UBAREC                                                                                                          NUMBER                                                                      
+    9      STATUS                                                                                                          VARCHAR2(16)                                                                
+   10      START_TIME                                                                                                      VARCHAR2(20)                                                                
+   11      START_SCNB                                                                                                      NUMBER                                                                      
+   12      START_SCNW                                                                                                      NUMBER                                                                      
+   13      START_UEXT                                                                                                      NUMBER                                                                      
+   14      START_UBAFIL                                                                                                    NUMBER                                                                      
+   15      START_UBABLK                                                                                                    NUMBER                                                                      
+   16      START_UBASQN                                                                                                    NUMBER                                                                      
+   17      START_UBAREC                                                                                                    NUMBER                                                                      
+   18      SES_ADDR                                                                                                        RAW(8)                                                                      
+   19      FLAG                                                                                                            NUMBER                                                                      
+   20      SPACE                                                                                                           VARCHAR2(3)                                                                 
+   21      RECURSIVE                                                                                                       VARCHAR2(3)                                                                 
+   22      NOUNDO                                                                                                          VARCHAR2(3)                                                                 
+   23      PTX                                                                                                             VARCHAR2(3)                                                                 
+   24      NAME                                                                                                            VARCHAR2(256)                                                               
+   25      PRV_XIDUSN                                                                                                      NUMBER                                                                      
+   26      PRV_XIDSLT                                                                                                      NUMBER                                                                      
+   27      PRV_XIDSQN                                                                                                      NUMBER                                                                      
+   28      PTX_XIDUSN                                                                                                      NUMBER                                                                      
+   29      PTX_XIDSLT                                                                                                      NUMBER                                                                      
+   30      PTX_XIDSQN                                                                                                      NUMBER                                                                      
+   31      DSCN-B                                                                                                          NUMBER                                                                      
+   32      DSCN-W                                                                                                          NUMBER                                                                      
+   33      USED_UBLK                                                                                                       NUMBER                                                                      
+   34      USED_UREC                                                                                                       NUMBER                                                                      
+   35      LOG_IO                                                                                                          NUMBER                                                                      
+   36      PHY_IO                                                                                                          NUMBER                                                                      
+   37      CR_GET                                                                                                          NUMBER                                                                      
+   38      CR_CHANGE                                                                                                       NUMBER                                                                      
+   39      START_DATE                                                                                                      DATE                                                                        
+   40      DSCN_BASE                                                                                                       NUMBER                                                                      
+   41      DSCN_WRAP                                                                                                       NUMBER                                                                      
+   42      START_SCN                                                                                                       NUMBER                                                                      
+   43      DEPENDENT_SCN                                                                                                   NUMBER                                                                      
+   44      XID                                                                                                             RAW(8)                                                                      
+   45      PRV_XID                                                                                                         RAW(8)                                                                      
+   46      PTX_XID                                                                                                         RAW(8)                                                                      
+                                                                                                                                                                                                       
+SQL> @calc 1415053318 + 0                                                                                                                                                                              
+                                                                                                                                                                                                       
+       DEC                  HEX                                                                                                                                                                        
+---------- --------------------                                                                                                                                                                        
+1415053318             54580006                                                                                                                                                                        
+                                                                                                                                                                                                       
+SQL> @lt TX                                                                                                                                                                                            
+                                                                                                                                                                                                       
+TYPE LOCK NAME                      ID1 MEANING               ID2 MEANING               LT_ DESCRIPTION                                                                                                
+---- ------------------------------ ------------------------- ------------------------- --- ------------------------------------------------------------                                               
+TX   Transaction                    usn<<16 | slot            sequence                  YES Lock held by a transaction to allow other transactions to                                                  
+                                                                                            wait for it                                                                                                
+                                                                                                                                                                                                       
+                                                                                                                                                                                                       
+SQL> @sw 152                                                                                                                                                                                           
+                                                                                                                                                                                                       
+    SID STATE   EVENT                                          SEQ# SEC_IN_WAIT         P1         P2         P3 P1TRANSL                                                                              
+------- ------- ---------------------------------------- ---------- ----------- ---------- ---------- ---------- ------------------------------------------                                            
+    152 WAITING enq: TX - row lock contention                    21          78 1415053318     393221       6000 0x54580006: TX mode 6                                                                 
+                                                                                                                                                                                                       
+SQL>                                                                                                                                                                                                   
+SQL>                                                                                                                                                                                                   
+SQL> @sw 152                                                                                                                                                                                           
+                                                                                                                                                                                                       
+    SID STATE   EVENT                                          SEQ# SEC_IN_WAIT         P1         P2         P3 P1TRANSL                                                                              
+------- ------- ---------------------------------------- ---------- ----------- ---------- ---------- ---------- ------------------------------------------                                            
+    152 WAITING enq: TX - row lock contention                    21          81 1415053318     393221       6000 0x54580006: TX mode 6                                                                 
+                                                                                                                                                                                                       
+SQL>                                                                                                                                                                                                   
+SQL> select * from v$lock where sid = 152;                                                                                                                                                             
+                                                                                                                                                                                                       
+ADDR             KADDR                   SID TY        ID1        ID2      LMODE    REQUEST      CTIME      BLOCK                                                                                      
+---------------- ---------------- ---------- -- ---------- ---------- ---------- ---------- ---------- ----------                                                                                      
+00000003DA32CE88 00000003DA32CEA8        152 TX     393221       6000          0          6         99          0                                                                                      
+00000003DA99E260 00000003DA99E288        152 TM      58197          0          3          0         99          0                                                                                      
+                                                                                                                                                                                                       
+SQL> select * from v$lock where sid = 152 and request != 0;                                                                                                                                            
+                                                                                                                                                                                                       
+ADDR             KADDR                   SID TY        ID1        ID2      LMODE    REQUEST      CTIME      BLOCK                                                                                      
+---------------- ---------------- ---------- -- ---------- ---------- ---------- ---------- ---------- ----------                                                                                      
+00000003DA32CE88 00000003DA32CEA8        152 TX     393221       6000          0          6        108          0                                                                                      
+                                                                                                                                                                                                       
+SQL> select mod(393221,power(2,16)) from dual;                                                                                                                                                         
+                                                                                                                                                                                                       
+MOD(393221,POWER(2,16))                                                                                                                                                                                
+-----------------------                                                                                                                                                                                
+                      5                                                                                                                                                                                
+                                                                                                                                                                                                       
+SQL> select 393221/power(2,16) usn, mod(393221,power(2,16)) slot  from dual;                                                                                                                           
+                                                                                                                                                                                                       
+       USN       SLOT                                                                                                                                                                                  
+---------- ----------                                                                                                                                                                                  
+6.00007629          5                                                                                                                                                                                  
+                                                                                                                                                                                                       
+SQL> select trunc(393221/power(2,16)) usn, mod(393221,power(2,16)) slot  from dual;                                                                                                                    
+                                                                                                                                                                                                       
+       USN       SLOT                                                                                                                                                                                  
+---------- ----------                                                                                                                                                                                  
+         6          5                                                                                                                                                                                  
+                                                                                                                                                                                                       
+SQL>                                                                                                                                                                                                   
+SQL>                                                                                                                                                                                                   
+SQL>                                                                                                                                                                                                   
+SQL> select ses_addr from v$transaction where XIDUSN = 6 and XIDSLOT = 5;                                                                                                                              
+                                                                                                                                                                                                       
+SES_ADDR                                                                                                                                                                                               
+----------------                                                                                                                                                                                       
+00000003DD24CBA0                                                                                                                                                                                       
+                                                                                                                                                                                                       
+SQL> select sid, sql_hash_value from v$session where saddr = '00000003DD24CBA0';                                                                                                                       
+                                                                                                                                                                                                       
+       SID SQL_HASH_VALUE                                                                                                                                                                              
+---------- --------------                                                                                                                                                                              
+       144     3935459581                                                                                                                                                                              
+                                                                                                                                                                                                       
+SQL> @sql 3935459581                                                                                                                                                                                   
+                                                                                                                                                                                                       
+ CH# SQL_TEXT                                                                                                                                                                                          
+---- ------------------------------------------------------------------------------------------------------------------------------------------------------                                            
+   0 BEGIN dbms_lock.sleep(600); END;                                                                                                                                                                  
+                                                                                                                                                                                                       
+                                                                                                                                                                                                       
+ CH# PARENT_HANDLE    OBJECT_HANDLE        PARSES   H_PARSES EXECUTIONS    FETCHES ROWS_PROCESSED       LIOS       PIOS      SORTS     CPU_MS     ELA_MS USERS_EXECUTING                               
+---- ---------------- ---------------- ---------- ---------- ---------- ---------- -------------- ---------- ---------- ---------- ---------- ---------- ---------------                               
+   0 00000003DC63AD80 00000003DC4EF988          1          1          0          0              0          0          0          0      3.729      3.729               1                               
+                                                                                                                                                                                                       
+SQL>                                                                                                                                                                                                   
+SQL>                                                                                                                                                                                                   
+SQL> desc v$open_cursor                                                                                                                                                                                
+           Name                                                                                                   Null?    Type                                                                        
+           ------------------------------------------------------------------------------------------------------ -------- ----------------------------------------------------------------------------
+    1      SADDR                                                                                                           RAW(8)                                                                      
+    2      SID                                                                                                             NUMBER                                                                      
+    3      USER_NAME                                                                                                       VARCHAR2(30)                                                                
+    4      ADDRESS                                                                                                         RAW(8)                                                                      
+    5      HASH_VALUE                                                                                                      NUMBER                                                                      
+    6      SQL_ID                                                                                                          VARCHAR2(13)                                                                
+    7      SQL_TEXT                                                                                                        VARCHAR2(60)                                                                
+                                                                                                                                                                                                       
+SQL> select hash_value, sql_text from v$open_cursor where sid = 144;                                                                                                                                   
+                                                                                                                                                                                                       
+HASH_VALUE SQL_TEXT                                                                                                                                                                                    
+---------- ------------------------------------------------------------                                                                                                                                
+1420612433 update smon_scn_time set orig_thread=0, time_mp=:1, time_dp=                                                                                                                                
+3114265815 select local_tran_id, global_tran_fmt, global_oracle_id, glo                                                                                                                                
+3935459581 BEGIN dbms_lock.sleep(600); END;                                                                                                                                                            
+ 541202592 select obj, tch, file#, dbablk from x$bh where bitand(flag,8                                                                                                                                
+ 599212612 select  s.username   i_username,  i.instance_name i_instance                                                                                                                                
+2953317698 update mytest set dummy = 'Y'                                                                                                                                                               
+2509924099  select value ||'/'||(select instance_name from v$instance)                                                                                                                                 
+                                                                                                                                                                                                       
+7 rows selected.                                                                                                                                                                                       
+                                                                                                                                                                                                       
+SQL>                                                                                                                                                                                                   
+                                                                                                                                                                                                       
+                                                                                                                                                                                                       
+                                                      
+-- these were the troublemakers                                                      
+3935459581 BEGIN dbms_lock.sleep(600); END;                                                                                                                                                            
+2953317698 update mytest set dummy = 'Y'                                                                                                                                                               
+                                                      
+                                                                                                                                                                                                       

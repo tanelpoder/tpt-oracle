@@ -1,0 +1,99 @@
+-- MOS: Bug 13250244 : ORA-4031 ERRORS SEEN WHEN PARAMETER _KGHDSIDX_COUNT IS SET TO >1 DUE TO MEM LEAK
+
+--  ~~~~~~~~~~~~~
+--  Testcase 
+--  ~~~~~~~~~~~~~~~~~
+--   
+--    Files:  BDETC.tar.Z (containing init.ora, setup.sql, tc.sql)
+--   
+--    Steps:  
+--      ** IMPORTANT ** Merge init.ora into the pfile used to start the instance.
+--   
+--      ie: Ensure the instance has _kghdsidx_count=4 set
+--   
+--   
+--      sqlplus /nolog @setup
+--        Creates a user TC with table FOO and a few stored outlines.
+--        eg:
+--          create table foo ( a number );
+--          insert into foo values(10);
+--          commit;
+--          create index ifoo on foo(a);
+--          analyze table foo compute statistics;
+--          create sequence seq;
+--          alter session set create_stored_outlines=true;
+--          declare n number; 
+--          begin
+--            for i in 1 .. 10 loop
+--              execute immediate 'select count(*) from foo where a='||i INTO n;
+--            end loop;
+--          end;
+--          /
+--   
+--      sqlplus /nolog @tc
+--        Sets USE_STORED_OUTLINES=TRUE and runs a load of literal selects.
+--        eg:
+--          alter session set use_stored_outlines=true;
+--          declare n number; 
+--          begin
+--            for i in 1 .. 40000
+--            loop
+--              select seq.nextval into n from dual;
+--              execute immediate 'select count(*) from foo where a='||n INTO n;
+--            end loop;
+--          end;
+--          /
+--   
+--        Then flushes the shared pool and shows the number of 'STORED OUTLINE'
+--        objects in V$DB_OBJECT_CACHE (ie: In the library cache).
+--        eg:
+--          select count(*) from v$db_object_cache 
+--           where namespace='STORED OUTLINE';
+--   
+--          ^
+--          After one run of tc.sql you will see there are many thousand
+--          STORED OUTLINE objects in the library cache even after a flush
+--          of the shared pool. These objects are not in use by anyone
+--          but are not on the shared pool LRU so just accumulate "KGLHD"
+--          space.
+--   
+--          If you run tc.sql several times then eventually you will get 
+--          ORA-4031 errors as all free space is taken by the STORED OUTLINE
+--          KGLHD handles.
+--   
+--   
+--  Reproduced
+--  ~~~~~~~~~~
+--    Reproduced in 11.2.0.2
+--    Reproduced in 11.2.0.3
+--    Reproduced in RDBMS_MAIN_LINUX.X64_111025
+--   
+--   
+--  Workaround/s
+--  ~~~~~~~~~~~~
+--   Use plan baselines and related 11g options to control the execution
+--    plans instead of using stored outlines.
+--   OR
+--   The problem does not seem to occur if there is only one SGA subpool.
+--   ie: Instance runs with "_kghdsidx_count"=1 
+--   (but setting this to 1 may affect shared pool concurrency on some systems)
+--   
+--   The problem is aggravated by having USE_STORED_OUTLINES set for sessions
+--    running literal SQL as each literal statement gets a STORED OUTLINE
+--    handle , even if there is no matching outline (this is expected).
+--    Hence avoiding literal SQL in sessions with USE_STORED_OUTLINES 
+--    can help reduce/eliminate any impact from this problem
+--    eg: If the DB has CURSOR_SHARING=FORCE then the example test above
+--        leaks no KGLHD STORED OUTLINE handles
+--   
+--   
+--  Diagnostic Notes
+--  ~~~~~~~~~~~~~~~~
+--   If a session has USE_STORED_OUTLINES set then any SQL issued by the
+--   session gets an outline handle, even if there is no actual outline.
+--   This is normal and expected.
+--   
+--   However,
+--   It seems that if there is more than one shared pool subpool then
+--   we somehow manage to get some stored outline handles left off of 
+--   the LRU list leading to a leak of KGLHD STORED OUTLINE handles over 

@@ -1,0 +1,34 @@
+SQL> @asm/asm_imbalance
+
+                                           Percent Minimum
+                                 Percent Disk Size Percent  Disk Diskgroup
+Diskgroup                      Imbalance  Variance    Free Count Redundancy
+------------------------------ --------- --------- ------- ----- ----------
+DATA                                 8.2        .0    90.9    32 NORMAL
+DBFS_DG                             10.9        .0    48.8    28 NORMAL
+RECO                                  .5        .0    91.7    33 NORMAL
+
+SQL> 
+
+
+metalink script:
+
+SYS:+ASM1>@asm_imbalance
+
+ Columns Described in Script               Percent Minimum
+                                 Percent Disk Size Percent  Disk Diskgroup
+Diskgroup Name                 Imbalance  Varience    Free Count Redundancy
+------------------------------ --------- --------- ------- ----- ----------
+DATA                                 8.2        .0    90.9    32 NORMAL
+RECO                                  .5        .0    91.7    33 NORMAL
+DBFS_DG                             10.9        .0    48.8    28 NORMAL
+
+
+ Columns Described in Script     Partner   Partner              Inactive
+                                   Count   Space % Failgroup Partnership
+Diskgroup Name                 Imbalance Imbalance     Count       Count
+------------------------------ --------- --------- --------- -----------
+DATA                                   1      12.5         3           0
+DBFS_DG                                1      12.5         3           0
+RECO                                   0        .0         3           0
+

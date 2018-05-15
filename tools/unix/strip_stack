@@ -1,0 +1,24 @@
+#!/bin/ksh
+#
+# Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
+# Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
+# strip_stack by Tanel Poder (www.tanelpoder.com)
+#
+# strips program counter function offsets and aggregates dtrace stack sampler output
+#
+# usage: strip_stack <filename>
+# 
+
+cat $1 | sed 's/^ *//;s/+.*$//' | \
+        awk '/^$/{ printf "\n" }/^[0-9]*$/{ printf ";%s", $1 }/[a-z]/{ printf "%s<-", $1 }END{ printf "\n" }' | \
+        sort | \
+	awk -F";" '
+            /NR==1/{ sum=0; total=0; oldstack=$2 }
+            { 
+              if (oldstack==$2) {sum+=$3;total+=$3} 
+              else {printf "%d %s\n", sum, oldstack; oldstack=$2; sum=$3} 
+            }
+            END {printf "%d %s\n%d total samples\n", sum, oldstack,total}
+        ' | \
+        sort -bnr 
+

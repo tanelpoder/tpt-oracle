@@ -1,0 +1,73 @@
+-- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
+-- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
+
+-- create tablespace assm
+-- extent management local uniform size 1m
+-- segment space management auto
+-- datafile
+-- '/abc/db01/oracle/ABC1P/oradata/assm_01.dbf' size 1000m;
+
+create table test_assm
+(
+ n1 number,
+ v1 varchar2(50),
+ v2 varchar2(50),
+ v3 varchar2(50),
+ v4 varchar2(50),
+ v5 varchar2(50),
+ v6 varchar2(50),
+ v7 varchar2(50),
+ v8 varchar2(50),
+ v9 varchar2(50),
+v10 varchar2(50)
+)
+tablespace USERS;
+
+
+begin
+for i in 1..1000000 loop
+insert into test_assm values
+(i,
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567');
+end loop;
+end;
+/
+
+COMMIT;
+
+ALTER SESSION SET plsql_optimize_level = 0;
+
+begin
+for i in 1..1000 loop
+insert into test_assm values
+(i,
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567',
+'123456789*123456789*123456789*123456789*1234567');
+end loop;
+end;
+/
+
+PROMPT Deleting all rows from the table, do not commit...
+
+DELETE test_assm;
+
+PROMPT Re-execute script that inserts 1000 rows from a different session - this should be very slow
+
+

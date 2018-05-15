@@ -1,0 +1,62 @@
+CellCLI> ALTER CELL SHUTDOWN SERVICES CELLSRV;
+
+Stopping CELLSRV services... 
+The SHUTDOWN of CELLSRV services was successful.
+
+CellCLI> 
+
+CellCLI> 
+
+CellCLI> CALIBRATE;
+Calibration will take a few minutes...
+Aggregate random read throughput across all hard disk LUNs: 1103 MBPS
+Aggregate random read throughput across all flash disk LUNs: 3964.55 MBPS
+Aggregate random read IOs per second (IOPS) across all hard disk LUNs: 1716
+Aggregate random read IOs per second (IOPS) across all flash disk LUNs: 98216
+Controller read throughput: 1259.65 MBPS
+Calibrating hard disks (read only) ...
+LUN 0_0  on drive [16:0     ] random read throughput:  94.26 MBPS, and 145 IOPS
+LUN 0_1  on drive [16:1     ] random read throughput: 100.10 MBPS, and 142 IOPS
+LUN 0_10 on drive [16:10    ] random read throughput:  99.80 MBPS, and 155 IOPS
+LUN 0_11 on drive [16:11    ] random read throughput:  96.93 MBPS, and 149 IOPS
+LUN 0_2  on drive [16:2     ] random read throughput:  99.18 MBPS, and 146 IOPS
+LUN 0_3  on drive [16:3     ] random read throughput: 100.45 MBPS, and 149 IOPS
+LUN 0_4  on drive [16:4     ] random read throughput:  98.50 MBPS, and 148 IOPS
+LUN 0_5  on drive [16:5     ] random read throughput:  98.20 MBPS, and 147 IOPS
+LUN 0_6  on drive [16:6     ] random read throughput:  99.69 MBPS, and 147 IOPS
+LUN 0_7  on drive [16:7     ] random read throughput: 102.36 MBPS, and 145 IOPS
+LUN 0_8  on drive [16:8     ] random read throughput:  97.97 MBPS, and 147 IOPS
+LUN 0_9  on drive [16:9     ] random read throughput:  99.56 MBPS, and 140 IOPS
+Calibrating flash disks (read only, note that writes will be significantly slower) ...
+LUN 1_0  on drive [FLASH_1_0] random read throughput: 266.07 MBPS, and 18278 IOPS
+LUN 1_1  on drive [FLASH_1_1] random read throughput: 262.56 MBPS, and 18235 IOPS
+LUN 1_2  on drive [FLASH_1_2] random read throughput: 260.15 MBPS, and 18227 IOPS
+LUN 1_3  on drive [FLASH_1_3] random read throughput:  69.84 MBPS, and 17997 IOPS
+LUN 2_0  on drive [FLASH_2_0] random read throughput: 186.16 MBPS, and 18737 IOPS
+LUN 2_1  on drive [FLASH_2_1] random read throughput: 181.72 MBPS, and 18360 IOPS
+LUN 2_2  on drive [FLASH_2_2] random read throughput: 265.29 MBPS, and 19061 IOPS
+LUN 2_3  on drive [FLASH_2_3] random read throughput: 265.49 MBPS, and 19221 IOPS
+LUN 4_0  on drive [FLASH_4_0] random read throughput: 264.22 MBPS, and 18885 IOPS
+LUN 4_1  on drive [FLASH_4_1] random read throughput: 261.84 MBPS, and 18654 IOPS
+LUN 4_2  on drive [FLASH_4_2] random read throughput: 264.88 MBPS, and 18800 IOPS
+LUN 4_3  on drive [FLASH_4_3] random read throughput: 263.07 MBPS, and 18798 IOPS
+LUN 5_0  on drive [FLASH_5_0] random read throughput: 264.07 MBPS, and 19350 IOPS
+LUN 5_1  on drive [FLASH_5_1] random read throughput: 261.01 MBPS, and 19313 IOPS
+LUN 5_2  on drive [FLASH_5_2] random read throughput: 261.74 MBPS, and 19395 IOPS
+LUN 5_3  on drive [FLASH_5_3] random read throughput: 262.30 MBPS, and 19361 IOPS
+Found some bad LUNs, running tests sequentially to identify the bad LUNs...
+LUN 1_3  on drive [FLASH_1_3] random read throughput: 262.25 MBPS, and 20076 IOPS
+LUN 2_0  on drive [FLASH_2_0] random read throughput: 265.61 MBPS, and 20085 IOPS
+LUN 2_1  on drive [FLASH_2_1] random read throughput: 262.68 MBPS, and 20174 IOPS
+CALIBRATE results are within an acceptable range.
+
+CALIBRATE stress test is now running...
+Calibration has finished.
+
+CellCLI> 
+
+CellCLI> ALTER CELL STARTUP SERVICES CELLSRV;
+
+Starting CELLSRV services...
+The STARTUP of CELLSRV services was successful.
+

@@ -1,0 +1,31 @@
+#!/bin/ksh
+
+# "Quick Dtrace" script by Tanel Poder (http://www.tanelpoder.com)
+# (qda prints first 6 function arguments for function calls)
+
+# Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
+# Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
+
+#$FUNCLIST_ENTRY'{ printf("%16x %16x %16x %16x %16x %16x", arg0, arg1, arg2, arg3, arg4, arg5); }'\
+
+PROCESS=$1
+shift
+
+for F in $* ; do
+
+   FUNCLIST_ENTRY=${FUNCLIST_ENTRY}",pid\$target::$F:entry"
+   FUNCLIST_RETURN=${FUNCLIST_RETURN}",pid\$target::$F:return"
+
+done
+
+FUNCLIST_ENTRY=`echo "$FUNCLIST_ENTRY" | sed 's/^,//'`
+FUNCLIST_RETURN=`echo "$FUNCLIST_RETURN" | sed 's/^,//'`
+
+echo $FUNCLIST
+
+#$FUNCLIST_ENTRY'{ printf("%16x %16x %16x %16x %16x %16x", arg0, arg1, arg2, arg3, arg4, arg5); }'
+
+dtrace -p $PROCESS -Fn \
+$FUNCLIST_ENTRY'{ printf("%x %x %x %x %x %x", arg0, arg1, arg2, arg3, arg4, arg5); }'\
+$FUNCLIST_RETURN'{ printf("%x", arg1); }'
+
