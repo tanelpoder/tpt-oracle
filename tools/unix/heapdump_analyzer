@@ -2,7 +2,6 @@
 ################################################################################
 ## Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 ## Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
-
 ##
 ## File name:   heapdump_analyzer
 ## Purpose:     Script for aggregating Oracle heapdump chunk sizes
@@ -24,6 +23,7 @@
 ##              Private memory heapdumps are safer as only the dumped process is
 ##              affected.
 ##
+##              On Solaris you may need to replace awk with nawk in this script
 ##
 ################################################################################
 
@@ -40,7 +40,7 @@ echo
 echo "  Total_size #Chunks  Chunk_size,        From_heap,       Chunk_type,  Alloc_reason"
 echo "  ---------- ------- ------------ ----------------- ----------------- -----------------"
 
-cat $1 | nawk '
+cat $1 | awk '
      /^HEAP DUMP heap name=/ { split($0,ht,"\""); HTYPE=ht[2]; doPrintOut = 1; }
      /Chunk/{ if ( doPrintOut == 1 ) {
                 split($0,sf,"\"");
@@ -51,7 +51,7 @@ cat $1 | nawk '
               printf "%10d , %16s, %16s, %16s\n", $5, HTYPE, "TOTAL", "Total heap size";
               doPrintOut=0;
      }
-    ' | grep -v "$EXCLUDE" | sort -n | uniq -c | nawk '{ printf "%12d %s\n", $1*$2, $0 }' | sort -nr
+    ' | grep -v "$EXCLUDE" | sort -n | uniq -c | awk '{ printf "%12d %s\n", $1*$2, $0 }' | sort -nr
 
 echo
 
