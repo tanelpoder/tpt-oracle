@@ -17,6 +17,7 @@ FROM
 WHERE 
     plan_line_id = 1 AND starts > 1
 ORDER BY
-    sql_id 
+    sql_id
+  , sql_exec_start
 /
 
