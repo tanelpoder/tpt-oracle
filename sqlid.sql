@@ -36,6 +36,8 @@ select
 	cpu_time/1000000 cpu_sec,
 	cpu_time/NULLIF(executions,0)/1000000 cpu_sec_exec,
 	elapsed_time/1000000 ela_sec,
+	elapsed_time/NULLIF(executions,0)/1000000 ela_sec_exec,
+  user_io_wait_time/1000000 iowait_sec,
 	buffer_gets LIOS,
 	disk_reads PIOS,
 	sorts
