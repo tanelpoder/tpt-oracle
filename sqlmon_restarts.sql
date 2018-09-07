@@ -16,5 +16,7 @@ FROM
     gv$sql_plan_monitor 
 WHERE 
     plan_line_id = 1 AND starts > 1
+ORDER BY
+    sql_id 
 /
 
