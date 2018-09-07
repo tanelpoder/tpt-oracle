@@ -50,7 +50,7 @@
 --
 --------------------------------------------------------------------------------
 --
---   The Session Snapper v4.25 ( USE AT YOUR OWN RISK !!! )
+--   The Session Snapper v4.26 ( USE AT YOUR OWN RISK !!! )
 --   (c) Tanel Poder ( http://blog.tanelpoder.com )
 --
 --
@@ -158,7 +158,7 @@
 --      if you want to snap ALL sids, use "all" as value for
 --      <sids_to_snap> parameter
 --
---      alternatively you can use "select sid from gv$session" as value for <sids_to_snap>
+--      alternatively you can use "select inst_id,sid from gv$session" as value for <sids_to_snap>
 --      parameter to capture all SIDs. you can write any query (with multiple and/or)
 --      conditions to specify complex rules for capturing only the SIDs you want
 --
@@ -169,7 +169,7 @@
 --         user=tanel  -- take all sessions where username is 'tanel' (case insensitive)
 --                     -- this is the same as writing following subquery for the 
 --                     -- <sids_to_snap> parameter:
---                            select sid from gv$session where lower(username) like lower('tanel')
+--                            select inst_id,sid from gv$session where lower(username) like lower('tanel')
 --                     
 --         user=tanel% -- take all sessions where username begins with 'tanel%' (case insensitive)
 --                     -- the = means actually LIKE in SQL terms in this script
@@ -219,11 +219,11 @@
 --      (Write 90 10-second snapshots into tracefile for session IDs 117,210,313
 --       all statistics are reported, do not print any headers)
 --
---      @snapper trace,ash 900 999999999 "select sid from v$session"
+--      @snapper trace,ash 900 999999999 all
 --      (Take a snapshot of ALL sessions every 15 minutes and write the output to trace,
 --       loop (almost) forever )
 --
---      @snapper out,trace 300 12 "select sid from v$session where username='APPS'"
+--      @snapper out,trace 300 12 "select inst_id,sid from gv$session where username='APPS'"
 --      (Take 12 5-minute snapshots of all sessions belonging to APPS user, write
 --       output to both dbms_output and tracefile)
 --
@@ -1938,7 +1938,7 @@ begin
  
     if pagesize > 0 then
         output(' ');
-        output('-- Session Snapper v4.25 - by Tanel Poder ( http://blog.tanelpoder.com/snapper ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)');
+        output('-- Session Snapper v4.26 - by Tanel Poder ( http://blog.tanelpoder.com/snapper ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)');
         output(' ');
     end if;
 
