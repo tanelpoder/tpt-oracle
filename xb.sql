@@ -24,30 +24,29 @@
 
 prompt xb: eXplain Better (prev SQL in current session)
 
-set verify off heading off feedback off pagesize 5000 tab off lines 999
+--set verify off pagesize 5000 tab off lines 999
 
 column xms_child_number     heading "Ch|ld" format 99
 break on xms_child_number   skip 1
 
-column xms_id                                       heading Op|ID format 999
-column xms_parent_id                                heading Par.|ID format a5
-column xms_id2                                      heading Op|ID format a6
-column xms_pred                                     heading Pred|#Col format a5
-column xms_pos                                      heading Lvl|Pos for 99999
-column xms_optimizer                                heading Optimizer|Mode format a10
-column xms_plan_step                                heading Operation for a55
---column xms_plan_line                                heading "Row Source" for a70
-column xms_plan_line                                heading "Row Source" for a55
+column xms_id                                       heading "Op|ID" format 999
+column xms_parent_id                                heading "Par.|ID" format a5
+column xms_id2                                      heading "Op|ID" format a6
+column xms_pred                                     heading "Pred|#Col" format a5
+column xms_pos                                      heading "Lvl|Pos" for 99999
+column xms_optimizer                                heading "Optimizer|Mode" format a10
+column xms_plan_step                                heading "Operation" for a55
+column xms_plan_line                                heading "Row Source" for a70
 column xms_qblock_name                              heading "Query Block|name" for a20
-column xms_object_name                              heading Object|Name for a30
-column xms_opt_cost                                 heading Optimizer|Cost for 99999999999
+column xms_object_name                              heading "Object|Name" for a30
+column xms_opt_cost                                 heading "Optimizer|Cost" for 99999999999
 column xms_opt_card                                 heading "Est. rows|per Start" for 999999999999
 column xms_opt_card_times_starts                    heading "Est. rows|total" for 999999999999
 column xms_opt_card_misestimate                     heading "Opt.Card.|misestimate" for a15
 column xms_opt_bytes                                heading "Estimated|output bytes" for 999999999999
 column xms_predicate_info                           heading "Predicate Information (identified by operation id):" format a100 word_wrap
-column xms_cpu_cost                                 heading CPU|Cost for 9999999
-column xms_io_cost                                  heading IO|Cost for 9999999
+column xms_cpu_cost                                 heading "CPU|Cost" for 9999999
+column xms_io_cost                                  heading "IO|Cost" for 9999999
 
 column xms_last_output_rows                         heading "Real #rows|returned" for 999999999
 column xms_last_starts                              heading "Rowsource|starts" for 999999999
@@ -64,10 +63,13 @@ column xms_last_execution                           heading "Workarea|Passes" fo
 
 column xms_sql_plan_hash_value                      heading "Plan Hash Value" for 9999999999
 
-column xms_sql_id                                   heading "SQL_ID" for a13  new_value xms_sql_id 
-column xms_sql_child_number                         heading "CHLD" for 9999 new_value xms_sql_child_number
+--column xms_sql_id                                   heading "SQL_ID" for a13  new_value xms_sql_id 
+--column xms_sql_child_number                         heading "CHLD" for 9999 new_value xms_sql_child_number
 
 column xms_outline_hints                            heading "Outline Hints" for a120 word_wrap
+
+DEF xms_sql_id=&1
+DEF xms_sql_child_number=&2
 
 --select
 --  'Warning: statistics_level is not set to ALL!'||chr(10)||
@@ -99,7 +101,7 @@ order by
     sql.child_number asc
 /
 
-set heading on
+--set heading on
 
 select  
     p.child_number                                     xms_child_number,
@@ -169,7 +171,7 @@ and p.plan_hash_value   =  ps.plan_hash_value  (+)
 and p.child_number      =  ps.child_number     (+)
 and p.id                =  ps.id               (+) 
 and p.sql_id = '&xms_sql_id'
-and p.child_number = &xms_sql_child_number  
+and p.child_number LIKE '&xms_sql_child_number' 
 order by
     p.sql_id asc,
     p.address asc,
@@ -196,7 +198,7 @@ from (
         v$sql_plan
     where
         sql_id = '&xms_sql_id'
-    and child_number = &xms_sql_child_number
+    and child_number LIKE '&xms_sql_child_number'
     and access_predicates is not null
     union all
     select
@@ -210,7 +212,7 @@ from (
         v$sql_plan
     where
         sql_id = '&xms_sql_id'
-    and child_number = &xms_sql_child_number
+    and child_number LIKE '&xms_sql_child_number'
     and filter_predicates is not null
 )
 order by
@@ -225,7 +227,7 @@ order by
 --     FROM v$sql_plan p
 --     WHERE
 --         p.sql_id = '&xms_sql_id'
---     AND p.child_number = &xms_sql_child_number
+--     AND p.child_number LIKE '&xms_sql_child_number'
 --     AND p.id = 1
 -- )
 -- SELECT 
@@ -242,4 +244,3 @@ order by
 -- UNION ALL SELECT sq.child_number, 'SQL Plan Baseline used = '   ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "baseline"]')    FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "baseline"]')    IS NOT NULL
 -- /
 
-set feedback on
