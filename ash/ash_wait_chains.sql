@@ -88,6 +88,8 @@ SELECT * FROM (
       , COUNT(*) seconds
       , ROUND(COUNT(*) / ((CAST(&4 AS DATE) - CAST(&3 AS DATE)) * 86400), 1) AAS
       , path wait_chain
+      , TO_CHAR(MIN(sample_time), 'YYYY-MM-DD HH24:MI:SS') first_seen
+      , TO_CHAR(MAX(sample_time), 'YYYY-MM-DD HH24:MI:SS') last_seen
       -- , COUNT(DISTINCT sids)
       -- , MIN(sids)
       -- , MAX(sids)

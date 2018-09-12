@@ -86,6 +86,8 @@ SELECT * FROM (
       -- , MIN(sids)
       -- , MAX(sids)
       , path wait_chain
+      , TO_CHAR(MIN(sample_time), 'YYYY-MM-DD HH24:MI:SS') first_seen
+      , TO_CHAR(MAX(sample_time), 'YYYY-MM-DD HH24:MI:SS') last_seen
     FROM
         chains
     WHERE
