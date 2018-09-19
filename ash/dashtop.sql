@@ -115,8 +115,14 @@ SELECT * FROM (
            ||CASE WHEN BITAND(time_model, POWER(2, 23)) = POWER(2, 23) THEN 'TABLESPACE_ENCRYPTION ' END time_model_name
         FROM dba_hist_active_sess_history a) a
       , dba_users u
+      , (SELECT
+             object_id,data_object_id,owner,object_name,subobject_name,object_type
+           , owner||'.'||object_name obj
+           , owner||'.'||object_name||' ['||object_type||']' objt
+         FROM dba_objects) o
     WHERE
         a.user_id = u.user_id (+)
+    AND a.current_obj# = o.object_id(+)
     AND &2
     AND sample_time BETWEEN &3 AND &4
     AND dbid = (SELECT dbid FROM v$database)
