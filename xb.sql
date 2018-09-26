@@ -58,10 +58,11 @@ column xms_last_cu_buffer_gets_row                  heading "Current|gets/row" f
 column xms_last_disk_reads                          heading "Physical|reads" for 999999999
 column xms_last_disk_writes                         heading "Physical|writes" for 999999999
 column xms_last_elapsed_time_ms                     heading "ms spent in|operation" for 9,999,999.99
-column xms_last_memory_used                         heading "Memory|used (kB)" for 9,999,999.99
+column xms_last_memory_used                         heading "Memory|used (MB)" for 9,999,999.99
 column xms_last_execution                           heading "Workarea|Passes" for a15
 
 column xms_sql_plan_hash_value                      heading "Plan Hash Value" for 9999999999
+column xms_plan_hash_value_text                     noprint
 
 --column xms_sql_id                                   heading "SQL_ID" for a13  new_value xms_sql_id 
 --column xms_sql_child_number                         heading "CHLD" for 9999 new_value xms_sql_child_number
@@ -138,24 +139,24 @@ select
 --                                           order by nvl2(p.parent_id, (to_char(p.parent_id, '9999')), '      ')||'.'||trim(p.position)
 --                                        )) - round(ps.last_elapsed_time/1000,2)  xms_last_elapsed_time_d,
     round(ps.last_elapsed_time/1000,2)                                  xms_last_elapsed_time_ms,
-    lpad(to_char(round(1 - (ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0))))||'x',15)   xms_opt_card_misestimate,
-    p.cardinality                                                       xms_opt_card,
-    p.cardinality * ps.last_starts                                      xms_opt_card_times_starts,
-    ps.last_output_rows                                                 xms_last_output_rows,
-    ps.last_starts                                                      xms_last_starts,
-    ps.last_output_rows / DECODE(ps.last_starts,0,1,ps.last_starts)       xms_last_rows_start,
-    ps.last_cr_buffer_gets                                              xms_last_cr_buffer_gets,
+    lpad(to_char(round(1 - (1 / (ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0)))))||NVL2(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),'x', NULL),15)   xms_opt_card_misestimate,
+    p.cardinality                                                                  xms_opt_card,
+    p.cardinality * ps.last_starts                                                 xms_opt_card_times_starts,
+    ps.last_output_rows                                                            xms_last_output_rows,
+    ps.last_starts                                                                 xms_last_starts,
+    ps.last_output_rows / DECODE(ps.last_starts,0,1,ps.last_starts)                xms_last_rows_start,
+    ps.last_cr_buffer_gets                                                         xms_last_cr_buffer_gets,
     ps.last_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_last_cr_buffer_gets_row,
-    ps.last_cu_buffer_gets                                              xms_last_cu_buffer_gets,
+    ps.last_cu_buffer_gets                                                         xms_last_cu_buffer_gets,
     ps.last_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_last_cu_buffer_gets_row,
-    ps.last_disk_reads                                                  xms_last_disk_reads,
-    ps.last_disk_writes                                                 xms_last_disk_writes,
-    ps.last_memory_used/1024                                            xms_last_memory_used,
-    ps.last_execution                                                   xms_last_execution,
-    p.cost                                                             xms_opt_cost
---  p.bytes                                                            xms_opt_bytes,
---  p.cpu_cost                                                         xms_cpu_cost,
---  p.io_cost                                                          xms_io_cost,
+    ps.last_disk_reads                                                             xms_last_disk_reads,
+    ps.last_disk_writes                                                            xms_last_disk_writes,
+    ps.last_memory_used/1048576                                                    xms_last_memory_used,
+    ps.last_execution                                                              xms_last_execution,
+    p.cost                                                                         xms_opt_cost
+--  p.bytes                                                                        xms_opt_bytes,
+--  p.cpu_cost                                                                     xms_cpu_cost,
+--  p.io_cost                                                                      xms_io_cost,
 --  p.other_tag,
 --  p.other,
 --  p.access_predicates,
@@ -166,7 +167,6 @@ from
 where
     p.address           =  ps.address          (+)          
 and p.sql_id            =  ps.sql_id           (+)                  
-and p.sql_id            =  ps.sql_id           (+)     
 and p.plan_hash_value   =  ps.plan_hash_value  (+)              
 and p.child_number      =  ps.child_number     (+)
 and p.id                =  ps.id               (+) 
