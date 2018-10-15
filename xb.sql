@@ -33,7 +33,7 @@ column xms_id                                       heading "Op|ID" format 999
 column xms_parent_id                                heading "Par.|ID" format a5
 column xms_id2                                      heading "Op|ID" format a6
 column xms_pred                                     heading "Pred|#Col" format a5
-column xms_pos                                      heading "Lvl|Pos" for 99999
+column xms_pos                                      heading "#Sib|ling" for 99999
 column xms_optimizer                                heading "Optimizer|Mode" format a10
 column xms_plan_step                                heading "Operation" for a55
 column xms_plan_line                                heading "Row Source" for a70
@@ -57,20 +57,19 @@ column xms_last_cu_buffer_gets                      heading "Current|gets" for 9
 column xms_last_cu_buffer_gets_row                  heading "Current|gets/row" for 999999999
 column xms_last_disk_reads                          heading "Physical|reads" for 999999999
 column xms_last_disk_writes                         heading "Physical|writes" for 999999999
-column xms_last_elapsed_time_ms                     heading "ms spent in|operation" for 9,999,999.99
+column xms_last_elapsed_time_ms                     heading "cumulative ms|spent in branch" for 9,999,999.99
+column xms_self_elapsed_time_ms                     heading "ms spent in|this operation" for 9,999,999.99
 column xms_last_memory_used                         heading "Memory|used (MB)" for 9,999,999.99
 column xms_last_execution                           heading "Workarea|Passes" for a15
 
 column xms_sql_plan_hash_value                      heading "Plan Hash Value" for 9999999999
 column xms_plan_hash_value_text                     noprint
 
---column xms_sql_id                                   heading "SQL_ID" for a13  new_value xms_sql_id 
---column xms_sql_child_number                         heading "CHLD" for 9999 new_value xms_sql_child_number
+column xms_sql_id                                   heading "SQL_ID" for a13  new_value xms_sql_id 
+column xms_sql_child_number                         heading "CHLD" for 9999 new_value xms_sql_child_number
+column xms_sql_addr                                 heading "ADDRESS" new_value xms_sql_addr
 
 column xms_outline_hints                            heading "Outline Hints" for a120 word_wrap
-
-DEF xms_sql_id=&1
-DEF xms_sql_child_number=&2
 
 --select
 --  'Warning: statistics_level is not set to ALL!'||chr(10)||
@@ -86,6 +85,7 @@ select  --+ ordered use_nl(mys ses) use_nl(mys sql)
     'SQL ID: '              xms_sql_id_text,
     sql.sql_id              xms_sql_id,
     sql.child_number        xms_sql_child_number,
+    sql.address             xms_sql_addr,
     '  PLAN_HASH_VALUE: '   xms_plan_hash_value_text,
     sql.plan_hash_value     xms_sql_plan_hash_value,
     '   |   Statement first parsed at: '|| sql.first_load_time ||'  |  '||
@@ -97,6 +97,7 @@ where
     sql.parsing_user_id = usr.user_id
 and sql.sql_id =        (SELECT prev_sql_id FROM v$session WHERE sid = USERENV('SID'))
 and sql.child_number =  (SELECT prev_child_number FROM v$session WHERE sid = USERENV('SID'))
+and sql.address =       (SELECT prev_sql_addr FROM v$session WHERE sid = USERENV('SID'))
 order by
     sql.sql_id asc,
     sql.child_number asc
@@ -104,6 +105,36 @@ order by
 
 --set heading on
 
+WITH sq AS (
+    SELECT /*+ MATERIALIZE */
+        sp.id, sp.parent_id, sp.operation, sp.options
+      , sp.object_owner, sp.object_name, ss.last_elapsed_time
+    FROM v$sql_plan_statistics_all ss INNER JOIN
+         v$sql_plan sp
+      ON (
+            sp.sql_id=ss.sql_id
+        AND sp.child_number=ss.child_number
+        AND sp.address=ss.address
+        AND sp.id=ss.id
+      )
+    AND sp.sql_id='&xms_sql_id'
+    AND sp.child_number = &xms_sql_child_number
+    AND sp.address = HEXTORAW('&xms_sql_addr')
+),  deltas AS (
+    SELECT par.id, par.last_elapsed_time - SUM(chi.last_elapsed_time) self_elapsed_time
+    FROM sq par LEFT OUTER JOIN
+         sq chi
+      ON chi.parent_id = par.id
+    GROUP BY par.id, par.last_elapsed_time
+), combined AS (
+    SELECT sq.id, sq.parent_id, sq.operation, sq.options
+         , sq.object_owner, sq.object_name, sq.last_elapsed_time 
+         , NVL(deltas.self_elapsed_time, sq.last_elapsed_time) self_elapsed_time
+    FROM
+        sq, deltas
+    WHERE
+        sq.id = deltas.id
+)
 select  
     p.child_number                                     xms_child_number,
     CASE WHEN p.filter_predicates IS NOT NULL THEN 'F' ELSE ' ' END ||
@@ -138,8 +169,9 @@ select
 --    round (lag(ps.last_elapsed_time/1000,2,1) over (
 --                                           order by nvl2(p.parent_id, (to_char(p.parent_id, '9999')), '      ')||'.'||trim(p.position)
 --                                        )) - round(ps.last_elapsed_time/1000,2)  xms_last_elapsed_time_d,
+    round(c.self_elapsed_time /1000,2)                                  xms_self_elapsed_time_ms,
     round(ps.last_elapsed_time/1000,2)                                  xms_last_elapsed_time_ms,
-    lpad(to_char(round(1 - (1 / (ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0)))))||NVL2(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),'x', NULL),15)   xms_opt_card_misestimate,
+    lpad(to_char(round(1 - (1 / NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0))))||NVL2(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),'x', NULL),15)   xms_opt_card_misestimate,
     p.cardinality                                                                  xms_opt_card,
     p.cardinality * ps.last_starts                                                 xms_opt_card_times_starts,
     ps.last_output_rows                                                            xms_last_output_rows,
@@ -164,6 +196,7 @@ select
 from 
     v$sql_plan p
   , v$sql_plan_statistics_all ps
+  , combined c
 where
     p.address           =  ps.address          (+)          
 and p.sql_id            =  ps.sql_id           (+)                  
@@ -171,7 +204,9 @@ and p.plan_hash_value   =  ps.plan_hash_value  (+)
 and p.child_number      =  ps.child_number     (+)
 and p.id                =  ps.id               (+) 
 and p.sql_id = '&xms_sql_id'
-and p.child_number LIKE '&xms_sql_child_number' 
+and p.child_number = &xms_sql_child_number
+and p.address = HEXTORAW('&xms_sql_addr')
+and ps.id = c.id (+)
 order by
     p.sql_id asc,
     p.address asc,
@@ -198,7 +233,8 @@ from (
         v$sql_plan
     where
         sql_id = '&xms_sql_id'
-    and child_number LIKE '&xms_sql_child_number'
+    and child_number = &xms_sql_child_number
+    AND address = HEXTORAW('&xms_sql_addr')
     and access_predicates is not null
     union all
     select
@@ -212,7 +248,8 @@ from (
         v$sql_plan
     where
         sql_id = '&xms_sql_id'
-    and child_number LIKE '&xms_sql_child_number'
+    and child_number = &xms_sql_child_number
+    and address = HEXTORAW('&xms_sql_addr')
     and filter_predicates is not null
 )
 order by
@@ -227,7 +264,7 @@ order by
 --     FROM v$sql_plan p
 --     WHERE
 --         p.sql_id = '&xms_sql_id'
---     AND p.child_number LIKE '&xms_sql_child_number'
+--     AND p.child_number = &xms_sql_child_number
 --     AND p.id = 1
 -- )
 -- SELECT 

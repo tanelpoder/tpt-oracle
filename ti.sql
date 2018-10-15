@@ -36,5 +36,5 @@ set termout on
 
 prompt New tracefile_identifier=&trc
 
-col tracefile clear
+col tracefile print
 

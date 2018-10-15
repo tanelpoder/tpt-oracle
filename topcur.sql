@@ -38,7 +38,7 @@ SELECT
   , MAX(last_load_time)
 FROM v$sql
 GROUP BY sql_id
-HAVING COUNT(*) > 5
+HAVING COUNT(*) > 3
 ORDER BY COUNT(*) DESC
 /
 
