@@ -65,14 +65,17 @@ column xms_last_execution                           heading "Workarea|Passes" fo
 column xms_sql_plan_hash_value                      heading "Plan Hash Value" for 9999999999
 column xms_plan_hash_value_text                     noprint
 
-column xms_sql_id                                   heading "SQL_ID" for a13  new_value xms_sql_id 
-column xms_sql_child_number                         heading "CHLD" for 9999 new_value xms_sql_child_number
-column xms_prev_sql_addr                            heading "ADDRESS" new_value xms_prev_sql_addr
+-- column xbi_sql_id                                   heading "SQL_ID" for a13  new_value xbi_sql_id 
+-- column xbi_sql_child_number                         heading "CHLD" for 9999 new_value xbi_sql_child_number
+-- column xms_prev_sql_addr                            heading "ADDRESS" new_value xms_prev_sql_addr
+-- column xbi_sql_id clear
+-- column xbi_sql_child_number clear
+-- column xms_prev_sql_addr    clear
 
 column xms_outline_hints                            heading "Outline Hints" for a120 word_wrap
 
-DEF xms_sql_id=&1
-DEF xms_sql_child_number=&2
+DEF xbi_sql_id=&1
+DEF xbi_sql_child_number=&2
 
 --select
 --  'Warning: statistics_level is not set to ALL!'||chr(10)||
@@ -85,10 +88,10 @@ DEF xms_sql_child_number=&2
 --/
 
 select  --+ ordered use_nl(mys ses) use_nl(mys sql)
-    'SQL ID: '              xms_sql_id_text,
-    sql.sql_id              xms_sql_id,
-    sql.child_number        xms_sql_child_number,
-    sql.prev_sql_addr       xml_prev_sql_addr
+    'SQL ID: '              xbi_sql_id_text,
+    sql.sql_id              xbi_sql_id,
+    sql.child_number        xbi_sql_child_number,
+    sql.address             xml_prev_sql_addr,
     '  PLAN_HASH_VALUE: '   xms_plan_hash_value_text,
     sql.plan_hash_value     xms_sql_plan_hash_value,
     '   |   Statement first parsed at: '|| sql.first_load_time ||'  |  '||
@@ -98,9 +101,9 @@ from
     all_users   usr
 where
     sql.parsing_user_id = usr.user_id
-and sql.sql_id =        (SELECT prev_sql_id FROM v$session WHERE sid = USERENV('SID'))
-and sql.child_number =  (SELECT prev_child_number FROM v$session WHERE sid = USERENV('SID'))
-and sql.prev_sql_addr = (SELECT prev_sql_addr FROM v$session WHERE sid = USERENV('SID'))
+and sql.sql_id =        '&xbi_sql_id'
+and sql.child_number =  TO_NUMBER('&xbi_sql_child_number')
+--and sql.address      =  (SELECT prev_sql_addr FROM v$session WHERE sid = USERENV('SID'))
 order by
     sql.sql_id asc,
     sql.child_number asc
@@ -121,7 +124,7 @@ WITH sq AS (
         AND sp.id=ss.id
       )
     AND sp.sql_id='&1'
-    AND sp.child_number LIKE '&2'
+    and sp.child_number = TO_NUMBER('&xbi_sql_child_number')
 ),  deltas AS (
     SELECT par.id, par.last_elapsed_time - SUM(chi.last_elapsed_time) self_elapsed_time
     FROM sq par LEFT OUTER JOIN
@@ -205,8 +208,8 @@ and p.sql_id            =  ps.sql_id           (+)
 and p.plan_hash_value   =  ps.plan_hash_value  (+)              
 and p.child_number      =  ps.child_number     (+)
 and p.id                =  ps.id               (+) 
-and p.sql_id = '&xms_sql_id'
-and p.child_number LIKE '&xms_sql_child_number' 
+and p.sql_id = '&xbi_sql_id'
+and p.child_number = TO_NUMBER(&xbi_sql_child_number)
 and ps.id = c.id (+)
 order by
     p.sql_id asc,
@@ -224,7 +227,7 @@ select
     xms_predicate_info
 from (
     select
-        sql_id                      xms_sql_id,
+        sql_id                      xbi_sql_id,
         child_number                xms_child_number,
         lpad(id, 5, ' ')            xms_id2,
         filter_predicates           dummy, -- looks like there's a bug in 11.2.0.3 where both pred cols have to be selected
@@ -233,12 +236,12 @@ from (
     from
         v$sql_plan
     where
-        sql_id = '&xms_sql_id'
-    and child_number LIKE '&xms_sql_child_number'
+        sql_id = '&xbi_sql_id'
+    and child_number = TO_NUMBER(&xbi_sql_child_number)
     and access_predicates is not null
     union all
     select
-        sql_id                  xms_sql_id,
+        sql_id                  xbi_sql_id,
         child_number                xms_child_number,
         lpad(id, 5, ' ') xms_id2,
         access_predicates           dummy,
@@ -247,12 +250,12 @@ from (
     from
         v$sql_plan
     where
-        sql_id = '&xms_sql_id'
-    and child_number LIKE '&xms_sql_child_number'
+        sql_id = '&xbi_sql_id'
+    and child_number = TO_NUMBER(&xbi_sql_child_number)
     and filter_predicates is not null
 )
 order by
-    xms_sql_id asc,
+    xbi_sql_id asc,
     xms_child_number asc,
     xms_id2 asc,
     xms_predicate_info asc
@@ -262,8 +265,8 @@ order by
 --     SELECT child_number, other_xml 
 --     FROM v$sql_plan p
 --     WHERE
---         p.sql_id = '&xms_sql_id'
---     AND p.child_number LIKE '&xms_sql_child_number'
+--         p.sql_id = '&xbi_sql_id'
+--     AND p.child_number LIKE '&xbi_sql_child_number'
 --     AND p.id = 1
 -- )
 -- SELECT 
