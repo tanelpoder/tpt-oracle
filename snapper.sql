@@ -50,7 +50,7 @@
 --
 --------------------------------------------------------------------------------
 --
---   The Session Snapper v4.26 ( USE AT YOUR OWN RISK !!! )
+--   The Session Snapper v4.27 ( USE AT YOUR OWN RISK !!! )
 --   (c) Tanel Poder ( http://blog.tanelpoder.com )
 --
 --
@@ -1320,7 +1320,7 @@ declare
                                          and s.inst_id = ss.inst_id
                                          and s.sid = ss.sid
                                          and  (lv_gather like '%s%' or lv_gather like '%a%')
-                                         and ss.statistic# in (select /*+ no_unnest */ statistic# from v$statname
+                                         and ss.statistic# in (select statistic# from v$statname
                                                             where lower(name) like '%'||lv_include_stat||'%'
                                                             or regexp_like (name, lv_include_stat, 'i')
                                                            )
@@ -1938,7 +1938,7 @@ begin
  
     if pagesize > 0 then
         output(' ');
-        output('-- Session Snapper v4.26 - by Tanel Poder ( http://blog.tanelpoder.com/snapper ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)');
+        output('-- Session Snapper v4.27 - by Tanel Poder ( http://blog.tanelpoder.com/snapper ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)');
         output(' ');
     end if;
 
