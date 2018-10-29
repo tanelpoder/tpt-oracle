@@ -8,8 +8,12 @@
 -- Purpose:   Demo script for displaying execution plan profile as a flame chart
 -- 
 -- Usage:     @sqlflame.sql <sqlid> <child#>
---            Note that you'll need to download Brendan Gregg's FlameGraph.pl  
---            https://github.com/brendangregg/FlameGraph
+--            Note that you'll need to download Brendan Gregg's flamegraph.pl 
+--            https://github.com/brendangregg/FlameGraph and make sure that it's
+--            in your PATH (or edit this script to use it from a hardcoded location)
+--
+--            Note that you'll have to replace HOST OPEN with HOST START in the 
+--            end of this file if you're using sqlplus client on Windows
 --
 -- Author:    Tanel Poder - https://blog.tanelpoder.com 
 -- 
@@ -27,11 +31,13 @@
 @@saveset
 
 SET HEADING OFF LINESIZE 32767 PAGESIZE 0 TRIMSPOOL ON TRIMOUT ON LONG 9999999 VERIFY OFF LONGCHUNKSIZE 100000 FEEDBACK OFF APPINFO OFF
-SET TERMOUT OFF
-SET TIMING OFF
 
 PROMPT
 PROMPT -- SQLFlame 0.1 by Tanel Poder ( https://blog.tanelpoder.com )
+
+SET TERMOUT OFF
+SET TIMING OFF
+
 
 WITH sq AS (
     SELECT /*+ MATERIALIZE */ 
@@ -81,5 +87,10 @@ SET TERMOUT ON HEADING ON PAGESIZE 5000 LINESIZE 999 FEEDBACK ON
 SET TIMING ON
 
 HOST flamegraph.pl --countname=Milliseconds --title="sql_id=&1" sqlflame_stacks.txt > sqlflame_&1..svg
+
+-- Windows 
+-- HOST OPEN sqlflame_&1..svg
+
+-- MacOS
 HOST OPEN sqlflame_&1..svg
 
