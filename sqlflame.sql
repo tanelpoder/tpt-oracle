@@ -22,22 +22,22 @@
 --            can be treated just like any code profile (FlameGraphs were
 --            initially used for process stack profiling)
 --
+--            This script currently relies on the V$SQL_PLAN_STATISTICS_ALL source
+--            so you'll need to run your query with statistics_level=all or
+--            with the GATHER_PLAN_STATISTICS hint.
+--
 -- Credits:   Brendan Gregg invented and popularized FlameGraphs, if you want to
 --            understand theri logic better, read the articles at:
 --            http://www.brendangregg.com/flamegraphs.html          
 --
 --------------------------------------------------------------------------------
 
-@@saveset
-
 SET HEADING OFF LINESIZE 32767 PAGESIZE 0 TRIMSPOOL ON TRIMOUT ON LONG 9999999 VERIFY OFF LONGCHUNKSIZE 100000 FEEDBACK OFF APPINFO OFF
 
 PROMPT
-PROMPT -- SQLFlame 0.1 by Tanel Poder ( https://blog.tanelpoder.com )
+PROMPT -- SQLFlame 0.2 by Tanel Poder ( https://blog.tanelpoder.com )
 
 SET TERMOUT OFF
-SET TIMING OFF
-
 
 WITH sq AS (
     SELECT /*+ MATERIALIZE */ 
@@ -84,7 +84,6 @@ spool sqlflame_stacks.txt
 spool off
 
 SET TERMOUT ON HEADING ON PAGESIZE 5000 LINESIZE 999 FEEDBACK ON 
-SET TIMING ON
 
 HOST flamegraph.pl --countname=Milliseconds --title="sql_id=&1" sqlflame_stacks.txt > sqlflame_&1..svg
 
