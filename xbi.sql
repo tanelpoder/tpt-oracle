@@ -3,18 +3,18 @@
 
 --------------------------------------------------------------------------------
 --
--- File name:   xb (eXplain Better)
+-- File name:   xbi.sql (eXplain Better by SQL ID)
 --
 -- Purpose:     Explain a SQL statements execution plan with execution 
 --              profile directly from library cache - for the last
 --              SQL executed in current session (see also xbi.sql)
 --
 -- Author:      Tanel Poder
--- Copyright:   (c) http://www.tanelpoder.com
+-- Copyright:   (c) https://blog.tanelpoder.com
 --              
 -- Usage:       1) alter session set statistics_level = all;
 --              2) Run the statement you want to explain
---              3) @xb.sql
+--              3) @xbi.sql <sqlid> <child_number>
 --          
 -- Other:       You can add a GATHER_PLAN_STATISTICS hint to the statement instead 
 --              if you dont want to use "alter session set statistics_level" 
@@ -22,7 +22,7 @@
 --
 --------------------------------------------------------------------------------
 
-prompt xb: eXplain Better (prev SQL in current session)
+prompt xb: eXplain Better v0.9 for sql_id = &1 child_number = &2
 
 --set verify off pagesize 5000 tab off lines 999
 
@@ -157,26 +157,32 @@ select
         -- ||nvl2(p.qblock_name, ' @ '||p.qblock_name, null)  
                                                                        xms_plan_line, 
     p.qblock_name                                                      xms_qblock_name,
---    p.object_name                                                      xms_object_name,
+--  p.object_name                                                      xms_object_name,
 --  LPAD(' ',p.depth*1,' ')|| p.operation || ' ' || p.options          xms_plan_step, 
 --  p.object_name                                                      xms_object_name,
 --  p.qblock_name                                                      xms_qblock_name,
---    p.other,
---    p.other_tag,
---    p.distribution,
+--  p.other,
+--  p.other_tag,
+--  p.distribution,
 --  p.optimizer                                                        xms_optimizer,
 --  p.object#,
---    p.object_instance,
---    p.object_type,
---   p.other_tag,
---   p.distribution,
--- DEV
+--  p.object_instance,
+--  p.object_type,
+--  p.other_tag,
+--  p.distribution,
+--  DEV
 --    round (lag(ps.last_elapsed_time/1000,2,1) over (
 --                                           order by nvl2(p.parent_id, (to_char(p.parent_id, '9999')), '      ')||'.'||trim(p.position)
 --                                        )) - round(ps.last_elapsed_time/1000,2)  xms_last_elapsed_time_d,
     round(c.self_elapsed_time /1000,2)                                  xms_self_elapsed_time_ms,
     round(ps.last_elapsed_time/1000,2)                                  xms_last_elapsed_time_ms,
-    lpad(to_char(round(1 - (1 / NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0))))||NVL2(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),'x', NULL),15)   xms_opt_card_misestimate,
+    regexp_replace(lpad(to_char(round(
+                      CASE WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) > 1 THEN  -(NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0))
+                           WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) < 1 THEN 1/(NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0))
+                           WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) = 1 THEN 1
+                      ELSE null
+                      END   
+                 ,0))||'x',15),'^ *x$')   xms_opt_card_misestimate,
     p.cardinality                                                                  xms_opt_card,
     p.cardinality * ps.last_starts                                                 xms_opt_card_times_starts,
     ps.last_output_rows                                                            xms_last_output_rows,

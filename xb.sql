@@ -10,7 +10,7 @@
 --              SQL executed in current session (see also xbi.sql)
 --
 -- Author:      Tanel Poder
--- Copyright:   (c) http://www.tanelpoder.com
+-- Copyright:   (c) https://blog.tanelpoder.com
 --              
 -- Usage:       1) alter session set statistics_level = all;
 --              2) Run the statement you want to explain
@@ -22,13 +22,17 @@
 --
 --------------------------------------------------------------------------------
 
-prompt xb: eXplain Better (prev SQL in current session)
+prompt -- xb: eXplain Better v0.9 for prev SQL in current session
 
 --set verify off pagesize 5000 tab off lines 999
 
-column xms_child_number     heading "Ch|ld" format 99
+-- if this script causes weird behavior in Oracle SQL Developer app (doesn't show output)
+-- then comment out the break statement below and restart SQL Developer
 break on xms_child_number   skip 1
 
+column xms_child_number     heading "Ch|ld" format 99
+
+column xms_seconds_ago                              heading "First Load Time"
 column xms_id                                       heading "Op|ID" format 999
 column xms_parent_id                                heading "Par.|ID" format a5
 column xms_id2                                      heading "Op|ID" format a6
@@ -36,7 +40,7 @@ column xms_pred                                     heading "Pred|#Col" format a
 column xms_pos                                      heading "#Sib|ling" for 99999
 column xms_optimizer                                heading "Optimizer|Mode" format a10
 column xms_plan_step                                heading "Operation" for a55
-column xms_plan_line                                heading "Row Source" for a70
+column xms_plan_line                                heading "Row Source" for a72
 column xms_qblock_name                              heading "Query Block|name" for a20
 column xms_object_name                              heading "Object|Name" for a30
 column xms_opt_cost                                 heading "Optimizer|Cost" for 99999999999
@@ -88,7 +92,7 @@ select  --+ ordered use_nl(mys ses) use_nl(mys sql)
     sql.address             xms_sql_addr,
     '  PLAN_HASH_VALUE: '   xms_plan_hash_value_text,
     sql.plan_hash_value     xms_sql_plan_hash_value,
-    '   |   Statement first parsed at: '|| sql.first_load_time ||'  |  '||
+    'Statement first parsed at: '|| sql.first_load_time ||' - '||
     round( (sysdate - to_date(sql.first_load_time,'YYYY-MM-DD/HH24:MI:SS'))*86400 ) || ' seconds ago' xms_seconds_ago
 from
     v$sql       sql,
@@ -171,16 +175,22 @@ select
 --                                        )) - round(ps.last_elapsed_time/1000,2)  xms_last_elapsed_time_d,
     round(c.self_elapsed_time /1000,2)                                  xms_self_elapsed_time_ms,
     round(ps.last_elapsed_time/1000,2)                                  xms_last_elapsed_time_ms,
-    lpad(to_char(round(1 - (1 / NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0))))||NVL2(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),'x', NULL),15)   xms_opt_card_misestimate,
-    p.cardinality                                                                  xms_opt_card,
+    regexp_replace(lpad(to_char(round(
+                      CASE WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) > 1 THEN  -(NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0))
+                           WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) < 1 THEN 1/(NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0))
+                           WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) = 1 THEN 1
+                      ELSE null
+                      END
+                 ,0))||'x',15),'^ *x$')   xms_opt_card_misestimate,
+    --p.cardinality                                                                  xms_opt_card,
     p.cardinality * ps.last_starts                                                 xms_opt_card_times_starts,
     ps.last_output_rows                                                            xms_last_output_rows,
     ps.last_starts                                                                 xms_last_starts,
-    ps.last_output_rows / DECODE(ps.last_starts,0,1,ps.last_starts)                xms_last_rows_start,
+    --ps.last_output_rows / DECODE(ps.last_starts,0,1,ps.last_starts)                xms_last_rows_start,
     ps.last_cr_buffer_gets                                                         xms_last_cr_buffer_gets,
     ps.last_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_last_cr_buffer_gets_row,
     ps.last_cu_buffer_gets                                                         xms_last_cu_buffer_gets,
-    ps.last_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_last_cu_buffer_gets_row,
+    --ps.last_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_last_cu_buffer_gets_row,
     ps.last_disk_reads                                                             xms_last_disk_reads,
     ps.last_disk_writes                                                            xms_last_disk_writes,
     ps.last_memory_used/1048576                                                    xms_last_memory_used,
