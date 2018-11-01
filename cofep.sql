@@ -12,7 +12,7 @@ column pd_descr heading DESCRIPTION format a70 word_wrap
 
 -- funky pivot formatting for sqlplus
 
-COL "'18.1.0  '" FOR A30 WRAP
+COL "'18.1.0'" FOR A30 WRAP
 COL "'8.0.0'" FOR A30 WRAP
 COL "'8.0.3'" FOR A30 WRAP
 COL "'8.0.4'" FOR A30 WRAP
