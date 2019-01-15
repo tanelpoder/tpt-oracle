@@ -22,15 +22,16 @@
 --
 --------------------------------------------------------------------------------
 
-prompt -- xb: eXplain Better v0.9 for prev SQL in current session
+prompt -- xb: eXplain Better v0.95 for prev SQL in current session
 
 --set verify off pagesize 5000 tab off lines 999
 
--- if this script causes weird behavior in Oracle SQL Developer app (doesn't show output)
--- then comment out the break statement below and restart SQL Developer
+-- the BREAK clause below causes weird behavior in Oracle SQL Developer app (doesn't show output) up to SQLDev 18.3
+-- then comment out the break statement below and restart SQL Developer.
+-- better upgrade to SQLDeveloper 18.4 where this is fixed
 break on xms_child_number   skip 1
 
-column xms_child_number     heading "Ch|ld" format 99
+column xms_child_number                             heading "Ch|ld" format 99
 
 column xms_seconds_ago                              heading "First Load Time"
 column xms_id                                       heading "Op|ID" format 999
@@ -152,7 +153,7 @@ select
 --    LPAD(' ',p.depth*1,' ')||''||to_char(p.position, '999') || '...' || p.operation || ' ' || p.options ||' '
     LPAD(' ',p.depth*1,' ')|| p.operation || ' ' || p.options ||' '
          ||nvl2(p.object_name, '['||p.object_name||']', null)
-         ||nvl2(p.object_node, ' {'||p.object_node||'}', null)
+         ||nvl2(p.object_node, ' @'||p.object_node, null)
         -- ||nvl2(p.qblock_name, ' @ '||p.qblock_name, null)  
                                                                        xms_plan_line, 
     p.qblock_name                                                      xms_qblock_name,
