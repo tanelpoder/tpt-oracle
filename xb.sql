@@ -24,7 +24,7 @@
 
 prompt -- xb: eXplain Better v0.95 for prev SQL in current session
 
---set verify off pagesize 5000 tab off lines 999
+set verify off pagesize 5000 tab off lines 999
 
 -- the BREAK clause below causes weird behavior in Oracle SQL Developer app (doesn't show output) up to SQLDev 18.3
 -- then comment out the break statement below and restart SQL Developer.
@@ -44,6 +44,7 @@ column xms_plan_step                                heading "Operation" for a55
 column xms_plan_line                                heading "Row Source" for a72
 column xms_qblock_name                              heading "Query Block|name" for a20
 column xms_object_name                              heading "Object|Name" for a30
+column xms_object_node                              heading "Object|Node" for a10
 column xms_opt_cost                                 heading "Optimizer|Cost" for 99999999999
 column xms_opt_card                                 heading "Est. rows|per Start" for 999999999999
 column xms_opt_card_times_starts                    heading "Est. rows|total" for 999999999999
@@ -146,34 +147,14 @@ select
     CASE WHEN p.access_predicates IS NOT NULL THEN CASE WHEN p.options LIKE 'STORAGE %' THEN 'S' ELSE 'A' END ELSE ' ' END ||
     CASE p.search_columns WHEN 0 THEN NULL ELSE '#'||TO_CHAR(p.search_columns) END   xms_pred,
     p.id                                                               xms_id,
---    nvl2(p.parent_id, trim(to_char(p.parent_id, '9999')), ' root')||'.'||trim(p.position)                    xms_uniq_step,
     nvl2(p.parent_id, to_char(p.parent_id, '9999'), ' root')                                   xms_parent_id,
---    LPAD(' ',p.depth*1,' ')|| to_char(p.position, '999') xms_pos,
     CASE WHEN p.id != 0 THEN p.position END xms_pos,
---    LPAD(' ',p.depth*1,' ')||''||to_char(p.position, '999') || '...' || p.operation || ' ' || p.options ||' '
     LPAD(' ',p.depth*1,' ')|| p.operation || ' ' || p.options ||' '
          ||nvl2(p.object_name, '['||p.object_name||']', null)
-         ||nvl2(p.object_node, ' @'||p.object_node, null)
-        -- ||nvl2(p.qblock_name, ' @ '||p.qblock_name, null)  
                                                                        xms_plan_line, 
     p.qblock_name                                                      xms_qblock_name,
---    p.object_name                                                      xms_object_name,
---  LPAD(' ',p.depth*1,' ')|| p.operation || ' ' || p.options          xms_plan_step, 
---  p.object_name                                                      xms_object_name,
---  p.qblock_name                                                      xms_qblock_name,
---    p.other,
---    p.other_tag,
---    p.distribution,
---  p.optimizer                                                        xms_optimizer,
---  p.object#,
---    p.object_instance,
---    p.object_type,
---   p.other_tag,
---   p.distribution,
--- DEV
---    round (lag(ps.last_elapsed_time/1000,2,1) over (
---                                           order by nvl2(p.parent_id, (to_char(p.parent_id, '9999')), '      ')||'.'||trim(p.position)
---                                        )) - round(ps.last_elapsed_time/1000,2)  xms_last_elapsed_time_d,
+--  p.object_node                                                      xms_object_node,
+--  p.distribution                                                     xms_distribution,
     round(c.self_elapsed_time /1000,2)                                  xms_self_elapsed_time_ms,
     round(ps.last_elapsed_time/1000,2)                                  xms_last_elapsed_time_ms,
     regexp_replace(lpad(to_char(round(
@@ -183,15 +164,13 @@ select
                       ELSE null
                       END
                  ,0))||'x',15),'^ *x$')   xms_opt_card_misestimate,
-    --p.cardinality                                                                  xms_opt_card,
     p.cardinality * ps.last_starts                                                 xms_opt_card_times_starts,
     ps.last_output_rows                                                            xms_last_output_rows,
     ps.last_starts                                                                 xms_last_starts,
-    --ps.last_output_rows / DECODE(ps.last_starts,0,1,ps.last_starts)                xms_last_rows_start,
     ps.last_cr_buffer_gets                                                         xms_last_cr_buffer_gets,
     ps.last_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_last_cr_buffer_gets_row,
     ps.last_cu_buffer_gets                                                         xms_last_cu_buffer_gets,
-    --ps.last_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_last_cu_buffer_gets_row,
+--  ps.last_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_last_cu_buffer_gets_row,
     ps.last_disk_reads                                                             xms_last_disk_reads,
     ps.last_disk_writes                                                            xms_last_disk_writes,
     ps.last_memory_used/1048576                                                    xms_last_memory_used,
@@ -222,7 +201,6 @@ order by
     p.sql_id asc,
     p.address asc,
     p.child_number asc,
---    nvl2(p.parent_id, (to_char(p.parent_id, '9999')), '      ')||'.'||trim(p.position)
     p.id asc    
 /
 
