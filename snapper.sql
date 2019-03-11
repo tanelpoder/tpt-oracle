@@ -50,7 +50,7 @@
 --
 --------------------------------------------------------------------------------
 --
---   The Session Snapper v4.27 ( USE AT YOUR OWN RISK !!! )
+--   The Session Snapper v4.28 ( USE AT YOUR OWN RISK !!! )
 --   (c) Tanel Poder ( http://blog.tanelpoder.com )
 --
 --
@@ -1938,7 +1938,7 @@ begin
  
     if pagesize > 0 then
         output(' ');
-        output('-- Session Snapper v4.27 - by Tanel Poder ( http://blog.tanelpoder.com/snapper ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)');
+        output('-- Session Snapper v4.28 - by Tanel Poder ( http://blog.tanelpoder.com/snapper ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)');
         output(' ');
     end if;
 
@@ -2263,7 +2263,7 @@ begin
     end loop; -- for c in 1..snapper_count
 
     exception when others then
-        raise_application_error(-20000, 'Snapper: Probably bad syntax or no execute rights on SYS.DBMS_LOCK'||chr(10)||'Check http://blog.tanelpoder.com/snapper for instructions'||chr(10)||sqlerrm);
+        raise_application_error(-20000, 'Snapper: Probably bad syntax or no execute rights on SYS.DBMS_LOCK'||chr(10)||'Check http://blog.tanelpoder.com/snapper for instructions'||chr(10)||sqlerrm||chr(10)||'Stack Trace:'||chr(10)||dbms_utility.format_error_backtrace);
 
 end;
 /
