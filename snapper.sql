@@ -50,7 +50,7 @@
 --
 --------------------------------------------------------------------------------
 --
---   The Session Snapper v4.28 ( USE AT YOUR OWN RISK !!! )
+--   The Session Snapper v4.29 ( USE AT YOUR OWN RISK !!! )
 --   (c) Tanel Poder ( http://blog.tanelpoder.com )
 --
 --
@@ -418,7 +418,7 @@ end;
 -- this query populates some sqlplus variables required for dynamic compilation used below
 with mod_banner as (
     select
-        replace(banner,'9.','09.') banner
+        replace(banner,' 9.','09.') banner
     from
         v$version
     where rownum = 1
@@ -1938,7 +1938,7 @@ begin
  
     if pagesize > 0 then
         output(' ');
-        output('-- Session Snapper v4.28 - by Tanel Poder ( http://blog.tanelpoder.com/snapper ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)');
+        output('-- Session Snapper v4.29 - by Tanel Poder ( http://blog.tanelpoder.com/snapper ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)');
         output(' ');
     end if;
 
