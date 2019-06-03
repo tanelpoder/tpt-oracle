@@ -17,13 +17,14 @@ SET LINES 999 PAGES 50000 TRIMSPOOL ON TRIMOUT ON TAB OFF
 
 COL px_qcsid HEAD QC_SID FOR A13
 COL px_instances FOR A100
+COL px_username HEAD USERNAME FOR A25 WRAP
 
 PROMPT Show current Parallel Execution sessions in RAC cluster...
 
 SELECT 
     pxs.qcsid||','||pxs.qcserial# px_qcsid
   , pxs.qcinst_id
-  , ses.username
+  , ses.username px_username
   , ses.sql_id
   , pxs.degree
   , pxs.req_degree
