@@ -1,6 +1,11 @@
 // run with:
 // java -cp $ORACLE_HOME/jdbc/lib/ojdbc5.jar:. Client_id
-
+//
+// Note that Oracle 12c JDBC drivers support JDBC 4.1 with SetClientInfo() method
+// In Oracle 12c+ drivers, conn.setEndToEndMetrics() is deprecated in favor of
+// conn.setClientInfo()
+//
+// https://docs.oracle.com/en/database/oracle/oracle-database/19/jjdbc/JDBC-standards-support.html#GUID-1987FAC4-E93A-49A5-9EB4-A78B465E6938
 
 import java.sql.*;
 import oracle.jdbc.OracleConnection;
