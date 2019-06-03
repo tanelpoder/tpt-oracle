@@ -1,16 +1,16 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
--- Purpose: List SQL workarea memory usage details at session/workarea level.
---          Show both PGA workarea usage and TEMP usage by workareas (workareas don't include
---          other PGA/TEMP use like PL/SQL arrays and global temporary tables)
+-- Purpose:     List SQL workarea memory usage details at session/workarea level.
+--              Show both PGA workarea usage and TEMP usage by workareas (workareas don't include
+--              other PGA/TEMP use like PL/SQL arrays and global temporary tables)
 --
--- Usage:   @wrka 1=1 
---          @wrka sid=123
---          @wrka username='APPUSER'
---          @wrka "sid IN (123,234,456)"
---          @wrka "program LIKE '%BatchRunner.exe%' AND machine='host123'"
---          @wrka "sid in (SELECT sid FROM v$session WHERE ....)"
+-- Usage:       @wrka 1=1 
+--              @wrka sid=123
+--              @wrka username='APPUSER'
+--              @wrka "sid IN (123,234,456)"
+--              @wrka "program LIKE '%BatchRunner.exe%' AND machine='host123'"
+--              @wrka "sid in (SELECT sid FROM v$session WHERE ....)"
 
 prompt Show Active workarea memory usage for where &1....
 
