@@ -6,11 +6,13 @@ COL sysm_group_name HEAD METRICGROUP FOR A30
 prompt Display SYSTEM metrics from V$METRIC
 
 select
-   mg.name sysm_group_name
+   (sysdate-end_time)*86400 seconds_ago
+-- , end_time last_updated
  , ROUND(mg.interval_size/100) seconds
  , m.metric_name
  , ROUND(m.value,2) value
  , m.metric_unit
+ , mg.name sysm_group_name
 from
    v$metric m
  , v$metricgroup mg
