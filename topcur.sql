@@ -19,7 +19,7 @@ SELECT
   , MAX(last_load_time)
 FROM v$sql
 GROUP BY plan_hash_value
-HAVING COUNT(DISTINCT sql_id) > 5
+HAVING COUNT(DISTINCT sql_id) > 10
 ORDER BY COUNT(*) DESC
 /
 
@@ -38,7 +38,7 @@ SELECT
   , MAX(last_load_time)
 FROM v$sql
 GROUP BY sql_id
-HAVING COUNT(*) > 3
+HAVING COUNT(*) > 10
 ORDER BY COUNT(*) DESC
 /
 
