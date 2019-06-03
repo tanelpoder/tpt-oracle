@@ -2,7 +2,13 @@
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
 col sql_sql_text head SQL_TEXT format a150 word_wrap
-col sql_child_number head CH# for 999
+col sql_child_number head CH# for 9999
+
+
+col cpu_sec_exec   FOR 999999.999
+col ela_sec_exec   FOR 999999.999
+col lios_per_exec  FOR 9999999999
+col pios_per_exec  FOR 9999999999
 
 prompt Show SQL text, child cursors and execution stats for SQLID &1 child &2
 
@@ -24,8 +30,6 @@ order by
 
 select 
 	child_number	sql_child_number,
-	address		parent_handle,
-	child_address   object_handle,
 	plan_hash_value plan_hash,
 	parse_calls parses,
 	loads h_parses,
@@ -33,13 +37,15 @@ select
 	fetches,
 	rows_processed,
   rows_processed/nullif(fetches,0) rows_per_fetch,
-	cpu_time/1000000 cpu_sec,
-	cpu_time/NULLIF(executions,0)/1000000 cpu_sec_exec,
-	elapsed_time/1000000 ela_sec,
-	elapsed_time/NULLIF(executions,0)/1000000 ela_sec_exec,
-  user_io_wait_time/1000000 iowait_sec,
-	buffer_gets LIOS,
-	disk_reads PIOS,
+	ROUND(cpu_time/NULLIF(executions,0)/1000000,3)     cpu_sec_exec,
+	ROUND(elapsed_time/NULLIF(executions,0)/1000000,3) ela_sec_exec,
+	ROUND(buffer_gets/NULLIF(executions,0),3)  lios_per_exec,
+	ROUND(disk_reads/NULLIF(executions,0),3)   pios_per_exec,
+	ROUND(cpu_time/1000000,3) total_cpu_sec,
+	ROUND(elapsed_time/1000000,3) total_ela_sec,
+  user_io_wait_time/1000000 total_iowait_sec,
+	buffer_gets total_LIOS,
+	disk_reads total_pios,
 	sorts
 --	address,
 --	sharable_mem,
@@ -54,6 +60,9 @@ select
 --   , IO_CELL_UNCOMPRESSED_BYTES     
 --   , IO_CELL_OFFLOAD_RETURNED_BYTES 
   ,	users_executing
+  , last_active_time
+	, address		parent_handle
+	, child_address   object_handle
 from 
 	v$sql
 where 
