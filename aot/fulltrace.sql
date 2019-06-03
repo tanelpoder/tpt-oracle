@@ -19,3 +19,7 @@ ORADEBUG EVENT 10079 TRACE NAME CONTEXT FOREVER, LEVEL 1;
 -- ORADEBUG SETMYPID
 -- ORADEBUG DUMP SQLNET_SERVER_TRACE 16
 
+-- trace wait event stack traces (this will slow stuff down)
+--
+-- ALTER SESSION SET EVENTS 'wait_event[all] trace(''event="%" ela=% p1=% p2=% p3=%\n'', evargs(5), evargn(1), evargn(2), evargn(3), evargn(4))';
+
