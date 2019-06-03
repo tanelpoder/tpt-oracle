@@ -3,32 +3,32 @@
 
 --------------------------------------------------------------------------------
 --
--- Name:      sqlflame.sql
+-- Name:        sqlflame.sql
 --
--- Purpose:   Demo script for displaying execution plan profile as a flame chart
+-- Purpose:     Demo script for displaying execution plan profile as a flame chart
 -- 
--- Usage:     @sqlflame.sql <sqlid> <child#>
---            Note that you'll need to download Brendan Gregg's flamegraph.pl 
---            https://github.com/brendangregg/FlameGraph and make sure that it's
---            in your PATH (or edit this script to use it from a hardcoded location)
+-- Usage:       @sqlflame.sql <sqlid> <child#>
+--              Note that you'll need to download Brendan Gregg's flamegraph.pl 
+--              https://github.com/brendangregg/FlameGraph and make sure that it's
+--              in your PATH (or edit this script to use it from a hardcoded location)
 --
---            Note that you'll have to replace HOST OPEN with HOST START in the 
---            end of this file if you're using sqlplus client on Windows
+--              Note that you'll have to replace HOST OPEN with HOST START in the 
+--              end of this file if you're using sqlplus client on Windows
 --
--- Author:    Tanel Poder - https://blog.tanelpoder.com 
+-- Author:      Tanel Poder - https://blog.tanelpoder.com 
 -- 
--- Other:     This is an early version mostly meant as a proof of concept for
---            illustrating that a modern RDBMS SQL execution plan profile 
---            can be treated just like any code profile (FlameGraphs were
---            initially used for process stack profiling)
+-- Other:       This is an early version mostly meant as a proof of concept for
+--              illustrating that a modern RDBMS SQL execution plan profile 
+--              can be treated just like any code profile (FlameGraphs were
+--              initially used for process stack profiling)
 --
---            This script currently relies on the V$SQL_PLAN_STATISTICS_ALL source
---            so you'll need to run your query with statistics_level=all or
---            with the GATHER_PLAN_STATISTICS hint.
+--              This script currently relies on the V$SQL_PLAN_STATISTICS_ALL source
+--              so you'll need to run your query with statistics_level=all or
+--              with the GATHER_PLAN_STATISTICS hint.
 --
--- Credits:   Brendan Gregg invented and popularized FlameGraphs, if you want to
---            understand theri logic better, read the articles at:
---            http://www.brendangregg.com/flamegraphs.html          
+-- Credits:     Brendan Gregg invented and popularized FlameGraphs, if you want to
+--              understand theri logic better, read the articles at:
+--              http://www.brendangregg.com/flamegraphs.html          
 --
 --------------------------------------------------------------------------------
 
