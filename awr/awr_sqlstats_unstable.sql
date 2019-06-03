@@ -10,6 +10,8 @@
 -- a) typical use - show SQL_IDs from last 2 weeks that have different plans with different
 --                  elapsed time per execution (per plan)
 -- 
+--   @awr/awr_sqlstats_unstable sql_id plan_hash_value sysdate-14 sysdate
+--
 -- b) special case use with SQL using literals (note that AWR may not persist many of these queries)
 --    as due to literals these tend to be executed only once
 --
@@ -77,11 +79,11 @@ WITH metrics AS(
 ), norm AS (
     SELECT
         &1
-      , SUM(executions)        total_executions
-      , MIN(ela_us_per_exec) / 1000000  min_s_per_exec
-      , MAX(ela_us_per_exec) / 1000000  max_s_per_exec
-      , ela_us_stddev / MIN(ela_us_per_exec) ela_norm_stddev
-      , ela_us_stddev / 1000000 seconds_stddev
+      , SUM(executions)                             total_executions
+      , MIN(ela_us_per_exec) / 1000000              min_s_per_exec
+      , MAX(ela_us_per_exec) / 1000000              max_s_per_exec
+      , ela_us_stddev        / MIN(ela_us_per_exec) ela_norm_stddev
+      , ela_us_stddev        / 1000000              seconds_stddev
     FROM
     		sq
     GROUP BY
