@@ -4,7 +4,7 @@
 COL w_metric_value HEAD METRIC_VALUE FOR 9,999,999,999,999.99
 
 prompt What's going on right now?!
-prompt System metrics...
+prompt Showing System metrics from V$SYSMETRIC...
 
 SET FEEDBACK OFF
 
