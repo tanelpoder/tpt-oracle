@@ -1,9 +1,9 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
-col pd_name head NAME for a54
+col pd_name head NAME for a56
 col pd_value head VALUE for a30 WRAP
-column pd_descr heading DESCRIPTION format a100 word_wrap
+column pd_descr heading DESCRIPTION format a99 word_wrap
 
 Prompt Show all parameters and session values from x$ksppi/x$ksppcv...
 
