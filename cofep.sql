@@ -4,7 +4,7 @@
 -- Compare Optimizer Features Enable Parameter values
 -- By Tanel Poder ( http://www.tanelpoder.com )
 --   Requires opt_param_matrix table to be created (using tools/optimizer/optimizer_features_matrix.sql)
---   Requires Oracle 11g due PIVOT clause (but you can rewrite this SQL in earlier versions)`
+--   Requires Oracle 11g+ due to PIVOT clause (but you can rewrite this SQL in earlier versions)`
 
 col pd_name head NAME for a50
 col pd_value head VALUE for a30

@@ -113,6 +113,7 @@ from
 where 
     p.address = ps.address(+)
 and p.sql_id = ps.sql_id(+)
+and p.child_number = ps.child_number(+)
 and p.id = ps.operation_id(+)
 and p.sql_id = '&1'
 and to_char(p.child_number) like '&2'  -- to_char is just used for convenient filtering using % for all children

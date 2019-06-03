@@ -33,10 +33,10 @@ BEGIN
     -- The leading space in hint_text is intentional.
 
     -- 12.2+
-    -- ret := DBMS_SQLDIAG.CREATE_SQL_PATCH(sql_id=>'&1', hint_text=>q'[ &2]', name=>'SQL_PATCH_&1');
+    ret := DBMS_SQLDIAG.CREATE_SQL_PATCH(sql_id=>'&1', hint_text=>q'[ &2]', name=>'SQL_PATCH_&1');
 
     -- 11g and 12.1
-    DBMS_SQLDIAG_INTERNAL.I_CREATE_PATCH(sql_text=>v_sql_text, hint_text=>q'[ &2]', name=>'SQL_PATCH_&1');
+    --DBMS_SQLDIAG_INTERNAL.I_CREATE_PATCH(sql_text=>v_sql_text, hint_text=>q'[ &2]', name=>'SQL_PATCH_&1');
     DBMS_OUTPUT.PUT_LINE(q'[SQL Patch Name = SQL_PATCH_&1]');
 END;
 /

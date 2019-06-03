@@ -5,6 +5,7 @@ COL imseg_owner FOR A20
 COL imseg_segment_name FOR A30
 COL imseg_partition_name FOR A30
 COL imseg_pct_done HEAD '%POP' FOR A5 JUST RIGHT
+COL tablespace_name FOR A30
 
 COMPUTE SUM LABEL 'totseg' OF seg_mb ON seg_mb REPORT
 COMPUTE SUM LABEL 'totmem' OF inmem_mb ON inmem_mb REPORT

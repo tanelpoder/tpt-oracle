@@ -114,6 +114,7 @@ from
 where 
     p.address = ps.address(+)
 and p.hash_value = ps.hash_value(+)
+and p.child_number = ps.child_number(+)
 and p.id = ps.operation_id(+)
 and p.hash_value in (&1)
 --and   p.hash_value = &1

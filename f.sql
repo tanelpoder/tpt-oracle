@@ -2,7 +2,7 @@
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
 col view_name for a25 wrap
-col text for a60 word_wrap
+col text for a100 word_wrap
 
 prompt Search for Fixed view (V$ view) text containing %&1%
 

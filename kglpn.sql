@@ -7,6 +7,7 @@
 
 col kglpn_object_name head OBJECT_NAME for a40
 col kglpn_pinned_blocks head PINNED_BLOCKS for a13 word_wrap
+col kglpn_username HEAD USERNAME for a25 wrap
 
 -- there's a reason for the use_hash hint, we don't want to hammer libcache with a lot of single object lookups
 -- which a nested loops join would cause if lots of objects are returned from x$kglpn (for a handful of rows
@@ -18,10 +19,8 @@ select * from (
     --  , kglpnuse
     --  , kglpnses
       , s.sid
-      , s.username
-      , g.kglnahsh              kglnahsh
-      , g.kglnahsh              hash_value
-      , kglpncnt                refcnt
+      , s.username              kglpn_username
+      , nvl2(kglnaown, kglnaown||'.', null)||kglnaobj kglpn_object_name
       , SUBSTR(CASE kglpnmod WHEN 0 THEN 'None' WHEN 2 THEN 'Share' WHEN 3 THEN 'Excl' ELSE TO_CHAR(kglpnmod) END, 1,5) pin_mode
       , SUBSTR(CASE kglpnreq WHEN 0 THEN 'None' WHEN 2 THEN 'Share' WHEN 3 THEN 'Excl' ELSE TO_CHAR(kglpnreq) END, 1,5) req_mode
       ,  CASE WHEN BITAND(kglpndmk,       1)=    1  THEN '0 '   END
@@ -40,7 +39,9 @@ select * from (
       || CASE WHEN BITAND(kglpndmk,    8192)= 8192  THEN '13 '  END
       || CASE WHEN BITAND(kglpndmk,   16384)=16384  THEN '14 '  END
       || CASE WHEN BITAND(kglpndmk,   32768)=32768  THEN '15'   END kglpn_pinned_blocks
-      , nvl2(kglnaown, kglnaown||'.', null)||kglnaobj kglpn_object_name
+    --, g.kglnahsh              kglnahsh
+      , g.kglnahsh              hash_value
+      , kglpncnt                refcnt
     from 
         x$kglpn p, 
         x$kglob g,

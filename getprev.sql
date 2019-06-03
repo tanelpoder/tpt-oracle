@@ -1,8 +1,8 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
--- Author:  Tanel Poder (http://tanelpoder.com | @tanelpoder )
--- Purpose: Get previously executed SQL ID, child number and other details into sqlplus variables for further use
+-- Author:      Tanel Poder (http://tanelpoder.com | @tanelpoder )
+-- Purpose:     Get previously executed SQL ID, child number and other details into sqlplus variables for further use
 
 COL GETLAST_PREV_SQL_ADDR      HEAD SQL_ADDR     NEW_VALUE prev_sql_addr
 COL GETLAST_PREV_HASH_VALUE    HEAD HASH_VALUE   NEW_VALUE prev_hash_value

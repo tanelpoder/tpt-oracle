@@ -5,10 +5,10 @@ prompt Show undo statistics from V$UNDOSTAT....
 col uds_mb head MB format 999999.99
 col uds_maxquerylen head "MAX|QRYLEN" format 999999
 col uds_maxqueryid  head "MAX|QRY_ID" format a13 
-col uds_ssolderrcnt head "ORA-|1555" format 999
+col uds_ssolderrcnt head "ORA-|1555" format 9999
 col uds_nospaceerrcnt head "SPC|ERR" format 99999
-col uds_unxpstealcnt head "UNEXP|STEAL" format 99999
-col uds_expstealcnt head "EXP|STEAL" format 99999
+col uds_unxpstealcnt head "UNEXP|STEAL" format 9999999
+col uds_expstealcnt head "EXP|STEAL" format 9999999
 
 select * from (
     select 

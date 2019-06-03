@@ -1,8 +1,7 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
--- Purpose: List UPDATE/DELETE statements that have experienced restarts due to write consistency
---          from V$SQL_PLAN_MONITOR
+-- Purpose:     List UPDATE/DELETE statements that have experienced restarts due to write consistency from V$SQL_PLAN_MONITOR
 
 SELECT
     inst_id

@@ -6,6 +6,7 @@ column lm_where heading WHERE format a50
 column lm_label heading LABEL format a30
 column lm_nwfail_count heading NOWAITFAILS format 999999999999
 column lm_sleep_count heading SLEEPS format 999999999999
+column lm_wtr_sleep_count heading WAITER_SLEEPS format 999999999999
 
 PROMPT Querying V$LATCH_MISSES....
 
@@ -32,7 +33,9 @@ select * from (
 		parent_name	lm_parent_name,
 		"WHERE"		lm_where,
 		nwfail_count	lm_nwfail_count,
-		sleep_count	lm_sleep_count
+		sleep_count	lm_sleep_count,
+    wtr_slp_count lm_wtr_sleep_count,
+    longhold_count
 	from
 		v$latch_misses
 )

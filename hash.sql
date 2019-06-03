@@ -22,12 +22,20 @@
 col hash_hex for a10
 
 select 
-    prev_hash_value                                hash_value
-  , prev_sql_id                                    sql_id
-  , prev_child_number                              child_number
-  , lower(to_char(prev_hash_value, 'XXXXXXXX'))    hash_hex
+    ses.prev_hash_value                                hash_value
+  , ses.prev_sql_id                                    sql_id
+  , ses.prev_child_number                              child_number
+  , (select sql.plan_hash_value 
+     from v$sql sql 
+     where 
+         sql.sql_id = ses.prev_sql_id 
+     and sql.child_number = ses.prev_child_number
+     and sql.address = ses.prev_sql_addr)        plan_hash_value
+  --, lower(to_char(ses.prev_hash_value, 'XXXXXXXX'))    hash_hex
+  , ses.prev_exec_start                                sql_exec_start
+  , ses.prev_exec_id                                   sql_exec_id
 from 
-    v$session 
+    v$session ses
 where 
-    sid = (select sid from v$mystat where rownum = 1)
+    ses.sid = userenv('sid')
 /
