@@ -37,4 +37,6 @@ block
 from
     v$lock
 where &1
+order by
+    sid
 /
