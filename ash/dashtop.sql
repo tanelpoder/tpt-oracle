@@ -20,7 +20,12 @@
 --     This script uses only the AWR's DBA_HIST_ACTIVE_SESS_HISTORY, use
 --     @dashtop.sql for accessiong the V$ ASH view
 --              
+--
+-- TODO:
+--     Deal with cases where there's no AWR snapshot saved to DBA_HIST_SNAPSHOTS
+--     (due to a DB issue) but DBA_HIST_ASH samples are there
 --------------------------------------------------------------------------------
+
 COL "%This" FOR A7
 --COL p1     FOR 99999999999999
 --COL p2     FOR 99999999999999
@@ -125,7 +130,7 @@ SELECT * FROM (
     AND a.current_obj# = o.object_id(+)
     AND &2
     AND sample_time BETWEEN &3 AND &4
-    AND dbid = (SELECT dbid FROM v$database)
+    AND dbid = (SELECT dbid FROM v$database) -- for partition pruning
     AND snap_id IN (SELECT snap_id FROM dba_hist_snapshot WHERE sample_time BETWEEN &3 AND &4) -- for partition pruning
     GROUP BY
         &1
