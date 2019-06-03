@@ -2,10 +2,10 @@
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
 -------------------------------------------------------------------------------------------
--- SCRIPT:  DF.SQL
--- PURPOSE: Show Oracle tablespace free space in Unix df style
--- AUTHOR:  Tanel Poder [ http://www.tanelpoder.com ]
--- DATE:    2003-05-01
+-- SCRIPT:      DF.SQL
+-- PURPOSE:     Show Oracle tablespace free space in Unix df style
+-- AUTHOR:      Tanel Poder [ http://www.tanelpoder.com ]
+-- DATE:        2003-05-01
 -------------------------------------------------------------------------------------------
 
 col "% Used" for a6
