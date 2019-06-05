@@ -30,11 +30,12 @@ END;
 /
 
 -- Example 4: SwingBench TPCDS-Like Query 31 skip scan issue (force match)
+-- alternative option would be to use opt_param('_optimizer_skip_scan_enabled','false')
 
 DECLARE
     hints sys.sqlprof_attr := sys.sqlprof_attr(
-        ('INDEX_SS(@"SEL$26CA4453" "STORE_SALES"@"SEL$1")')
-      , ('INDEX_SS(@"SEL$2C2C13D8" "WEB_SALES"@"SEL$2")')
+        ('NO_INDEX_SS(@"SEL$26CA4453" "STORE_SALES"@"SEL$1")')
+      , ('NO_INDEX_SS(@"SEL$2C2C13D8" "WEB_SALES"@"SEL$2")')
     );
 BEGIN
     DBMS_SQLTUNE.IMPORT_SQL_PROFILE(sql_text=>:sql_fulltext, profile=> hints, name=> 'QUERY31_DISABLE_SKIP_SCAN', force_match=> TRUE);
