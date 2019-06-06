@@ -523,6 +523,8 @@ declare
 
     g_mysid           number;
 
+    top_n number;
+
     i number;
     a number;
     b number;
@@ -1893,7 +1895,6 @@ declare
 
   end out_ash;
 
-
 -- and it begins!!!
 begin
 
@@ -2238,14 +2239,15 @@ begin
             g_ash_columns6 := case when getopt('&snapper_options', 'ash6' ) is null then null when getopt('&snapper_options', 'ash6' ) = chr(0) then g_ash_columns6 else getopt('&snapper_options', 'ash6=' ) end;
 
             -- group ASH records and print report
-            out_ash( g_ash_columns, 10 );
+            top_n := nvl( getopt('&snapper_options', 'topn=' ), 10 );
+            out_ash( g_ash_columns, top_n );
             -- group and print optional ASH reports
-            if g_ash_columns1 is not null then out_ash( g_ash_columns1, 10 ); end if;
-            if g_ash_columns2 is not null then out_ash( g_ash_columns2, 10 ); end if;
-            if g_ash_columns3 is not null then out_ash( g_ash_columns3, 10 ); end if;
-            if g_ash_columns4 is not null then out_ash( g_ash_columns4, 10 ); end if;
-            if g_ash_columns5 is not null then out_ash( g_ash_columns5, 10 ); end if;
-            if g_ash_columns6 is not null then out_ash( g_ash_columns6, 10 ); end if;
+            if g_ash_columns1 is not null then out_ash( g_ash_columns1, top_n ); end if;
+            if g_ash_columns2 is not null then out_ash( g_ash_columns2, top_n ); end if;
+            if g_ash_columns3 is not null then out_ash( g_ash_columns3, top_n ); end if;
+            if g_ash_columns4 is not null then out_ash( g_ash_columns4, top_n ); end if;
+            if g_ash_columns5 is not null then out_ash( g_ash_columns5, top_n ); end if;
+            if g_ash_columns6 is not null then out_ash( g_ash_columns6, top_n ); end if;
 
 
             if pagesize > 0 then 
