@@ -77,8 +77,10 @@ def _tpt_tempdir=&SQLPATH/tmp
 -- larger arraysize for faster fetching of data
 -- note that arraysize can affect outcome of experiments
 -- like buffer gets for select statements etc.
+-- 
+-- setting from 500 to 100 as otherwise snapper/dbms_output starts getting ORA-6502 errors due to 32k fetch limit of dbms_output
 
-  set arraysize 500
+  set arraysize 100
 
 -- normally I keep this commented out, otherwise
 -- a DBMS_OUTPUT.GET_LINES call is made after all
