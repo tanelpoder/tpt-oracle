@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 --
--- File name:   ash_wait_chains.sql (v0.2 BETA)
+-- File name:   ash_wait_chains.sql (v0.4 BETA)
 -- Purpose:     Display ASH wait chains (multi-session wait signature, a session
 --              waiting for another session etc.)
 --              
