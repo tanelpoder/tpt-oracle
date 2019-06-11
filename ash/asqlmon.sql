@@ -23,7 +23,7 @@
 ------------------------------------------------------------------------------------------------------------------------
 SET LINESIZE 999 PAGESIZE 5000 TRIMOUT ON TRIMSPOOL ON 
 
-COL asqlmon_operation  HEAD Plan_Operation FOR a70
+COL asqlmon_operation  HEAD Plan_Operation FOR a72
 COL asqlmon_predicates HEAD PREDICATES     FOR a100 word_wrap
 COL obj_alias_qbc_name FOR a40
 COL options   FOR a30
