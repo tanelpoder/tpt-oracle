@@ -23,3 +23,6 @@ ORADEBUG EVENT 10079 TRACE NAME CONTEXT FOREVER, LEVEL 1;
 --
 -- ALTER SESSION SET EVENTS 'wait_event[all] trace(''event="%" ela=% p1=% p2=% p3=%\n'', evargs(5), evargn(1), evargn(2), evargn(3), evargn(4))';
 
+-- trace enqueue get waits
+-- ALTER SESSION SET EVENTS '10704 trace name context forever, level 4';
+
