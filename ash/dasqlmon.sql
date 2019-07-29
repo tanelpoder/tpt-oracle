@@ -17,7 +17,7 @@
 -- Usage:       @dasqlmon <sqlid> <plan_hash_value> <from_time> <to_time>
 --
 -- Notes:       This script runs on Oracle 11g+ and you should have the
---              Diagnostics and Tuning pack licenses for using it as it queries
+--              Diagnostics license for using it as it queries
 --              some separately licensed views.
 --
 ------------------------------------------------------------------------------------------------------------------------

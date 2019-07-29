@@ -17,7 +17,7 @@
 -- Usage:       @asqlmon <sqlid> <child#> <from_time> <to_time>
 --
 -- Notes:       This script runs on Oracle 11g+ and you should have the
---              Diagnostics and Tuning pack licenses for using it as it queries
+--              Diagnostics pack license for using it as it queries
 --              some separately licensed views.
 --
 ------------------------------------------------------------------------------------------------------------------------
