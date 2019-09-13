@@ -21,7 +21,6 @@
 --------------------------------------------------------------------------------
 
 SET HEADING OFF LINESIZE 32767 PAGESIZE 0 TRIMSPOOL ON TRIMOUT ON LONG 9999999 VERIFY OFF LONGCHUNKSIZE 100000 FEEDBACK OFF
-SET SERVEROUT ON SIZE UNLIMITED
 SET TERMOUT OFF 
 SET TIMING OFF
 SET DEFINE ON
@@ -80,10 +79,11 @@ FROM dual
 
 SPOOL OFF
 
-SET TERMOUT ON HEADING ON PAGESIZE 5000 LINESIZE 999 FEEDBACK ON SERVEROUT OFF
+SET TERMOUT ON HEADING ON PAGESIZE 5000 LINESIZE 999 FEEDBACK ON 
 SET TIMING ON
 
-HOST open sqlmon_&_v_dbname._&_v_sql_id._&_v_sql_exec_start._&_v_sql_exec_id..html
+--HOST open sqlmon_&_v_dbname._&_v_sql_id._&_v_sql_exec_start._&_v_sql_exec_id..html
+HOST open http://localhost:8000/sqlmon_&_v_dbname._&_v_sql_id._&_v_sql_exec_start._&_v_sql_exec_id..html
 
 undefine _v_dbname
 undefine _v_sid

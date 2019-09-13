@@ -16,7 +16,7 @@ select t.table_name d_table_name, 'BASE TABLE' d_comments
 	where t.owner = 'SYS'
 	and upper(t.table_name) like upper('%&1%')
 /
-select ft.name d_table_name, (select fvd.view_name 
+select ft.object_id, ft.name d_table_name, (select fvd.view_name 
 			from v$fixed_view_definition fvd 
 			where instr(upper(fvd.view_definition),upper(ft.name)) > 0
 			and rownum = 1) used_in

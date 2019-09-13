@@ -17,19 +17,20 @@
 -- Usage:       @asqlmon <sqlid> <child#> <from_time> <to_time>
 --
 -- Notes:       This script runs on Oracle 11g+ and you should have the
---              Diagnostics and Tuning pack licenses for using it as it queries
+--              Diagnostics pack license for using it as it queries
 --              some separately licensed views.
 --
 ------------------------------------------------------------------------------------------------------------------------
 SET LINESIZE 999 PAGESIZE 5000 TRIMOUT ON TRIMSPOOL ON 
 
-COL asqlmon_operation  HEAD Plan_Operation FOR a70
+COL asqlmon_operation  HEAD Plan_Operation FOR a72
 COL asqlmon_predicates HEAD PREDICATES     FOR a100 word_wrap
+COL obj_alias_qbc_name FOR a40
 COL options   FOR a30
 
-COL asqlmon_plan_hash_value HEAD PLAN_HASH_VALUE
-COL asqlmon_sql_id          HEAD SQL_ID  NOPRINT
-COL asqlmon_sql_child       HEAD CHILD#  NOPRINT
+COL asqlmon_plan_hash_value HEAD PLAN_HASH_VALUE   PRINT
+COL asqlmon_sql_id          HEAD SQL_ID          NOPRINT
+COL asqlmon_sql_child       HEAD "CHILD"          PRINT
 COL asqlmon_sample_time     HEAD SAMPLE_HOUR
 COL projection FOR A520
 
@@ -80,7 +81,7 @@ GROUP BY
 SELECT
     plan.sql_id            asqlmon_sql_id
   , plan.child_number      asqlmon_sql_child
---  , plan.plan_hash_value asqlmon_plan_hash_value
+  , plan.plan_hash_value asqlmon_plan_hash_value
   , sq.samples seconds
   , LPAD(TO_CHAR(ROUND(RATIO_TO_REPORT(sq.samples) OVER (PARTITION BY sq.sql_id, sq.sql_plan_hash_value) * 100, 1), 999.9)||' %',8) pct_child
   , '|'||RPAD( NVL( LPAD('#', ROUND(RATIO_TO_REPORT(sq.samples) OVER (PARTITION BY sq.sql_id, sq.sql_plan_hash_value) * 10), '#'), ' '), 10,' ')||'|' pct_child_vis
@@ -92,7 +93,7 @@ SELECT
   , sq.event
 --  , sq.avg_p3 
   , plan.object_alias || CASE WHEN plan.qblock_name IS NOT NULL THEN ' ['|| plan.qblock_name || ']' END obj_alias_qbc_name
-  , CASE WHEN plan.access_predicates IS NOT NULL THEN '[A:] '|| plan.access_predicates END || CASE WHEN plan.filter_predicates IS NOT NULL THEN ' [F:]' || plan.filter_predicates END asqlmon_predicates
+  , CASE WHEN plan.access_predicates IS NOT NULL THEN '[A:] '|| SUBSTR(plan.access_predicates,1,1994) END || CASE WHEN plan.filter_predicates IS NOT NULL THEN ' [F:] ' || SUBSTR(plan.filter_predicates,1,1994) END asqlmon_predicates
 --  , plan.projection
 FROM
     v$sql_plan plan

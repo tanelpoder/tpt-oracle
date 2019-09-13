@@ -2,10 +2,10 @@
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
 -------------------------------------------------------------------------------------------
--- SCRIPT:  DF.SQL
--- PURPOSE: Show Oracle tablespace free space in Unix df style
--- AUTHOR:  Tanel Poder [ http://www.tanelpoder.com ]
--- DATE:    2003-05-01
+-- SCRIPT:      DF.SQL
+-- PURPOSE:     Show Oracle tablespace free space in Unix df style
+-- AUTHOR:      Tanel Poder [ http://www.tanelpoder.com ]
+-- DATE:        2003-05-01
 -------------------------------------------------------------------------------------------
 
 col "% Used" for a6
@@ -13,7 +13,7 @@ col "Used" for a22
 
 select t.tablespace_name, t.gb "TotalGB", t.gb - nvl(f.gb,0) "UsedGB", nvl(f.gb,0) "FreeGB"
        ,lpad(ceil((1-nvl(f.gb,0)/decode(t.gb,0,1,t.gb))*100)||'%', 6) "% Used", t.ext "Ext", 
-       '|'||rpad(lpad('#',ceil((1-nvl(f.gb,0)/decode(t.gb,0,1,t.gb))*20),'#'),20,' ')||'|' "Used"
+       '|'||rpad(nvl(lpad('#',ceil((1-nvl(f.gb,0)/decode(t.gb,0,1,t.gb))*20),'#'),' '),20,' ')||'|' "Used"
 from (
   select tablespace_name, trunc(sum(bytes)/(1024*1024*1024)) gb
   from dba_free_space

@@ -5,14 +5,17 @@ col ksmlridx head IDX for 99
 col ksmlrdur head DUR for 99
 col ksmlrshrpool head SP for a2
 
+
+select to_char(sysdate, 'YYYY-MM-DD HH24:MI:SS') current_time from dual;
+
 select
     KSMLRIDX        
   , KSMLRDUR        
   , KSMLRNUM          flushed
---  , decode(KSMLRSHRPOOL,1,'Y','N') ksmlrshrpool
+  , decode(KSMLRSHRPOOL,1,'Y','N') ksmlrshrpool
   , KSMLRCOM          alloc_comment
   , KSMLRSIZ          alloc_size
-  , KSMLRHON          object_name
+  , KSMLRHON          ksmlru_object_name
   , KSMLROHV          hash_value
   , KSMLRSES          ses_addr
 --  , KSMLRADU

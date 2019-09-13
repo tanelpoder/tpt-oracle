@@ -10,20 +10,21 @@ col o_status heading STATUS for a9
 prompt Display number of buffered blocks of a segment using X$KCBOQH for table &1
 
 -- done: currently buggy when data object ID doesn't match object Id (due to truncate or alter table move / rebuild)
+-- todo: currently doesn't join properly to undo segment info
 select * from (
     select 
-        SUM(x.num_buf) num_buf,
         ROUND(SUM(x.num_buf * ts.blocksize) / 1024 / 1024 , 2)  mb_buf,
+        SUM(x.num_buf) num_buf,
         o.owner o_owner,
         o.object_name o_object_name, 
-        o.subobject_name o_subobject_name,
+     -- o.subobject_name o_subobject_name,
         ts.name tablespace_name,
         o.object_type o_object_type,
-        o.status o_status,
-        o.object_id oid,
-        o.data_object_id d_oid,
-        o.created, 
-        o.last_ddl_time
+        o.status o_status 
+     -- o.object_id oid,
+     -- o.data_object_id d_oid,
+     -- o.created, 
+     -- o.last_ddl_time
     from 
         dba_objects o
       , x$kcboqh x
@@ -35,7 +36,7 @@ select * from (
     --and o.data_object_id = so.object_id
     and o.owner = s.owner
     and o.object_name = s.segment_name
-    and SYS_OP_MAP_NONNULL(o.subobject_name) = SYS_OP_MAP_NONNULL(s.partition_name)
+    and SYS_OP_MAP_NONNULL(o.subobject_name) = SYS_OP_MAP_NONNULL(s.partition_name) 
     and s.tablespace_name = ts.name
     --and x.ts# = ts.ts#
     and
@@ -56,16 +57,16 @@ select * from (
     group by
         o.owner 
       , o.object_name 
-      , o.subobject_name
+    --, o.subobject_name
       , ts.name
       , o.object_type
       , o.status
-      , o.object_id 
-      , data_object_id
-      , o.created 
-      , o.last_ddl_time
+    --, o.object_id 
+    --, data_object_id
+    --, o.created 
+    --, o.last_ddl_time
     order by 
-        num_buf desc
+        mb_buf desc
     --    o_object_name,
     --    o_owner,
     --    o_object_type

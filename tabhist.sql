@@ -33,10 +33,12 @@ select
   , CASE 
         WHEN c.data_type = 'NUMBER' THEN LPAD(TO_CHAR(h.endpoint_value), 30, ' ') 
         WHEN c.data_type IN ('CHAR', 'VARCHAR2', 'NCHAR', 'NVARCHAR2') THEN
-             hexstr(to_number((substr(trim(to_char(h.endpoint_value,lpad('x',63,'x'))),1,12)),'XXXXXXXXXXXXXXXX'))
+             --to_char(to_number((substr(trim(to_char(h.endpoint_value,lpad('x',63,'x'))),1,12)),'XXXXXXXXXXXXXXXX'))
+             to_char(to_number((substr(trim(to_char(h.endpoint_value,lpad('x',63,'x'))),1,12)),'XXXXXXXXXXXXXXXX'),'XXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+             --hexstr(to_number((substr(trim(to_char(h.endpoint_value,lpad('x',63,'x'))),1,12)),'XXXXXXXXXXXXXXXX'))
              --hexstr(substr(to_char(h.endpoint_value,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'),1,12))
         ELSE
-             substr(trim(to_char(h.endpoint_value,lpad('x',63,'x'))),1,12)
+             trim(substr(trim(to_char(h.endpoint_value,lpad('x',63,'x'))),1,12))
     END tabhist_ep_value
   , CASE WHEN c.histogram = 'FREQUENCY' THEN
         h.endpoint_number - lag(endpoint_number, 1) over ( order by

@@ -16,7 +16,8 @@ col kghlurmx head "RESERVED|MISS MAX SZ"
 
 
 select
-    kghluidx
+    to_char(sysdate, 'YYYY-MM-DD HH24:MI:SS') current_time
+  , kghluidx
   , kghludur
   , kghlufsh
   , kghluops
@@ -24,13 +25,13 @@ select
   , kghlutrn
   , kghlunfu
   , kghlunfs
---  , kghlumxa
---  , kghlumes
---  , kghlumer
   , kghlurcn
   , kghlurmi
   , kghlurmz
   , kghlurmx
+--  , kghlumxa
+--  , kghlumes
+--  , kghlumer
 from
     x$kghlu
 order by

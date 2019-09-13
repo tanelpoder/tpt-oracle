@@ -8,7 +8,7 @@ SELECT
     pname_qkscesyrow            parameter
   , DECODE(BITAND(flags_qkscesyrow, 2), 0, 'NO', 'YES') isdefault
   , UPPER(pvalue_qkscesyrow)    value
-FROM   x$qkscesys
+FROM   sys.x$qkscesys
 WHERE
     LOWER(pname_qkscesyrow) LIKE LOWER('%&1%')
 --    BITAND(flags_qkscesyrow, 8) = 0

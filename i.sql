@@ -1,15 +1,15 @@
--- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
--- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
+-- Copyright 2018 Tanel Poder. All rights reserved. More info at https://blog.tanelpoder.com
+-- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms and conditions.
 
 --------------------------------------------------------------------------------
 --
--- Name:      i.sql
--- Purpose:   the Who am I script (also sets terminal title)
+-- Name:        i.sql
+-- Purpose:     the Who am I script (also sets terminal title)
 --
--- Author:    Tanel Poder
--- Copyright: (c) http://blog.tanelpoder.com
+-- Author:      Tanel Poder
+-- Copyright:   (c) http://blog.tanelpoder.com
 -- 
--- Other:     Some settings client OS specific (search for title)
+-- Other:       Some settings client OS specific (search for title)
 --
 --------------------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ def _i_conn="&_connect_identifier"
 
 col i_username head USERNAME for a20
 col i_sid head SID for a5 new_value mysid
-col i_serial head SERIAL# for a8 new_value _i_serial
+col i_serial head "SERIAL#" for a8 new_value _i_serial
 col i_cpid head CPID for a15 new_value _i_cpid
 col i_spid head SPID for a10 new_value _i_spid
 col i_opid head OPID for a5 new_value _i_opid
@@ -37,12 +37,15 @@ col i_startup_day head STARTED for a8
 col _i_user noprint new_value _i_user
 col _i_conn noprint new_value _i_conn
 col i_myoraver noprint new_value myoraver
+col i_inst head I# FOR 99
+col i_db_role head DB_ROLE FOR A25
 
 select 
 	s.username			i_username, 
 --  i.instance_name i_instance_name,
-  (CASE SUBSTR(i.version, 1, instr(i.version,'.',1)-1) WHEN '12' THEN (SELECT SYS_CONTEXT('userenv', 'con_name') FROM dual)||'-'||i.instance_name ELSE i.instance_name END) i_instance_name,
-	i.host_name			i_host_name, 
+  (CASE WHEN TO_NUMBER(SUBSTR(i.version, 1, instr(i.version,'.',1)-1)) >= 12 THEN (SELECT SYS_CONTEXT('userenv', 'con_name') FROM dual)||'-'||i.instance_name ELSE i.instance_name END) i_instance_name,
+	i.host_name			i_host_name,
+  i.instance_number i_inst,
 	to_char(s.sid) 			i_sid, 
 	to_char(s.serial#)		i_serial, 
 	(select substr(banner, instr(banner, 'Release ')+8,10) from v$version where rownum = 1) i_ver,
@@ -57,6 +60,7 @@ select
 	s.process			i_cpid, 
 	s.saddr				saddr, 
 	p.addr				paddr,
+  --sys_context('userenv', 'database_role') i_db_role,
 	lower(s.username) "_i_user",
 	upper('&_connect_identifier') "_i_conn"
 from 
@@ -74,7 +78,7 @@ and
 --host doskey /exename=sqlplus.exe desc=set lines 80 sqlprompt ""$Tdescribe $*$Tset lines 299 sqlprompt "SQL> "
 
 -- short xterm title
-host echo -ne "\033]0;&_i_user@&_i_inst &mysid[&_i_spid]\007"
+host echo -ne '\033]0;&_i_user@&_i_inst &mysid[&_i_spid]\007'
 -- long xterm title
 --host echo -ne "\033]0;host=&_i_host inst=&_i_inst sid=&mysid ser#=&_i_serial spid=&_i_spid cpid=&_i_cpid opid=&_i_opid\007"
 

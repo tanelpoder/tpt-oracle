@@ -14,13 +14,13 @@ select
 	time/1000000	xt_time, 
 	seq#    xt_seq#,
 	event   xt_event, 
---	file_loc xt_file_loc, 	-- 11g
---	"FUNCTION",				-- 11g
---	operation,				-- 11g
---	section,				-- 11g
-	op xt_op, 
+  file_loc xt_file_loc, 	-- 11g
+  "FUNCTION",				-- 11g
+--  operation,				-- 11g
+--  section,				-- 11g
+--  op xt_op, 
 	sid xt_sid, 
---	data xtrace_data,
+  --	data xtrace_data,
 	CASE event
 		WHEN 10812 THEN
 			'rfile='||RPAD(
@@ -58,6 +58,7 @@ and time > (select max(time)-10000000000 from x$trace)
 and seq# > &_xt_seq
 order by 
 	time asc
+, seq# asc
 /
 
 set termout off

@@ -79,7 +79,7 @@ select
     owner ind_owner, 
     table_name ind_table_name1, 
     index_name ind_index_name1, 
-    index_type ind_index_type, 
+    REPLACE(index_type,'FUNCTION-BASED', 'FBI') ind_index_type, 
     decode(uniqueness,'UNIQUE', 'YES', 'NONUNIQUE', 'NO', 'N/A') ind_uniq, 
     status, 
     partitioned ind_part, 

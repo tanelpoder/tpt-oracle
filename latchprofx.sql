@@ -10,7 +10,7 @@
 --              function the latch held was taken
 --
 -- Author:      Tanel Poder
--- Copyright:   (c) http://www.tanelpoder.com
+--              https://blog.tanelpoder.com
 --              
 -- Usage:       @latchprofx <what> <sid> <latch name> <#samples>
 --              @latchprofx name 350 % 100000                   - monitor all latches SID 350 is holding
@@ -84,26 +84,27 @@ DEF _lhp_sid="&2"
 DEF _lhp_name="&3"
 DEF _lhp_samples="&4"
 
-COL name FOR A35 WRAP
+COL name FOR A40 WRAP
 COL latchprof_total_ms HEAD "Held ms" FOR 999999.999
 COL latchprof_pct_total_samples head "Held %" format 999.99
-COL latchprof_avg_ms HEAD "Avg hold ms" FOR 999999.999
-COL dist_samples HEAD Gets
-COL total_samples HEAD Held
-COL ksllwnam FOR A40 TRUNCATE
-COL ksllwlbl FOR A20 TRUNCATE
-COL objtype  FOR A20 TRUNCATE
-COL object   FOR A17 WRAP JUST RIGHT
-COL hmode    FOR A12 TRUNCATE
-COL what     FOR A17 WRAP
-COL func     FOR A40 TRUNCATE
+COL latchprof_avg_ms   HEAD "Avg hold ms" FOR 999999.999
+COL dist_samples       HEAD Gets
+COL total_samples      HEAD Held
+COL ksllwnam           FOR A40 TRUNCATE
+COL ksllwlbl           FOR A20 TRUNCATE
+COL objtype            FOR A20 TRUNCATE
+COL object             FOR A17 WRAP JUST RIGHT
+COL hmode              FOR A12 TRUNCATE
+COL what               FOR A17 WRAP
+COL func               FOR A40 TRUNCATE
+COL timemodel          FOR A32 WORD_WRAP
 
 BREAK ON lhp_name SKIP 1
 
 DEF _IF_ORA_10_OR_HIGHER="--"
 
 PROMPT
-PROMPT -- LatchProfX 2.02 by Tanel Poder ( http://www.tanelpoder.com )
+PROMPT -- LatchProfX 2.03 by Tanel Poder ( https://blog.tanelpoder.com )
 
 COL latchprof_oraversion NEW_VALUE _IF_ORA_10_OR_HIGHER
 
@@ -132,6 +133,29 @@ WITH
                     indx
                   , ksusesqh     sqlhash
                   , ksusesql     sqladdr 
+                  &_IF_ORA_10_OR_HIGHER , CASE WHEN BITAND(ksusstmbv, POWER(2, 01)) = POWER(2, 01) THEN 'DBTIME '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 02)) = POWER(2, 02) THEN 'BACKGROUND '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 03)) = POWER(2, 03) THEN 'CONNECTION_MGMT '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 04)) = POWER(2, 04) THEN 'PARSE '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 05)) = POWER(2, 05) THEN 'FAILED_PARSE '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 06)) = POWER(2, 06) THEN 'NOMEM_PARSE '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 07)) = POWER(2, 07) THEN 'HARD_PARSE '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 08)) = POWER(2, 08) THEN 'NO_SHARERS_PARSE '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 09)) = POWER(2, 09) THEN 'BIND_MISMATCH_PARSE '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 10)) = POWER(2, 10) THEN 'SQL_EXECUTION '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 11)) = POWER(2, 11) THEN 'PLSQL_EXECUTION '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 12)) = POWER(2, 12) THEN 'PLSQL_RPC '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 13)) = POWER(2, 13) THEN 'PLSQL_COMPILATION '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 14)) = POWER(2, 14) THEN 'JAVA_EXECUTION '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 15)) = POWER(2, 15) THEN 'BIND '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 16)) = POWER(2, 16) THEN 'CURSOR_CLOSE '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 17)) = POWER(2, 17) THEN 'SEQUENCE_LOAD '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 18)) = POWER(2, 18) THEN 'INMEMORY_QUERY '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 19)) = POWER(2, 19) THEN 'INMEMORY_POPULATE '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 20)) = POWER(2, 20) THEN 'INMEMORY_PREPOPULATE '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 21)) = POWER(2, 21) THEN 'INMEMORY_REPOPULATE '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 22)) = POWER(2, 22) THEN 'INMEMORY_TREPOPULATE '  END
+                  &_IF_ORA_10_OR_HIGHER ||CASE WHEN BITAND(ksusstmbv, POWER(2, 23)) = POWER(2, 23) THEN 'TABLESPACE_ENCRYPTION ' END timemodel
                   &_IF_ORA_10_OR_HIGHER , ksusesph planhash
                   &_IF_ORA_10_OR_HIGHER , ksusesch sqlchild
                   &_IF_ORA_10_OR_HIGHER , ksusesqi sqlid
@@ -164,7 +188,7 @@ SELECT /*+ ORDERED */
     t1,
     samples s,
     t2
-  WHERE ROWNUM <= 20
+  WHERE ROWNUM <= 40
 /
 
 COL name    CLEAR

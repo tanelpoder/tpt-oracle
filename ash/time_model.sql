@@ -1,6 +1,9 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
+COL TOP_LEVEL_CALL_NAME FOR A25
+COL SQL_OPNAME FOR A25
+
 SELECT * FROM (
   SELECT /*+ LEADING(a) USE_HASH(u) */
         count(*) seconds

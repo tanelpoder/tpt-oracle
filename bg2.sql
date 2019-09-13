@@ -9,6 +9,8 @@ select /*+ ordered use_hash(s) */
   , p.spid
   , b.paddr
   , s.saddr
+--  , b.typea    -- 12.2+
+--  , b.priority -- 12.2+
 from 
     v$bgprocess b
   , v$process p

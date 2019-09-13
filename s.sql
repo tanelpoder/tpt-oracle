@@ -22,7 +22,7 @@ col sw_sid      head SID for 999999
 
 col sw_p1       head P1 for a18 justify left word_wrap
 col sw_p2       head P2 for a18 justify left word_wrap
-col sw_p3       head P3 for a18 justify left word_wrap
+col sw_p3       head P3 for a19 justify left word_wrap
 
 col sw_blocking_session head BLOCKING_SID for a12
 col sqlid_and_child for a20

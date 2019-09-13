@@ -4,7 +4,7 @@
 col hold_mode head HOLD_MODE for a10
 col req_mode head REQ_MODE for a10
 col object_owner head OBJECT_OWNER for a15
-col namespace for a20 word_wrap
+col namespace for a30 word_wrap
 col kgllk_state head 0xSTATE for A8
 
 SELECT * FROM (
@@ -25,7 +25,7 @@ SELECT * FROM (
     -- , KGLLKSPN
     -- , KGLLKHTB
        , KGLNAHSH
-    -- , KGLLKSQLID
+       , KGLLKSQLID
     -- , KGLHDPAR
     -- , KGLHDNSP
     -- , n.kglsttyp

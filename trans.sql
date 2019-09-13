@@ -2,12 +2,12 @@
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
 col 0xFLAG just right
-
+col trans_username HEAD USERNAME FOR A25
 
 select
     s.sid
   , s.serial#
-  , s.username
+  , s.username       trans_username
   , t.addr taddr
   , s.saddr ses_addr
   , t.used_ublk

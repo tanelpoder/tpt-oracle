@@ -2,6 +2,8 @@
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
 col tabpart_high_value head HIGH_VALUE_RAW for a100
+col partition_name for a30
+col subpartition_name for a30
 
 select
     table_owner

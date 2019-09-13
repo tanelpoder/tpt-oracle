@@ -1,8 +1,8 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
--- Author:  Tanel Poder (http://tanelpoder.com | @tanelpoder )
--- Purpose: A temporary script/hack to display exadata-specific metrics along normal SQL stuff from V$SQL
+-- Author:      Tanel Poder (http://tanelpoder.com | @tanelpoder )
+-- Purpose:     A temporary script/hack to display exadata-specific metrics along normal SQL stuff from V$SQL
  
 col sql_sql_text head SQL_TEXT format a150 word_wrap
 col sql_child_number head CH# for 999

@@ -1,8 +1,8 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
--- script by Tanel Poder (http://www.tanelpoder.com)
-
+PROMPT ORADEBUG DOC COMPONENT | grep -i &1
+PROMPT
 set termout off
 spool oddc.tmp
 
