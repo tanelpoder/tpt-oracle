@@ -20,9 +20,16 @@
 --              if you dont want to use "alter session set statistics_level" 
 --              for some reason (this hint works on Oracle 10.2 and higher)
 --
+-- TODO:        Noteworthy outstanding items are:
+--              * hide inactive (pass-through) plan steps in adaptive plans
+--              * add total buffer gets/physical reads somewhere into the output
+--              * formatting, decide what columns to show by default
+--              * clone to an @xbx.sql (eXtended version) with wider output and stuff like plan outline hints shown etc
+--                currently you can just comment/uncomment sections in this script
+--
 --------------------------------------------------------------------------------
 
-prompt -- xb: eXplain Better v0.95 for prev SQL in current session
+prompt -- xb.sql: eXplain Better v0.99 for prev SQL in the current session - by Tanel Poder (https://blog.tanelpoder.com)
 
 set verify off pagesize 5000 tab off lines 999
 
@@ -31,7 +38,7 @@ set verify off pagesize 5000 tab off lines 999
 -- better upgrade to SQLDeveloper 18.4 where this is fixed
 break on xms_child_number   skip 1
 
-column xms_child_number                             heading "Ch|ld" format 99
+column xms_child_number                             heading "Ch|ld" format 999
 
 column xms_seconds_ago                              heading "First Load Time"
 column xms_id                                       heading "Op|ID" format 999
@@ -48,7 +55,7 @@ column xms_object_node                              heading "Object|Node" for a1
 column xms_opt_cost                                 heading "Optimizer|Cost" for 99999999999
 column xms_opt_card                                 heading "Est. rows|per Start" for 999999999999
 column xms_opt_card_times_starts                    heading "Est. rows|total" for 999999999999
-column xms_opt_card_misestimate                     heading "Opt.Card.|misestimate" for a15
+column xms_opt_card_misestimate                     heading "Opt. Card.|misestimate" for a15 justify right
 column xms_opt_bytes                                heading "Estimated|output bytes" for 999999999999
 column xms_predicate_info                           heading "Predicate Information (identified by operation id):" format a100 word_wrap
 column xms_cpu_cost                                 heading "CPU|Cost" for 9999999
@@ -65,6 +72,12 @@ column xms_last_disk_reads                          heading "Physical|reads" for
 column xms_last_disk_writes                         heading "Physical|writes" for 999999999
 column xms_last_elapsed_time_ms                     heading "cumulative ms|spent in branch" for 9,999,999.99
 column xms_self_elapsed_time_ms                     heading "ms spent in|this operation" for 9,999,999.99
+column xms_self_cr_buffer_gets                      heading "Consistent|gets" for 999999999
+column xms_self_cr_buffer_gets_row                  heading "Consistent|gets/row" for 999999999
+column xms_self_cu_buffer_gets                      heading "Current|gets" for 999999999
+column xms_self_cu_buffer_gets_row                  heading "Current|gets/row" for 999999999
+column xms_self_disk_reads                          heading "Physical|reads" for 999999999
+column xms_self_disk_writes                         heading "Physical|writes" for 999999999
 column xms_last_memory_used                         heading "Memory|used (MB)" for 9,999,999.99
 column xms_last_execution                           heading "Workarea|Passes" for a15
 
@@ -76,16 +89,9 @@ column xms_sql_child_number                         heading "CHLD" for 9999 new_
 column xms_sql_addr                                 heading "ADDRESS" new_value xms_sql_addr
 
 column xms_outline_hints                            heading "Outline Hints" for a120 word_wrap
+column xms_notes                                    heading "Plan|Notes" for a120 word_wrap
 
---select
---  'Warning: statistics_level is not set to ALL!'||chr(10)||
---  'Run: alter session set statistics_level=all before executing your query...' warning
---from
---  v$parameter
---where
---  name = 'statistics_level'
---and   lower(value) != 'all'
---/
+set feedback off
 
 select  --+ ordered use_nl(mys ses) use_nl(mys sql)
     'SQL ID: '              xms_sql_id_text,
@@ -112,9 +118,10 @@ order by
 --set heading on
 
 WITH sq AS (
-    SELECT /*+ MATERIALIZE */
-        sp.id, sp.parent_id, sp.operation, sp.options
-      , sp.object_owner, sp.object_name, ss.last_elapsed_time
+    SELECT /*+ MATERIALIZE */ 
+         -- using materialize hint to avoid the chance of a nested loop join accessing the V$ views in a loop
+        sp.id, sp.parent_id, sp.operation, sp.options, sp.object_owner, sp.object_name
+      , ss.last_elapsed_time, ss.last_cr_buffer_gets, ss.last_cu_buffer_gets, ss.last_disk_reads, ss.last_disk_writes
     FROM v$sql_plan_statistics_all ss INNER JOIN
          v$sql_plan sp
       ON (
@@ -127,15 +134,27 @@ WITH sq AS (
     AND sp.child_number = &xms_sql_child_number
     AND sp.address = HEXTORAW('&xms_sql_addr')
 ),  deltas AS (
-    SELECT par.id, par.last_elapsed_time - SUM(chi.last_elapsed_time) self_elapsed_time
+    SELECT 
+        par.id
+      , par.last_elapsed_time   - SUM(chi.last_elapsed_time  ) self_elapsed_time
+      , par.last_cr_buffer_gets - SUM(chi.last_cr_buffer_gets) self_cr_buffer_gets
+      , par.last_cu_buffer_gets - SUM(chi.last_cu_buffer_gets) self_cu_buffer_gets
+      , par.last_disk_reads     - SUM(chi.last_disk_reads    ) self_disk_reads  
+      , par.last_disk_writes    - SUM(chi.last_disk_writes   ) self_disk_writes  
     FROM sq par LEFT OUTER JOIN
          sq chi
       ON chi.parent_id = par.id
-    GROUP BY par.id, par.last_elapsed_time
+    GROUP BY 
+        par.id
+      , par.last_elapsed_time, par.last_cr_buffer_gets, par.last_cu_buffer_gets, par.last_disk_reads, par.last_disk_writes   
 ), combined AS (
     SELECT sq.id, sq.parent_id, sq.operation, sq.options
          , sq.object_owner, sq.object_name, sq.last_elapsed_time 
-         , NVL(deltas.self_elapsed_time, sq.last_elapsed_time) self_elapsed_time
+         , NVL(deltas.self_elapsed_time   , sq.last_elapsed_time)   self_elapsed_time
+         , NVL(deltas.self_cr_buffer_gets , sq.last_cr_buffer_gets) self_cr_buffer_gets
+         , NVL(deltas.self_cu_buffer_gets , sq.last_cu_buffer_gets) self_cu_buffer_gets
+         , NVL(deltas.self_disk_reads     , sq.last_disk_reads)     self_disk_reads
+         , NVL(deltas.self_disk_writes    , sq.last_disk_writes)    self_disk_writes
     FROM
         sq, deltas
     WHERE
@@ -167,12 +186,18 @@ select
     p.cardinality * ps.last_starts                                                 xms_opt_card_times_starts,
     ps.last_output_rows                                                            xms_last_output_rows,
     ps.last_starts                                                                 xms_last_starts,
-    ps.last_cr_buffer_gets                                                         xms_last_cr_buffer_gets,
-    ps.last_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_last_cr_buffer_gets_row,
-    ps.last_cu_buffer_gets                                                         xms_last_cu_buffer_gets,
+    c.self_cr_buffer_gets                                                         xms_self_cr_buffer_gets,
+    c.self_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_self_cr_buffer_gets_row,
+    c.self_cu_buffer_gets                                                         xms_self_cu_buffer_gets,
+    c.self_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_self_cu_buffer_gets_row,
+    c.self_disk_reads                                                             xms_self_disk_reads,
+    c.self_disk_writes                                                            xms_self_disk_writes,
+--  ps.last_cr_buffer_gets                                                         xms_last_cr_buffer_gets,
+--  ps.last_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_last_cr_buffer_gets_row,
+--  ps.last_cu_buffer_gets                                                         xms_last_cu_buffer_gets,
 --  ps.last_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_last_cu_buffer_gets_row,
-    ps.last_disk_reads                                                             xms_last_disk_reads,
-    ps.last_disk_writes                                                            xms_last_disk_writes,
+--  ps.last_disk_reads                                                             xms_last_disk_reads,
+--  ps.last_disk_writes                                                            xms_last_disk_writes,
     ps.last_memory_used/1048576                                                    xms_last_memory_used,
     ps.last_execution                                                              xms_last_execution,
     p.cost                                                                         xms_opt_cost
@@ -262,11 +287,22 @@ order by
 -- FROM
 --     sq
 --   , TABLE(XMLSEQUENCE(EXTRACT(XMLTYPE(sq.other_xml), '/*/outline_data/hint'))) D
--- UNION ALL SELECT sq.child_number, '' FROM sq 
--- UNION ALL SELECT sq.child_number, 'Cardinality feedback was used for this child cursor.' FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "cardinality_feedback"]') = 'yes'
--- UNION ALL SELECT sq.child_number, 'SQL Stored Outline used = '  ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "outline"]')     FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "outline"]')     IS NOT NULL
--- UNION ALL SELECT sq.child_number, 'SQL Patch used = '           ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_patch"]')   FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_patch"]')   IS NOT NULL
--- UNION ALL SELECT sq.child_number, 'SQL Profile used = '         ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_profile"]') FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_profile"]') IS NOT NULL
--- UNION ALL SELECT sq.child_number, 'SQL Plan Baseline used = '   ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "baseline"]')    FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "baseline"]')    IS NOT NULL
 -- /
 
+WITH sq AS (
+    SELECT child_number, other_xml 
+    FROM v$sql_plan p
+    WHERE
+        p.sql_id = '&xms_sql_id'
+    AND p.child_number = &xms_sql_child_number
+    AND p.id = 1
+)
+          SELECT sq.child_number xms_child_number, 'Cardinality feedback was used for this child cursor.' xms_notes FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "cardinality_feedback"]') = 'yes'
+UNION ALL SELECT sq.child_number, 'SQL Stored Outline used = '  ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "outline"]')       FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "outline"]')          IS NOT NULL
+UNION ALL SELECT sq.child_number, 'SQL Patch used = '           ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_patch"]')     FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_patch"]')        IS NOT NULL
+UNION ALL SELECT sq.child_number, 'SQL Profile used = '         ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_profile"]')   FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_profile"]')      IS NOT NULL
+UNION ALL SELECT sq.child_number, 'SQL Plan Baseline used = '   ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "baseline"]')      FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "baseline"]')         IS NOT NULL
+UNION ALL SELECT sq.child_number, 'Adaptive Plan = '            ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "adaptive_plan"]') FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "adaptive_plan"]')    IS NOT NULL
+/
+
+set feedback on
