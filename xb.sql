@@ -33,89 +33,83 @@ prompt -- xb.sql: eXplain Better v0.99 for prev SQL in the current session - by 
 
 set verify off pagesize 5000 tab off lines 999
 
--- the BREAK clause below causes weird behavior in Oracle SQL Developer app (doesn't show output) up to SQLDev 18.3
--- then comment out the break statement below and restart SQL Developer.
--- better upgrade to SQLDeveloper 18.4 where this is fixed
-break on xms_child_number   skip 1
+column xbi_child_number                             heading "Ch|ld" format 999
 
-column xms_child_number                             heading "Ch|ld" format 999
+column xbi_sql_id                                   heading "SQL_ID" for a13 
+column xbi_sql_child_number                         heading "CHLD" for 9999
+column xbi_sql_addr                                 heading "ADDRESS"
+column xbi_sql_id_text                              heading "" 
+column xbi_seconds_ago                              heading "First Load Time"
+column xbi_id                                       heading "Op|ID" format 999 justify right
+column xbi_parent_id                                heading "Par.|ID" format a5 justify right
+column xbi_id2                                      heading "Op|ID" format a5 justify right
+column xbi_pred                                     heading "Pred|#Col" format a5 justify right
+column xbi_pos                                      heading "#Sib|ling" for 9999
+column xbi_optimizer                                heading "Optimizer|Mode" format a10
+column xbi_plan_step                                heading "Operation" for a55
+column xbi_plan_line                                heading "Row Source" for a72
+column xbi_qblock_name                              heading "Query Block|name" for a20
+column xbi_object_name                              heading "Object|Name" for a30
+column xbi_object_node                              heading "Object|Node" for a10
+column xbi_opt_cost                                 heading "Optimizer|Cost" for 99999999999
+column xbi_opt_card                                 heading "Est. rows|per Start" for 999999999999
+column xbi_opt_card_times_starts                    heading "Est. rows|total" for 999999999999
+column xbi_opt_card_misestimate                     heading "Opt. Card.|misestimate" for a15 justify right
+column xbi_opt_bytes                                heading "Estimated|output bytes" for 999999999999
+column xbi_predicate_info                           heading "Predicate Information (identified by operation id):" format a100 word_wrap
+column xbi_cpu_cost                                 heading "CPU|Cost" for 9999999
+column xbi_io_cost                                  heading "IO|Cost" for 9999999
 
-column xms_seconds_ago                              heading "First Load Time"
-column xms_id                                       heading "Op|ID" format 999
-column xms_parent_id                                heading "Par.|ID" format a5
-column xms_id2                                      heading "Op|ID" format a6
-column xms_pred                                     heading "Pred|#Col" format a5
-column xms_pos                                      heading "#Sib|ling" for 99999
-column xms_optimizer                                heading "Optimizer|Mode" format a10
-column xms_plan_step                                heading "Operation" for a55
-column xms_plan_line                                heading "Row Source" for a72
-column xms_qblock_name                              heading "Query Block|name" for a20
-column xms_object_name                              heading "Object|Name" for a30
-column xms_object_node                              heading "Object|Node" for a10
-column xms_opt_cost                                 heading "Optimizer|Cost" for 99999999999
-column xms_opt_card                                 heading "Est. rows|per Start" for 999999999999
-column xms_opt_card_times_starts                    heading "Est. rows|total" for 999999999999
-column xms_opt_card_misestimate                     heading "Opt. Card.|misestimate" for a15 justify right
-column xms_opt_bytes                                heading "Estimated|output bytes" for 999999999999
-column xms_predicate_info                           heading "Predicate Information (identified by operation id):" format a100 word_wrap
-column xms_cpu_cost                                 heading "CPU|Cost" for 9999999
-column xms_io_cost                                  heading "IO|Cost" for 9999999
+column xbi_last_output_rows                         heading "Real #rows|returned" for 999999999
+column xbi_last_starts                              heading "Rowsource|starts" for 999999999
+column xbi_last_rows_start                          heading "#Rows ret/|per start" for 999999999
+column xbi_last_cr_buffer_gets                      heading "Consistent|gets" for 999999999
+column xbi_last_cr_buffer_gets_row                  heading "Consistent|gets/row" for 999999999
+column xbi_last_cu_buffer_gets                      heading "Current|gets" for 999999999
+column xbi_last_cu_buffer_gets_row                  heading "Current|gets/row" for 999999999
+column xbi_last_disk_reads                          heading "Physical|reads" for 999999999
+column xbi_last_disk_writes                         heading "Physical|writes" for 999999999
+column xbi_last_elapsed_time_ms                     heading "cumulative ms|spent in branch" for 9,999,999.99
+column xbi_self_elapsed_time_ms                     heading "ms spent in|this operation" for 9,999,999.99
+column xbi_self_cr_buffer_gets                      heading "Consistent|gets" for 999999999
+column xbi_self_cr_buffer_gets_row                  heading "Consistent|gets/row" for 999999999
+column xbi_self_cu_buffer_gets                      heading "Current|gets" for 999999999
+column xbi_self_cu_buffer_gets_row                  heading "Current|gets/row" for 999999999
+column xbi_self_disk_reads                          heading "Physical|reads" for 999999999
+column xbi_self_disk_writes                         heading "Physical|writes" for 999999999
+column xbi_last_memory_used                         heading "Memory|used (MB)" for 9,999,999.99
+column xbi_last_execution                           heading "Workarea|Passes" for a15
 
-column xms_last_output_rows                         heading "Real #rows|returned" for 999999999
-column xms_last_starts                              heading "Rowsource|starts" for 999999999
-column xms_last_rows_start                          heading "#Rows ret/|per start" for 999999999
-column xms_last_cr_buffer_gets                      heading "Consistent|gets" for 999999999
-column xms_last_cr_buffer_gets_row                  heading "Consistent|gets/row" for 999999999
-column xms_last_cu_buffer_gets                      heading "Current|gets" for 999999999
-column xms_last_cu_buffer_gets_row                  heading "Current|gets/row" for 999999999
-column xms_last_disk_reads                          heading "Physical|reads" for 999999999
-column xms_last_disk_writes                         heading "Physical|writes" for 999999999
-column xms_last_elapsed_time_ms                     heading "cumulative ms|spent in branch" for 9,999,999.99
-column xms_self_elapsed_time_ms                     heading "ms spent in|this operation" for 9,999,999.99
-column xms_self_cr_buffer_gets                      heading "Consistent|gets" for 999999999
-column xms_self_cr_buffer_gets_row                  heading "Consistent|gets/row" for 999999999
-column xms_self_cu_buffer_gets                      heading "Current|gets" for 999999999
-column xms_self_cu_buffer_gets_row                  heading "Current|gets/row" for 999999999
-column xms_self_disk_reads                          heading "Physical|reads" for 999999999
-column xms_self_disk_writes                         heading "Physical|writes" for 999999999
-column xms_last_memory_used                         heading "Memory|used (MB)" for 9,999,999.99
-column xms_last_execution                           heading "Workarea|Passes" for a15
+column xbi_sql_plan_hash_value                      heading "Plan Hash Value" for 9999999999
+column xbi_plan_hash_value_text                     noprint
 
-column xms_sql_plan_hash_value                      heading "Plan Hash Value" for 9999999999
-column xms_plan_hash_value_text                     noprint
+column xbi_outline_hints                            heading "Outline Hints" for a120 word_wrap
+column xbi_notes                                    heading "Plan|Notes" for a120 word_wrap
 
-column xms_sql_id                                   heading "SQL_ID" for a13  new_value xms_sql_id 
-column xms_sql_child_number                         heading "CHLD" for 9999 new_value xms_sql_child_number
-column xms_sql_addr                                 heading "ADDRESS" new_value xms_sql_addr
+column xbi_sql_id                                   heading "SQL_ID" for a13  new_value xbi_sql_id 
+column xbi_sql_child_number                         heading "CHLD" for 9999 new_value xbi_sql_child_number
+column xbi_sql_addr                                 heading "ADDRESS" new_value xbi_sql_addr
 
-column xms_outline_hints                            heading "Outline Hints" for a120 word_wrap
-column xms_notes                                    heading "Plan|Notes" for a120 word_wrap
 
 set feedback off
 
-select  --+ ordered use_nl(mys ses) use_nl(mys sql)
-    'SQL ID: '              xms_sql_id_text,
-    sql.sql_id              xms_sql_id,
-    sql.child_number        xms_sql_child_number,
-    sql.address             xms_sql_addr,
-    '  PLAN_HASH_VALUE: '   xms_plan_hash_value_text,
-    sql.plan_hash_value     xms_sql_plan_hash_value,
+select 
+    'Cursor: '              xbi_sql_id_text,
+    sql.sql_id              xbi_sql_id,
+    sql.child_number        xbi_sql_child_number,
+    sql.address             xbi_sql_addr,
+    '  PLAN_HASH_VALUE: '   xbi_plan_hash_value_text,
+    sql.plan_hash_value     xbi_sql_plan_hash_value,
     'Statement first parsed at: '|| sql.first_load_time ||' - '||
-    round( (sysdate - to_date(sql.first_load_time,'YYYY-MM-DD/HH24:MI:SS'))*86400 ) || ' seconds ago' xms_seconds_ago
+    round( (sysdate - to_date(sql.first_load_time,'YYYY-MM-DD/HH24:MI:SS'))*86400 ) || ' seconds ago' xbi_seconds_ago
 from
     v$sql       sql,
     all_users   usr
 where
     sql.parsing_user_id = usr.user_id
-and sql.sql_id =        (SELECT prev_sql_id FROM v$session WHERE sid = USERENV('SID'))
-and sql.child_number =  (SELECT prev_child_number FROM v$session WHERE sid = USERENV('SID'))
-and sql.address =       (SELECT prev_sql_addr FROM v$session WHERE sid = USERENV('SID'))
-order by
-    sql.sql_id asc,
-    sql.child_number asc
+and (sql.sql_id,sql.child_number,sql.address) = (SELECT prev_sql_id,prev_child_number,prev_sql_addr 
+                                                 FROM v$session WHERE sid = USERENV('SID'))
 /
-
---set heading on
 
 WITH sq AS (
     SELECT /*+ MATERIALIZE */ 
@@ -130,9 +124,8 @@ WITH sq AS (
         AND sp.address=ss.address
         AND sp.id=ss.id
       )
-    AND sp.sql_id='&xms_sql_id'
-    AND sp.child_number = &xms_sql_child_number
-    AND sp.address = HEXTORAW('&xms_sql_addr')
+    AND sp.sql_id='&xbi_sql_id'
+    AND sp.child_number = TO_NUMBER('&xbi_sql_child_number')
 ),  deltas AS (
     SELECT 
         par.id
@@ -161,49 +154,50 @@ WITH sq AS (
         sq.id = deltas.id
 )
 select  
-    p.child_number                                     xms_child_number,
-    CASE WHEN p.filter_predicates IS NOT NULL THEN 'F' ELSE ' ' END ||
-    CASE WHEN p.access_predicates IS NOT NULL THEN CASE WHEN p.options LIKE 'STORAGE %' THEN 'S' ELSE 'A' END ELSE ' ' END ||
-    CASE p.search_columns WHEN 0 THEN NULL ELSE '#'||TO_CHAR(p.search_columns) END   xms_pred,
-    p.id                                                               xms_id,
-    nvl2(p.parent_id, to_char(p.parent_id, '9999'), ' root')                                   xms_parent_id,
-    CASE WHEN p.id != 0 THEN p.position END xms_pos,
+    LPAD(
+      CASE WHEN p.filter_predicates IS NOT NULL THEN 'F' ELSE ' ' END ||
+      CASE WHEN p.access_predicates IS NOT NULL THEN CASE WHEN p.options LIKE 'STORAGE %' THEN 'S' ELSE 'A' END ELSE '' END ||
+      CASE p.search_columns WHEN 0 THEN NULL ELSE '#'||TO_CHAR(p.search_columns) END
+    ,5)   xbi_pred,
+    p.id                                                               xbi_id,
+    nvl2(p.parent_id, to_char(p.parent_id, '9999'), ' root')                                   xbi_parent_id,
+    CASE WHEN p.id != 0 THEN p.position END xbi_pos,
     LPAD(' ',p.depth*1,' ')|| p.operation || ' ' || p.options ||' '
          ||nvl2(p.object_name, '['||p.object_name||']', null)
-                                                                       xms_plan_line, 
-    p.qblock_name                                                      xms_qblock_name,
---  p.object_node                                                      xms_object_node,
---  p.distribution                                                     xms_distribution,
-    round(c.self_elapsed_time /1000,2)                                  xms_self_elapsed_time_ms,
-    round(ps.last_elapsed_time/1000,2)                                  xms_last_elapsed_time_ms,
+                                                                       xbi_plan_line, 
+    p.qblock_name                                                      xbi_qblock_name,
+--  p.object_node                                                      xbi_object_node,
+--  p.distribution                                                     xbi_distribution,
+    round(c.self_elapsed_time /1000,2)                                  xbi_self_elapsed_time_ms,
+    round(ps.last_elapsed_time/1000,2)                                  xbi_last_elapsed_time_ms,
     regexp_replace(lpad(to_char(round(
                       CASE WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) > 1 THEN  -(NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0))
                            WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) < 1 THEN 1/(NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0))
                            WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) = 1 THEN 1
                       ELSE null
                       END
-                 ,0))||'x',15),'^ *x$')   xms_opt_card_misestimate,
-    p.cardinality * ps.last_starts                                                 xms_opt_card_times_starts,
-    ps.last_output_rows                                                            xms_last_output_rows,
-    ps.last_starts                                                                 xms_last_starts,
-    c.self_cr_buffer_gets                                                         xms_self_cr_buffer_gets,
-    c.self_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_self_cr_buffer_gets_row,
-    c.self_cu_buffer_gets                                                         xms_self_cu_buffer_gets,
-    c.self_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_self_cu_buffer_gets_row,
-    c.self_disk_reads                                                             xms_self_disk_reads,
-    c.self_disk_writes                                                            xms_self_disk_writes,
---  ps.last_cr_buffer_gets                                                         xms_last_cr_buffer_gets,
---  ps.last_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_last_cr_buffer_gets_row,
---  ps.last_cu_buffer_gets                                                         xms_last_cu_buffer_gets,
---  ps.last_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xms_last_cu_buffer_gets_row,
---  ps.last_disk_reads                                                             xms_last_disk_reads,
---  ps.last_disk_writes                                                            xms_last_disk_writes,
-    ps.last_memory_used/1048576                                                    xms_last_memory_used,
-    ps.last_execution                                                              xms_last_execution,
-    p.cost                                                                         xms_opt_cost
---  p.bytes                                                                        xms_opt_bytes,
---  p.cpu_cost                                                                     xms_cpu_cost,
---  p.io_cost                                                                      xms_io_cost,
+                 ,0))||'x',15),'^ *x$')   xbi_opt_card_misestimate,
+    p.cardinality * ps.last_starts                                                 xbi_opt_card_times_starts,
+    ps.last_output_rows                                                            xbi_last_output_rows,
+    ps.last_starts                                                                 xbi_last_starts,
+    c.self_cr_buffer_gets                                                         xbi_self_cr_buffer_gets,
+    c.self_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xbi_self_cr_buffer_gets_row,
+    c.self_cu_buffer_gets                                                         xbi_self_cu_buffer_gets,
+    c.self_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xbi_self_cu_buffer_gets_row,
+    c.self_disk_reads                                                             xbi_self_disk_reads,
+    c.self_disk_writes                                                            xbi_self_disk_writes,
+--  ps.last_cr_buffer_gets                                                         xbi_last_cr_buffer_gets,
+--  ps.last_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xbi_last_cr_buffer_gets_row,
+--  ps.last_cu_buffer_gets                                                         xbi_last_cu_buffer_gets,
+--  ps.last_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xbi_last_cu_buffer_gets_row,
+--  ps.last_disk_reads                                                             xbi_last_disk_reads,
+--  ps.last_disk_writes                                                            xbi_last_disk_writes,
+    ps.last_memory_used/1048576                                                    xbi_last_memory_used,
+    ps.last_execution                                                              xbi_last_execution,
+    p.cost                                                                         xbi_opt_cost
+--  p.bytes                                                                        xbi_opt_bytes,
+--  p.cpu_cost                                                                     xbi_cpu_cost,
+--  p.io_cost                                                                      xbi_io_cost,
 --  p.other_tag,
 --  p.other,
 --  p.access_predicates,
@@ -218,91 +212,85 @@ and p.sql_id            =  ps.sql_id           (+)
 and p.plan_hash_value   =  ps.plan_hash_value  (+)              
 and p.child_number      =  ps.child_number     (+)
 and p.id                =  ps.id               (+) 
-and p.sql_id = '&xms_sql_id'
-and p.child_number = &xms_sql_child_number
-and p.address = HEXTORAW('&xms_sql_addr')
+and p.sql_id = '&xbi_sql_id'
+and p.address = hextoraw('&xbi_sql_addr')
+and p.child_number = TO_NUMBER(&xbi_sql_child_number)
 and ps.id = c.id (+)
 order by
-    p.sql_id asc,
-    p.address asc,
-    p.child_number asc,
     p.id asc    
 /
 
 select
-    xms_child_number,
-    xms_id2,
-    xms_qblock_name,
+    xbi_id2,
+    xbi_qblock_name,
     substr(dummy,1,0)||'-' " ", -- there's an ugly reason (bug) for this hack
-    xms_predicate_info
+    xbi_predicate_info
 from (
     select
-        sql_id                      xms_sql_id,
-        child_number                xms_child_number,
-        lpad(id, 5, ' ')            xms_id2,
+        sql_id                      xbi_sql_id,
+        lpad(id, 5, ' ')            xbi_id2,
         filter_predicates           dummy, -- looks like there's a bug in 11.2.0.3 where both pred cols have to be selected
-        CASE WHEN options LIKE 'STORAGE %' THEN 'storage' ELSE 'access' END||'('|| substr(access_predicates,1,3989) || ')' xms_predicate_info,
-        qblock_name                 xms_qblock_name
+        CASE WHEN options LIKE 'STORAGE %' THEN 'storage' ELSE 'access' END||'('|| substr(access_predicates,1,3989) || ')' xbi_predicate_info,
+        qblock_name                 xbi_qblock_name
     from
         v$sql_plan
     where
-        sql_id = '&xms_sql_id'
-    and child_number = &xms_sql_child_number
-    AND address = HEXTORAW('&xms_sql_addr')
+        sql_id = '&xbi_sql_id'
+    and child_number = TO_NUMBER(&xbi_sql_child_number)
+    AND address = HEXTORAW('&xbi_sql_addr')
     and access_predicates is not null
     union all
     select
-        sql_id                  xms_sql_id,
-        child_number                xms_child_number,
-        lpad(id, 5, ' ') xms_id2,
+        sql_id                      xbi_sql_id,
+        lpad(id, 5, ' ')            xbi_id2,
         access_predicates           dummy,
-        'filter('|| substr(filter_predicates,1,3989) || ')' xms_predicate_info,
-        qblock_name                 xms_qblock_name
+        'filter('|| substr(filter_predicates,1,3989) || ')' xbi_predicate_info,
+        qblock_name                 xbi_qblock_name
     from
         v$sql_plan
     where
-        sql_id = '&xms_sql_id'
-    and child_number = &xms_sql_child_number
-    and address = HEXTORAW('&xms_sql_addr')
+        sql_id = '&xbi_sql_id'
+    and child_number = TO_NUMBER(&xbi_sql_child_number)
+    and address = HEXTORAW('&xbi_sql_addr')
     and filter_predicates is not null
 )
 order by
-    xms_sql_id asc,
-    xms_child_number asc,
-    xms_id2 asc,
-    xms_predicate_info asc
+    xbi_id2 asc,
+    xbi_predicate_info asc
 /
 
+WITH sq AS (
+    SELECT other_xml 
+    FROM v$sql_plan p
+    WHERE
+        p.sql_id = '&xbi_sql_id'
+    AND p.child_number = &xbi_sql_child_number
+    AND p.other_xml IS NOT NULL -- (the other_xml is not guaranteed to always be on plan line 1)
+)
+          SELECT '    *' " ", 'Cardinality feedback was used for this child cursor.' xbi_notes FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "cardinality_feedback"]') = 'yes'
+UNION ALL SELECT '    *', 'SQL Stored Outline used = '  ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "outline"]')       FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "outline"]')          IS NOT NULL
+UNION ALL SELECT '    *', 'SQL Patch used = '           ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_patch"]')     FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_patch"]')        IS NOT NULL
+UNION ALL SELECT '    *', 'SQL Profile used = '         ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_profile"]')   FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_profile"]')      IS NOT NULL
+UNION ALL SELECT '    *', 'SQL Plan Baseline used = '   ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "baseline"]')      FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "baseline"]')         IS NOT NULL
+UNION ALL SELECT '    *', 'Adaptive Plan = '            ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "adaptive_plan"]') FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "adaptive_plan"]')    IS NOT NULL
+/
+
+-- === Outline Hints ===
 -- WITH sq AS (
---     SELECT child_number, other_xml 
+--     SELECT other_xml 
 --     FROM v$sql_plan p
 --     WHERE
---         p.sql_id = '&xms_sql_id'
---     AND p.child_number = &xms_sql_child_number
+--         p.sql_id = '&xbi_sql_id'
+--     AND p.child_number = &xbi_sql_child_number
 --     AND p.id = 1
 -- )
 -- SELECT 
---     child_number xms_child_number,
---     SUBSTR(EXTRACTVALUE(VALUE(d), '/hint'),1,4000)  xms_outline_hints
+--     SUBSTR(EXTRACTVALUE(VALUE(d), '/hint'),1,4000)  xbi_outline_hints
 -- FROM
 --     sq
 --   , TABLE(XMLSEQUENCE(EXTRACT(XMLTYPE(sq.other_xml), '/*/outline_data/hint'))) D
 -- /
 
-WITH sq AS (
-    SELECT child_number, other_xml 
-    FROM v$sql_plan p
-    WHERE
-        p.sql_id = '&xms_sql_id'
-    AND p.child_number = &xms_sql_child_number
-    AND p.id = 1
-)
-          SELECT sq.child_number xms_child_number, 'Cardinality feedback was used for this child cursor.' xms_notes FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "cardinality_feedback"]') = 'yes'
-UNION ALL SELECT sq.child_number, 'SQL Stored Outline used = '  ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "outline"]')       FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "outline"]')          IS NOT NULL
-UNION ALL SELECT sq.child_number, 'SQL Patch used = '           ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_patch"]')     FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_patch"]')        IS NOT NULL
-UNION ALL SELECT sq.child_number, 'SQL Profile used = '         ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_profile"]')   FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "sql_profile"]')      IS NOT NULL
-UNION ALL SELECT sq.child_number, 'SQL Plan Baseline used = '   ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "baseline"]')      FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "baseline"]')         IS NOT NULL
-UNION ALL SELECT sq.child_number, 'Adaptive Plan = '            ||extractvalue(xmltype(sq.other_xml), '/*/info[@type = "adaptive_plan"]') FROM sq WHERE extractvalue(xmltype(sq.other_xml), '/*/info[@type = "adaptive_plan"]')    IS NOT NULL
-/
 
+PROMPT 
 set feedback on
