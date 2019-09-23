@@ -50,6 +50,8 @@
 --              The join in exec plan step 9 MUST be a NESTED LOOPS join, this is how
 --              the high speed sampling is done.
 --
+-- Todo:        Add a check _IF_ORA_11_OR_HIGHER for the x$ksuse.ksusstmbv column
+--
 -- -----------------------------------------------------------------------------------------------------
 -- | Id  | Operation                             | Name            | E-Rows |  OMem |  1Mem | Used-Mem |
 -- -----------------------------------------------------------------------------------------------------
