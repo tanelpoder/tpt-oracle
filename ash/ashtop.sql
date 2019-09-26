@@ -2,7 +2,7 @@
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
 --------------------------------------------------------------------------------
---
+-- 
 -- File name:   ashtop.sql v1.2
 -- Purpose:     Display top ASH time (count of ASH samples) grouped by your
 --              specified dimensions
@@ -45,7 +45,9 @@ COL sql_opname          FOR A20
 COL top_level_call_name FOR A30
 COL wait_class          FOR A15
 
-SELECT * FROM (
+SELECT
+    * 
+FROM (
     WITH bclass AS (SELECT class, ROWNUM r from v$waitstat)
     SELECT /*+ LEADING(a) USE_HASH(u) */
         COUNT(*)                                                     totalseconds
