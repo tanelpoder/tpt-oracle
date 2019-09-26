@@ -117,8 +117,7 @@ and sql.child_number = TO_NUMBER('&xbi_sql_child_number')
 /
 
 WITH sq AS (
-    SELECT /*+ MATERIALIZE */ 
-         -- using materialize hint to avoid the chance of a nested loop join accessing the V$ views in a loop
+    SELECT 
         sp.id, sp.parent_id, sp.operation, sp.options, sp.object_owner, sp.object_name
       , ss.last_elapsed_time, ss.last_cr_buffer_gets, ss.last_cu_buffer_gets, ss.last_disk_reads, ss.last_disk_writes
     FROM v$sql_plan_statistics_all ss INNER JOIN
