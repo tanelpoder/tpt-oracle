@@ -4,6 +4,8 @@ DEF sql_handle=&1
 -- as this is what DBMS_XPLAN reports as used... (so no manual lookup from plan_name -> sql_handle
 -- is needed)
 
+SET SERVEROUT ON SIZE 1000000
+
 DECLARE
   x NUMBER;
 BEGIN
@@ -11,4 +13,6 @@ BEGIN
   DBMS_OUTPUT.PUT_LINE('ret='||x);
 END;
 /
+
+SET SERVEROUT OFF
 

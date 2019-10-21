@@ -9,11 +9,15 @@
 --
 --
 -- Query baseline info from: DBA_SQL_PLAN_BASELINES
--- Drop baselines: exec DBMS_SPM.DROP_SQL_PLAN_BASELINE('&sql_handle')
+-- Drop baselines: @drop_sql_baseline &sql_handle
+--             or: exec DBMS_SPM.DROP_SQL_PLAN_BASELINE('&sql_handle')
+--
+-- You can get the SQL_HANDLE from DBA_SQL_PLAN_BASELINES
 --
 -- More info:
 --    SQL Plan Baselines - DBMS_SPM in EE licenses - see http://jonathanlewis.wordpress.com/2011/01/12/fake-baselines/
 --------------------------------------------------------------------------------------------------------
+SET SERVEROUT ON SIZE 1000000
 
 DEF good_sql_id  = &1
 DEF good_sql_phv = &2
@@ -53,4 +57,6 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE(q'[SQL Baseline Name = SQL_BASELINE_&1] return=]'||ret);
 END;
 /
+
+SET SERVEROUT OFF
 
