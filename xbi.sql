@@ -64,7 +64,7 @@ column xbi_predicate_info                           heading "Predicate Informati
 column xbi_cpu_cost                                 heading "CPU|Cost" for 9999999
 column xbi_io_cost                                  heading "IO|Cost" for 9999999
 
-column xbi_last_output_rows                         heading "Real #rows|returned" for 999999999
+column xbi_last_output_rows                         heading "Real #rows|returned" for 9999999999
 column xbi_last_starts                              heading "Rowsource|starts" for 999999999
 column xbi_last_rows_start                          heading "#Rows ret/|per start" for 999999999
 column xbi_last_cr_buffer_gets                      heading "Consistent|gets" for 999999999
@@ -93,7 +93,6 @@ column xbi_notes                                    heading "Plan|Notes" for a12
 column xbi_sql_id                                   heading "SQL_ID" for a13  new_value xbi_sql_id 
 column xbi_sql_child_number                         heading "CHLD" for 9999 new_value xbi_sql_child_number
 column xbi_sql_addr                                 heading "ADDRESS" new_value xbi_sql_addr
-
 
 set feedback off
 
@@ -346,22 +345,21 @@ UNION ALL SELECT '    *', 'Adaptive Plan = '            ||extractvalue(xmltype(s
 /
 
 -- === Outline Hints ===
--- WITH sq AS (
---     SELECT other_xml 
---     FROM v$sql_plan p
---     WHERE
---         p.sql_id = '&xbi_sql_id'
---     AND p.child_number = &xbi_sql_child_number
---     AND p.address = hextoraw('&xbi_sql_addr')
---     AND p.other_xml IS NOT NULL
--- )
--- SELECT 
---     SUBSTR(EXTRACTVALUE(VALUE(d), '/hint'),1,4000)  xbi_outline_hints
--- FROM
---     sq
---   , TABLE(XMLSEQUENCE(EXTRACT(XMLTYPE(sq.other_xml), '/*/outline_data/hint'))) D
--- /
+WITH sq AS (
+    SELECT other_xml 
+    FROM v$sql_plan p
+    WHERE
+        p.sql_id = '&xbi_sql_id'
+    AND p.child_number = &xbi_sql_child_number
+    AND p.address = hextoraw('&xbi_sql_addr')
+    AND p.other_xml IS NOT NULL
+)
+SELECT 
+    SUBSTR(EXTRACTVALUE(VALUE(d), '/hint'),1,4000)  xbi_outline_hints
+FROM
+    sq
+  , TABLE(XMLSEQUENCE(EXTRACT(XMLTYPE(sq.other_xml), '/*/outline_data/hint'))) D
+/
 
-
-PROMPT 
 set feedback on
+PROMPT 
