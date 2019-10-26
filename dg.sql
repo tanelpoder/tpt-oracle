@@ -2,7 +2,7 @@
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
 PROMPT == v$database
-SELECT name,open_mode FROM v$database;
+SELECT name,open_mode,database_role FROM v$database;
 PROMPT == v$dataguard_config
 SELECT * FROM v$dataguard_config;
 PROMPT == v$managed_standby
