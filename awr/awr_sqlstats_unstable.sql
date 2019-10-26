@@ -44,15 +44,15 @@ WITH metrics AS(
       , SUM(executions_delta)     executions
       --, ROUND(SUM(elapsed_time_delta  ) / NULLIF(SUM(executions_delta),0)) ela_us_per_exec
       , ROUND(SUM(elapsed_time_delta  ) / CASE WHEN SUM(executions_delta) = 0 THEN 1 ELSE SUM(executions_delta) END) ela_us_per_exec
-      , ROUND(SUM(cpu_time_delta      ) / NULLIF(SUM(executions_delta),0)) cpu_us_per_exec
+      , ROUND(SUM(cpu_time_delta      ) / NULLIF(SUM(executions_delta),0))      cpu_us_per_exec
       , ROUND(SUM(rows_processed_delta) / NULLIF(SUM(executions_delta),0),1)    rows_per_exec
       , ROUND(SUM(buffer_gets_delta   ) / NULLIF(SUM(executions_delta),0),1)    lios_per_exec
       , ROUND(SUM(disk_reads_delta    ) / NULLIF(SUM(executions_delta),0),1)    blkrd_per_exec
-      , ROUND(SUM(iowait_delta        ) / NULLIF(SUM(executions_delta),0)) iow_us_per_exec
+      , ROUND(SUM(iowait_delta        ) / NULLIF(SUM(executions_delta),0))      iow_us_per_exec
       , ROUND(SUM(iowait_delta        ) / NULLIF(SUM(physical_read_requests_delta)+SUM(physical_write_requests_delta),0),1) avg_iow_us
-      , ROUND(SUM(clwait_delta        ) / NULLIF(SUM(executions_delta),0)) clw_us_per_exec
-      , ROUND(SUM(apwait_delta        ) / NULLIF(SUM(executions_delta),0)) apw_us_per_exec
-      , ROUND(SUM(ccwait_delta        ) / NULLIF(SUM(executions_delta),0)) ccw_us_per_exec
+      , ROUND(SUM(clwait_delta        ) / NULLIF(SUM(executions_delta),0))      clw_us_per_exec
+      , ROUND(SUM(apwait_delta        ) / NULLIF(SUM(executions_delta),0))      apw_us_per_exec
+      , ROUND(SUM(ccwait_delta        ) / NULLIF(SUM(executions_delta),0))      ccw_us_per_exec
     FROM
         dba_hist_snapshot sn
       , dba_hist_sqlstat st
