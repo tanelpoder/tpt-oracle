@@ -16,7 +16,7 @@ DECLARE
     curscn NUMBER;
 BEGIN
     SELECT current_scn INTO curscn FROM v$database;
-    FOR i IN 1..1000 LOOP
+    FOR i IN 1..10000 LOOP
         EXECUTE IMMEDIATE 'select count(*) from t as of scn '||curscn INTO j;
         t := t + j; 
         DBMS_OUTPUT.PUT_LINE(j);
