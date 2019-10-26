@@ -1,3 +1,6 @@
+
+COL BIND_NAME FOR A30
+
 SELECT * FROM (
     SELECT
         s.sql_id
