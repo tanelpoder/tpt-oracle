@@ -16,7 +16,7 @@ DEFINE nl=chr(10)
 DEFINE search_string=&1
 
 COLUMN name FORMAT A25 TRUNC
-COLUMN description FORMAT A80 WORD_WRAP
+COLUMN description FORMAT A60 WORD_WRAP
 COLUMN usage FORMAT A110
 
 WITH q AS (
@@ -54,6 +54,7 @@ FROM (
   SELECT 'evo.sql' AS name, 'Disable session event' AS description, '@evo <event>'||&nl||'@evo 10046' AS usage FROM dual UNION ALL
   SELECT 'fix.sql' AS name, 'Display session fix controls' AS description, '@fix <bugno|description|optimizer_feature_enable|sql_feature>'||&nl||'@fix 13836796'||&nl||'@fix adaptive' AS usage FROM dual UNION ALL
   SELECT 'grp.sql' AS name, 'Group function wrapper' AS description, '@grp <column_name> <table_name>'||&nl||'@grp owner dba_tables'||&nl||'@grp owner,object_type dba_objects' AS usage FROM dual UNION ALL
+  SELECT 'help.sql' AS name, 'Display TPT script help' AS description, '@help <search_expression>'||&nl||'@help explain'||&nl||'@help lock|latch.*hold' AS usage FROM dual UNION ALL
   SELECT 'hash.sql' AS name, 'Display the hash value, sql_id, and child number of the last SQL in session' AS description, '@hash' AS usage FROM dual UNION ALL
   SELECT 'hint.sql' AS name, 'Display all available hints' AS description, '@hint <name>'||&nl||'@hint full' AS usage FROM dual UNION ALL
   SELECT 'hintclass.sql' AS name, 'Display all available hints' AS description, '@hintclass <hint_name>'||&nl||'@hintclass merge' AS usage FROM dual UNION ALL
@@ -61,6 +62,8 @@ FROM (
   SELECT 'hinth.sql' AS name, 'Display hint hierarchy' AS description, '@hinth <hint_name>'||&nl||'@hinth merge' AS usage FROM dual UNION ALL
   SELECT 'ind.sql' AS name, 'Display indexes' AS description, '@ind <owner>.<index_name|table_name>'||&nl||'@ind soe.orders'||&nl||'@ind soe.ord_customer_ix'||&nl||'@ind soe.%' AS usage FROM dual UNION ALL
   SELECT 'kill.sql' AS name, 'Generate command to for killing user session' AS description, '@kill <filter_expression>'||&nl||'@kill sid=284'||&nl||'@kill username=''SYSTEM'''||&nl||'@kill "username=''APP'' AND program LIKE ''sqlplus%''"' AS usage FROM dual UNION ALL
+  SELECT 'latchprof.sql' AS name, 'Profile top latch holders (V$ version)' AS description, '@latchprof <grouping_columns> <sid> <latch_name> <samples>'||&nl||'@latchprof name,sqlid 123 % 10000'||&nl||'@latchprof sid,name,sqlid % "shared pool" 10000' AS usage FROM dual UNION ALL
+  SELECT 'latchprofx.sql' AS name, 'Profile top latch holders eXtended (X$ version)' AS description, '@latchprofx <grouping_columns> <sid> <latch_name> <samples>'||&nl||'@latchprofx sid,name 123 % 10000'||&nl||'@latchprofx sid,name,timemodel,hmode,func % "shared pool" 10000' AS usage FROM dual UNION ALL
   SELECT 'lock.sql' AS name, 'Display current locks' AS description, '@lock <filter_expression>'||&nl||'@lock 1=1'||&nl||'@lock type=''TM''' AS usage FROM dual UNION ALL
   SELECT 'log.sql' AS name, 'Display redo log layout' AS description, '@log' AS usage FROM dual UNION ALL
   SELECT 'long.sql' AS name, 'Display session long operations' AS description, '@long <filter_expression>'||&nl||'@long 1=1'||&nl||'@long username=''SOE''' AS usage FROM dual UNION ALL
@@ -138,10 +141,13 @@ FROM (
   ) 
 )
 SELECT * FROM q
-WHERE upper(name) LIKE upper ('%&search_string%')
-OR upper(description) LIKE upper ('%&search_string%')
-OR upper(usage) LIKE upper ('%&search_string%')
-ORDER BY 1;
+WHERE
+   (upper(name)        LIKE upper ('%&search_string%') OR regexp_like(name, '&search_string', 'i'))
+OR (upper(description) LIKE upper ('%&search_string%') OR regexp_like(description, '&search_string', 'i'))
+OR (upper(usage)       LIKE upper ('%&search_string%') OR regexp_like(usage, '&search_string', 'i'))
+ORDER BY
+    name
+/
 
 UNDEFINE search_string
 CLEAR COLUMNS
