@@ -1,3 +1,14 @@
+-- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
+
+
+--------------------------------------------------------------------------------
+--
+-- File name:   help.sql
+-- Purpose:     Help
+-- Author:      Tomasz Sroka
+-- Usage:       @help <string>
+--
+--------------------------------------------------------------------------------
 --ACCEPT search_string CHAR PROMPT "Search: [%] "
 
 DEFINE amp=chr(38)
