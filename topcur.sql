@@ -18,6 +18,7 @@ SELECT
   , MIN(first_load_time)
   , MAX(last_load_time)
 FROM v$sql
+--WHERE plan_hash_value != 0
 GROUP BY plan_hash_value
 HAVING COUNT(DISTINCT sql_id) > 10
 ORDER BY COUNT(*) DESC
