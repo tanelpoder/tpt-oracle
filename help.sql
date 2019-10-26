@@ -144,7 +144,7 @@ SELECT * FROM q
 WHERE
    (upper(name)        LIKE upper ('%&search_string%') OR regexp_like(name, '&search_string', 'i'))
 OR (upper(description) LIKE upper ('%&search_string%') OR regexp_like(description, '&search_string', 'i'))
-OR (upper(usage)       LIKE upper ('%&search_string%') OR regexp_like(usage, '&search_string', 'i'))
+-- OR (upper(usage)       LIKE upper ('%&search_string%') OR regexp_like(usage, '&search_string', 'i'))
 ORDER BY
     name
 /
