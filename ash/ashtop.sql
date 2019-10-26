@@ -17,7 +17,7 @@
 --     @ashtop username,sql_id session_type='FOREGROUND' sysdate-1/24 sysdate
 --
 -- Other:
---     This script uses only the in-memory V$ACTIVE_SESSION_HISTORY, use
+--     This script uses only the in-memory GV$ACTIVE_SESSION_HISTORY, use
 --     @dashtop.sql for accessiong the DBA_HIST_ACTIVE_SESS_HISTORY archive
 --              
 --------------------------------------------------------------------------------
