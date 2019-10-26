@@ -66,12 +66,8 @@ COL total_samples HEAD Held
 
 BREAK ON lhp_name SKIP 1
 
-DEF _IF_ORA_10_OR_HIGHER="--"
-
 PROMPT
-PROMPT -- LatchProf 2.02 by Tanel Poder ( http://www.tanelpoder.com )
-
-COL latchprof_oraversion NEW_VALUE _IF_ORA_10_OR_HIGHER
+PROMPT -- LatchProf 2.10 by Tanel Poder ( https://blog.tanelpoder.com )
 
 SET TERMOUT OFF
 SELECT DECODE(SUBSTR(BANNER, INSTR(BANNER, 'Release ')+8,1), 1, '', '--') latchprof_oraversion 
@@ -83,7 +79,7 @@ WITH
     samples AS (
         SELECT /*+ ORDERED USE_NL(l) USE_NL(s) USE_NL(l.gv$latchholder.x$ksuprlat) NO_TRANSFORM_DISTINCT_AGG  */
             &_lhp_what
-          &_IF_ORA_10_OR_HIGHER , COUNT(DISTINCT gets)      dist_samples
+          , COUNT(DISTINCT gets)        dist_samples
           , COUNT(*)                    total_samples
           , COUNT(*) / &_lhp_samples    total_samples_pct
         FROM 
@@ -93,8 +89,8 @@ WITH
                     sid                                     indx
                   , sql_hash_value                          sqlhash
                   , sql_address                             sqladdr 
-                  &_IF_ORA_10_OR_HIGHER , sql_child_number  sqlchild
-                  &_IF_ORA_10_OR_HIGHER , sql_id            sqlid
+                  , sql_child_number                        sqlchild
+                  , sql_id                                  sqlid
              FROM v$session) s
         WHERE
             l.sid LIKE '&_lhp_sid'
@@ -109,17 +105,17 @@ WITH
 SELECT /*+ ORDERED */
     &_lhp_what
   , s.total_samples
-  &_IF_ORA_10_OR_HIGHER , s.dist_samples
+  , s.dist_samples
   --  , s.total_samples_pct
   , s.total_samples / &_lhp_samples * 100 latchprof_pct_total_samples
   , (t2.hsecs - t1.hsecs) * 10 * s.total_samples / &_lhp_samples latchprof_total_ms
   --   s.dist_events,
-  &_IF_ORA_10_OR_HIGHER , (t2.hsecs - t1.hsecs) * 10 * s.total_samples / dist_samples / &_lhp_samples latchprof_avg_ms
-  FROM
+  , (t2.hsecs - t1.hsecs) * 10 * s.total_samples / dist_samples / &_lhp_samples latchprof_avg_ms
+FROM
     t1,
     samples s,
     t2
-  WHERE ROWNUM <= 30
+WHERE ROWNUM <= 30
 /
 
 COL name CLEAR
