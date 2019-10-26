@@ -45,17 +45,22 @@
 
 
 COL desc_column_id 		HEAD "Col#" FOR A4
+COL desc_table_owner	        HEAD "Table Owner" FOR A25
+COL desc_table_name 	        HEAD "Table Name"  FOR A30
 COL desc_column_name	        HEAD "Column Name" FOR A30
 COL desc_data_type		HEAD "Type" FOR A20 WORD_WRAP
 COL desc_nullable		HEAD "Null?" FOR A10
 COL desc_low_value HEAD "Low Value" FOR A32
 COL desc_high_value HEAD "High Value" FOR A32
 
+BREAK ON desc_table_owner ON desc_table_name SKIP 1
+
+
 --prompt eXtended describe of &1
 
 SELECT
-  owner,
-  table_name,
+  owner desc_table_owner,
+  table_name desc_table_name,
 	CASE WHEN hidden_column = 'YES' THEN 'H' ELSE ' ' END||
 	LPAD(column_id,3)	desc_column_id,
 	column_name	desc_column_name,
@@ -69,8 +74,8 @@ SELECT
 	num_distinct,
 	density,
 	num_nulls,
+  CASE WHEN histogram = 'NONE'  THEN null ELSE histogram END histogram,
 	num_buckets,
-        -- histogram,
 	display_raw(low_value, data_type)   desc_low_value,
 	display_raw(high_value, data_type)  desc_high_value
 FROM
