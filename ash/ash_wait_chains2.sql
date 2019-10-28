@@ -45,7 +45,9 @@ ash AS (SELECT /*+ QB_NAME(ash) LEADING(a) USE_HASH(u) SWAP_JOIN_INPUTS(u) */
             a.*
           , CAST(a.sample_time AS DATE) sample_time_s -- round to 1 sec boundary
           , u.username
-          , CASE WHEN a.session_type = 'BACKGROUND' OR REGEXP_LIKE(a.program, '.*\([PJ]\d+\)') THEN
+          , CASE WHEN a.session_type = 'BACKGROUND' AND a.program LIKE '%(DBW%)' THEN
+              '(DBWn)'
+            WHEN a.session_type = 'BACKGROUND' OR REGEXP_LIKE(a.program, '.*\([PJ]\d+\)') THEN
               REGEXP_REPLACE(SUBSTR(a.program,INSTR(a.program,'(')), '\d', 'n')
             ELSE
                 '('||REGEXP_REPLACE(REGEXP_REPLACE(a.program, '(.*)@(.*)(\(.*\))', '\1'), '\d', 'n')||')'
