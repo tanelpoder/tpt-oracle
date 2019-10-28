@@ -199,9 +199,9 @@ select
     ps.last_output_rows                                                            xbi_last_output_rows,
     p.cardinality * ps.last_starts                                                 xbi_opt_card_times_starts,
     regexp_replace(lpad(to_char(round(
-                      CASE WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) > 1 THEN  -(NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0))
-                           WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) < 1 THEN 1/(NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0))
-                           WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) = 1 THEN 1
+                      CASE WHEN (DECODE(ps.last_output_rows,0,1,ps.last_output_rows) / DECODE(p.cardinality*ps.last_starts,0,1,p.cardinality*ps.last_starts)) > 1 THEN  -(DECODE(ps.last_output_rows,0,1,ps.last_output_rows) / DECODE(p.cardinality*ps.last_starts,0,1,p.cardinality*ps.last_starts))
+                           WHEN (DECODE(ps.last_output_rows,0,1,ps.last_output_rows) / DECODE(p.cardinality*ps.last_starts,0,1,p.cardinality*ps.last_starts)) < 1 THEN 1/(DECODE(ps.last_output_rows,0,1,ps.last_output_rows) / DECODE(p.cardinality*ps.last_starts,0,1,p.cardinality*ps.last_starts))
+                           WHEN (DECODE(ps.last_output_rows,0,1,ps.last_output_rows) / DECODE(p.cardinality*ps.last_starts,0,1,p.cardinality*ps.last_starts)) = 1 THEN 1
                       ELSE null
                       END
                  ,0))||'x',15),'^ *x$')   xbi_opt_card_misestimate,
