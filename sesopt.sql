@@ -15,4 +15,5 @@ WHERE
 AND LOWER(pname_qksceserow) LIKE LOWER('%&2%')
 --    BITAND(flags_qksceserow, 8) = 0
 --AND (BITAND(flags_qksceserow, 4) = 0 OR BITAND(flags_qksceserow, 2) = 0)
+--AND DECODE(BITAND(flags_qksceserow, 2), 0, 'NO', 'YES') = 'NO'
 /

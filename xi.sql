@@ -3,5 +3,12 @@
 
 prompt eXplain the execution plan for sqlid &1 child &2....
 
---select * from table(dbms_xplan.display_cursor('&1',CASE WHEN '&2' = '%' THEN null ELSE '&2' END,'ALLSTATS LAST +COST +ADAPTIVE +PEEKED_BINDS +PARTITION'));
-select * from table(dbms_xplan.display_cursor('&1',CASE WHEN '&2' = '%' THEN null ELSE '&2' END,'ALLSTATS LAST +COST +PEEKED_BINDS +PARTITION'));
+-- with ADAPTIVE included:
+-- select * from table(dbms_xplan.display_cursor('&1',CASE WHEN '&2' = '%' THEN null ELSE '&2' END,'ALLSTATS LAST +COST +ROWS +ADAPTIVE +PEEKED_BINDS +PARTITION'));
+
+-- without ADAPTIVE included:
+select * from table(dbms_xplan.display_cursor('&1',CASE WHEN '&2' = '%' THEN null ELSE '&2' END,'ALLSTATS LAST +COST +ROWS +PEEKED_BINDS +PARTITION'));
+
+-- with 19c HINT_REPORT
+-- select * from table(dbms_xplan.display_cursor('&1',CASE WHEN '&2' = '%' THEN null ELSE '&2' END,'ALLSTATS LAST +COST +ROWS +PEEKED_BINDS +PARTITION +HINT_REPORT'));
+

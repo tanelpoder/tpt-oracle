@@ -1,7 +1,7 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
-CREATE TABLE &ppxuser..orders_range_hash (
+CREATE TABLE &ppxuser..orders_range_hash_17 (
     order_id                                 NUMBER(12)   NOT NULL
   , order_date                               TIMESTAMP(6) NOT NULL
   , order_mode                               VARCHAR2(8)
@@ -22,10 +22,23 @@ CREATE TABLE &ppxuser..orders_range_hash (
 PARTITION BY RANGE (order_date)
 SUBPARTITION BY HASH (customer_id)
 SUBPARTITION TEMPLATE(
-    SUBPARTITION sp1 TABLESPACE &ppxtablespace,
-    SUBPARTITION sp2 TABLESPACE &ppxtablespace,
-    SUBPARTITION sp3 TABLESPACE &ppxtablespace,
-    SUBPARTITION sp4 TABLESPACE &ppxtablespace)
+    SUBPARTITION sp01 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp02 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp03 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp04 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp05 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp06 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp07 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp08 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp09 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp10 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp11 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp12 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp13 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp14 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp15 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp16 TABLESPACE &ppxtablespace,
+    SUBPARTITION sp17 TABLESPACE &ppxtablespace)
 (
     PARTITION Y2007_07 VALUES LESS THAN (DATE'2007-08-01')
   , PARTITION Y2007_08 VALUES LESS THAN (DATE'2007-09-01')
@@ -45,11 +58,11 @@ SUBPARTITION TEMPLATE(
 COMPRESS
 /
 
-INSERT /*+ APPEND */ INTO &ppxuser..orders_range_hash
-SELECT * FROM &oeuser..orders
+INSERT /*+ APPEND */ INTO &ppxuser..orders_range_hash_17
+SELECT * FROM &oeuser..orders_range_hash
 /
 
 COMMIT;
 
-EXEC DBMS_STATS.GATHER_TABLE_STATS('&ppxuser', 'ORDERS_RANGE_HASH');
+EXEC DBMS_STATS.GATHER_TABLE_STATS('&ppxuser', 'ORDERS_RANGE_HASH_17');
 

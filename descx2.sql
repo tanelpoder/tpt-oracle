@@ -28,8 +28,8 @@ SELECT
 	num_distinct,
 	density,
 	num_nulls,
+  CASE WHEN histogram = 'NONE'  THEN null ELSE histogram END histogram,
 	num_buckets,
-        -- histogram,
 	low_value,
 	high_value
 	--,'--' desc_succeeded

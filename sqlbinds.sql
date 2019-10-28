@@ -3,6 +3,11 @@
 
 prompt Show captured binds from V$SQL_BIND_CAPTURE...
 
+COL SQLBINDS_NAME FOR A30
+COL VALUE_STRING  FOR A100
+COL VALUE_ANYDATA FOR A100
+
+
 SELECT
   ADDRESS         parent_cursor
 , SQL_ID              

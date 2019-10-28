@@ -49,6 +49,7 @@ column xbi_optimizer                                heading "Optimizer|Mode" for
 column xbi_plan_step                                heading "Operation" for a55
 column xbi_plan_line                                heading "Row Source" for a72
 column xbi_qblock_name                              heading "Query Block|name" for a20 PRINT
+column xbi_object_alias                             heading "Object|Alias" for a20 PRINT
 column xbi_object_name                              heading "Object|Name" for a30
 column xbi_object_node                              heading "Object|Node" for a10
 column xbi_opt_cost                                 heading "Optimizer|Cost" for 9999999999
@@ -60,7 +61,7 @@ column xbi_predicate_info                           heading "Predicate Informati
 column xbi_cpu_cost                                 heading "CPU|Cost" for 9999999
 column xbi_io_cost                                  heading "IO|Cost" for 9999999
 
-column xbi_last_output_rows                         heading "Real #rows|returned" for 999999999
+column xbi_last_output_rows                         heading "Real #rows|returned" for 9999999999
 column xbi_last_starts                              heading "Rowsource|starts" for 999999999
 column xbi_last_rows_start                          heading "#Rows ret/|per start" for 999999999
 column xbi_last_cr_buffer_gets                      heading "Consistent|gets" for 999999999
@@ -71,6 +72,7 @@ column xbi_last_disk_reads                          heading "Physical|read blks"
 column xbi_last_disk_writes                         heading "Physical|write blks" for 999999999
 column xbi_last_elapsed_time_ms                     heading "cumulative ms|spent in branch" for 9,999,999.99 noprint
 column xbi_self_elapsed_time_ms                     heading "ms spent in|this operation" for 9,999,999.99
+column xbi_self_iotime_per_blk                      heading "Avg ms|per blk" for 9,999.999
 column xbi_self_cr_buffer_gets                      heading "Consistent|gets" for 999999999
 column xbi_self_cr_buffer_gets_row                  heading "Consistent|gets/row" for 999999999
 column xbi_self_cu_buffer_gets                      heading "Current|gets" for 999999999
@@ -89,7 +91,6 @@ column xbi_notes                                    heading "Plan|Notes" for a12
 column xbi_sql_id                                   heading "SQL_ID" for a13  new_value xbi_sql_id 
 column xbi_sql_child_number                         heading "CHLD" for 9999 new_value xbi_sql_child_number
 column xbi_sql_addr                                 heading "ADDRESS" new_value xbi_sql_addr
-
 
 set feedback off
 
@@ -199,6 +200,7 @@ select
     c.self_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)    xbi_self_cr_buffer_gets_row,
     ps.last_starts                                                                 xbi_last_starts,
     ps.last_output_rows                                                            xbi_last_output_rows,
+    p.cardinality                                                                  xbi_opt_card,
     p.cardinality * ps.last_starts                                                 xbi_opt_card_times_starts,
     regexp_replace(lpad(to_char(round(
                       CASE WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) > 1 THEN  -(NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0))
@@ -213,6 +215,7 @@ select
     c.self_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)    xbi_self_cu_buffer_gets_row,
     decode(p.id,0,c.last_disk_reads,c.self_disk_reads)                             xbi_self_disk_reads,
     decode(p.id,0,c.last_disk_writes,c.self_disk_writes)                           xbi_self_disk_writes,
+    round(decode(p.id,0,c.last_elapsed_time,c.self_elapsed_time) / NULLIF(decode(p.id,0,c.last_disk_reads,c.self_disk_reads) + decode(p.id,0,c.last_disk_writes,c.self_disk_writes),0) / 1000, 3) xbi_self_iotime_per_blk,
     round(ps.last_elapsed_time/1000,2)                                             xbi_last_elapsed_time_ms,
 --  ps.last_cr_buffer_gets                                                         xbi_last_cr_buffer_gets,
 --  ps.last_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xbi_last_cr_buffer_gets_row,
@@ -340,22 +343,21 @@ UNION ALL SELECT '    *', 'Adaptive Plan = '            ||extractvalue(xmltype(s
 /
 
 -- === Outline Hints ===
--- WITH sq AS (
---     SELECT other_xml 
---     FROM v$sql_plan p
---     WHERE
---         p.sql_id = '&xbi_sql_id'
---     AND p.child_number = &xbi_sql_child_number
---     AND p.address = hextoraw('&xbi_sql_addr')
---     AND p.id IS NOT NULL
--- )
--- SELECT 
---     SUBSTR(EXTRACTVALUE(VALUE(d), '/hint'),1,4000)  xbi_outline_hints
--- FROM
---     sq
---   , TABLE(XMLSEQUENCE(EXTRACT(XMLTYPE(sq.other_xml), '/*/outline_data/hint'))) D
--- /
+WITH sq AS (
+    SELECT other_xml 
+    FROM v$sql_plan p
+    WHERE
+        p.sql_id = '&xbi_sql_id'
+    AND p.child_number = &xbi_sql_child_number
+    AND p.address = hextoraw('&xbi_sql_addr')
+    AND p.other_xml IS NOT NULL
+)
+SELECT 
+    SUBSTR(EXTRACTVALUE(VALUE(d), '/hint'),1,4000)  xbi_outline_hints
+FROM
+    sq
+  , TABLE(XMLSEQUENCE(EXTRACT(XMLTYPE(sq.other_xml), '/*/outline_data/hint'))) D
+/
 
-
-PROMPT 
 set feedback on
+PROMPT

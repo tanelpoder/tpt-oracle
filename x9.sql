@@ -10,11 +10,10 @@ def _x9_temp_sql=&_tpt_tempdir/sql_&_tpt_tempfile..sql
 store set &_x9_temp_env replace
 save      &_x9_temp_sql replace
 
+set termout on
 
 0 explain plan for
 run
-
-set termout on
 
 select * from table(dbms_xplan.display());
 
