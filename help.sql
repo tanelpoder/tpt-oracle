@@ -59,8 +59,8 @@ FROM (
   SELECT 'help.sql' AS name, 'Display TPT script help' AS description, '@help <search_expression>'||&nl||'@help explain'||&nl||'@help lock|latch.*hold'||&nl||'@help ^ind.*sql|^tab.*sql' AS usage FROM dual UNION ALL
   SELECT 'hash.sql' AS name, 'Display the hash value, sql_id, and child number of the last SQL in session' AS description, '@hash' AS usage FROM dual UNION ALL
   SELECT 'hint.sql' AS name, 'Display all available hints' AS description, '@hint <name>'||&nl||'@hint full' AS usage FROM dual UNION ALL
-  SELECT 'hintclass.sql' AS name, 'Display all available hints' AS description, '@hintclass <hint_name>'||&nl||'@hintclass merge' AS usage FROM dual UNION ALL
-  SELECT 'hintfeature.sql' AS name, 'Display all available hints grouped by SQL feature' AS description, '@hintfeature <feature_name>'||&nl||'@hintfeature transformation' AS usage FROM dual UNION ALL
+  SELECT 'hintclass.sql' AS name, 'Display all available hints with hint class info' AS description, '@hintclass <hint_name>'||&nl||'@hintclass merge' AS usage FROM dual UNION ALL
+  SELECT 'hintfeature.sql' AS name, 'Display all available hints with SQL feature info' AS description, '@hintfeature <feature_name>'||&nl||'@hintfeature transformation' AS usage FROM dual UNION ALL
   SELECT 'hinth.sql' AS name, 'Display hint hierarchy' AS description, '@hinth <hint_name>'||&nl||'@hinth merge' AS usage FROM dual UNION ALL
   SELECT 'ind.sql' AS name, 'Display indexes' AS description, '@ind [<owner>.]<index_name|table_name>'||&nl||'@ind orders'||&nl||'@ind soe.ord_customer_ix'||&nl||'@ind soe.%' AS usage FROM dual UNION ALL
   SELECT 'indf.sql' AS name, 'Display function-based index expressions' AS description, '@indf [<owner>.]<index_name|table_name>'||&nl||'@indf orders'||&nl||'@indf soe.ord_customer_ix'||&nl||'@indf soe.%' AS usage FROM dual UNION ALL
