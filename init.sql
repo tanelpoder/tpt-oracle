@@ -53,6 +53,8 @@ def _tpt_tempdir=&SQLPATH/tmp
   define  24hours="sysdate-1 sysdate"
   define      day="sysdate-1 sysdate"
   define    today="TRUNC(sysdate) sysdate"
+  define    7days="sysdate-7 sysdate"
+  define   30days="sysdate-30 sysdate"
 
 -- you should change linesize to match terminal width - 1 only 
 -- if you don't have a terminal with horizontal scrolling
@@ -198,6 +200,8 @@ set editfile afiedit.sql
 -- var snapper refcursor
 
 -- reset termout back to normal
+
+@init_custom
 
   set termout on
 
