@@ -201,7 +201,5 @@ set editfile afiedit.sql
 
 -- reset termout back to normal
 
-@init_custom
-
-  set termout on
+set termout on
 
