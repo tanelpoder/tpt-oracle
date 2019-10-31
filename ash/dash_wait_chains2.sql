@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 --
--- File name:   dash_wait_chains.sql (v0.4 BETA)
+-- File name:   dash_wait_chains2.sql (v0.5 BETA)
 -- Purpose:     Display ASH wait chains (multi-session wait signature, a session
 --              waiting for another session etc.)
 --              
@@ -33,7 +33,7 @@ COL wait_chain FOR A300 WORD_WRAP
 COL "%This" FOR A6
 
 PROMPT
-PROMPT -- Display ASH Wait Chain Signatures script v0.4 BETA by Tanel Poder ( http://blog.tanelpoder.com )
+PROMPT -- Display ASH Wait Chain Signatures script v0.5 BETA by Tanel Poder ( http://blog.tanelpoder.com )
 
 WITH 
 bclass AS (SELECT class, ROWNUM r from v$waitstat),
@@ -41,9 +41,9 @@ ash AS (SELECT /*+ QB_NAME(ash) LEADING(a) USE_HASH(u) SWAP_JOIN_INPUTS(u) */
             a.*
           , SUBSTR(TO_CHAR(a.sample_time, 'YYYYMMDDHH24MISS'),1,13) sample_time_10s -- ASH dba_hist_ samples stored every 10sec
           , u.username
-          , CASE WHEN a.session_type = 'BACKGROUND' AND a.program LIKE '%(DBW%)' THEN
-              '(DBWn)'
-            WHEN a.session_type = 'BACKGROUND' OR REGEXP_LIKE(a.program, '.*\([PJ]\d+\)') THEN
+          , CASE WHEN a.program LIKE '%(J%)' OR a.program LIKE '%(DBW%)' THEN
+              REGEXP_REPLACE(a.program,'.*\((J|DBW).*\)', '(\1nnn)')
+            WHEN a.session_type = 'BACKGROUND' OR REGEXP_LIKE(a.program, '.*\([P]\d+\)') THEN
               REGEXP_REPLACE(SUBSTR(a.program,INSTR(a.program,'(')), '\d', 'n')
             ELSE
                 '('||REGEXP_REPLACE(REGEXP_REPLACE(a.program, '(.*)@(.*)(\(.*\))', '\1'), '\d', 'n')||')'

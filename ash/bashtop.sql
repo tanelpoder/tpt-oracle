@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 --
--- File name:   ashtop.sql v1.2
+-- File name:   bashtop.sql v1.3
 -- Purpose:     Display top ASH time (count of ASH samples) grouped by your
 --              specified dimensions
 --              
@@ -75,9 +75,9 @@ SELECT * FROM (
                                END  ||']' 
                     ELSE null 
                 END event2 -- event is NULL in ASH if the session is not waiting (session_state = ON CPU)
-          , CASE WHEN a.session_type = 'BACKGROUND' AND a.program LIKE '%(DBW%)' THEN
-              '(DBWn)'
-            WHEN a.session_type = 'BACKGROUND' OR REGEXP_LIKE(a.program, '.*\([PJ]\d+\)') THEN
+          , CASE WHEN a.program LIKE '%(J%)' OR a.program LIKE '%(DBW%)' THEN
+              REGEXP_REPLACE(a.program,'.*\((J|DBW).*\)', '(\1nnn)')
+            WHEN a.session_type = 'BACKGROUND' OR REGEXP_LIKE(a.program, '.*\([P]\d+\)') THEN
               REGEXP_REPLACE(SUBSTR(a.program,INSTR(a.program,'(')), '\d', 'n')
             ELSE
                 '('||REGEXP_REPLACE(REGEXP_REPLACE(a.program, '(.*)@(.*)(\(.*\))', '\1'), '\d', 'n')||')'
