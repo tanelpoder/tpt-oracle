@@ -22,8 +22,8 @@
 prompt generate lots of LIOs by repeatedly full scanning through a small table...
 
 select
-    /*+ monitor
-        ordered 
+    /*+ monitor 
+        leading(a b c)
         use_nl(b) use_nl(c) use_nl(d) 
         full(a) full(b) full(c) full(d) */
     count(*)
