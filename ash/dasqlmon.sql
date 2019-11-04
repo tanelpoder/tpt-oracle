@@ -25,12 +25,12 @@ SET LINESIZE 999 PAGESIZE 5000 TRIMOUT ON TRIMSPOOL ON
 
 COL asqlmon_operation  HEAD Plan_Operation FOR a70
 COL asqlmon_predicates HEAD PREDICATES     FOR a100 word_wrap
-COL obj_alias_qbc_name FOR a40
+COL obj_alias_qbc_name FOR A50
 COL options   FOR a30
 
-COL asqlmon_plan_hash_value HEAD PLAN_HASH_VALUE
+COL asqlmon_plan_hash_value FOR A15 HEAD PLAN_HASH_VALUE
 COL asqlmon_sql_id          HEAD SQL_ID  NOPRINT
-COL asqlmon_sql_child       HEAD "CHILD"  PRINT
+COL asqlmon_sql_child       FOR A10 HEAD "CHILD"  PRINT
 COL asqlmon_sample_time     HEAD SAMPLE_HOUR
 COL projection FOR A520
 
