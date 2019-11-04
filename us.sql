@@ -13,6 +13,7 @@ select
 	temporary_tablespace, 
 	user_id,
 	created,
+  account_status,
 	profile
 from 
 	dba_users 
