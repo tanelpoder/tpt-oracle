@@ -83,6 +83,7 @@ FROM (
   SELECT 'p.sql' AS name, 'Display parameter name and value' AS description, '@p <parameter_name>'||&nl||'@pd optimizer' AS usage FROM dual UNION ALL
   SELECT 'partkeys.sql' AS name, 'Display table partition keys' AS description, '@partkeys [<owner>.]<table_name>'||&nl||'@partkeys soe.orders'||&nl||'@partkeys soe.%' AS usage FROM dual UNION ALL
   SELECT 'pd.sql' AS name, 'Display parameter name, description and value' AS description, '@pd <parameter_description>'||&nl||'@pd optimizer' AS usage FROM dual UNION ALL
+  SELECT 'pga.sql' AS name, 'Display PGA memory usage statistics' AS description, '@pga' AS usage FROM dual UNION ALL
   SELECT 'pmem.sql' AS name, 'Display process memory usage' AS description, '@pmem <spid>'||&nl||'@pmem 1000' AS usage FROM dual UNION ALL
   SELECT 'proc.sql' AS name, 'Display functions and procedures' AS description, '@proc <object_name> <procedure_name>'||&nl||'@proc dbms_stats table'||&nl||'@proc dbms_stats %' AS usage FROM dual UNION ALL
   SELECT 'procid.sql' AS name, 'Display functions and procedures' AS description, '@procid <object_id> <subprogram_id>'||&nl||'@procid 13615 84' AS usage FROM dual UNION ALL
