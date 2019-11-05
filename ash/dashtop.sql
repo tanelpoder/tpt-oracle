@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 --
--- File name:   dashtop.sql v1.2
+-- File name:   dashtop.sql v1.3
 -- Purpose:     Display top ASH time (count of ASH samples) grouped by your
 --              specified dimensions
 --              
@@ -90,11 +90,13 @@ SELECT * FROM (
                                END  ||']' 
                     ELSE null 
                 END event2 -- event is NULL in ASH if the session is not waiting (session_state = ON CPU)
-           , CASE WHEN a.session_type = 'BACKGROUND' OR REGEXP_LIKE(a.program, '.*\([PJ]\d+\)') THEN
-                REGEXP_REPLACE(SUBSTR(a.program,INSTR(a.program,'(')), '\d', 'n')
-             ELSE
+          , CASE WHEN a.program LIKE '%(J%)' OR a.program LIKE '%(DBW%)' THEN
+              REGEXP_REPLACE(a.program,'.*\((J|DBW).*\)', '(\1nnn)')
+            WHEN a.session_type = 'BACKGROUND' OR REGEXP_LIKE(a.program, '.*\([P]\d+\)') THEN
+              REGEXP_REPLACE(SUBSTR(a.program,INSTR(a.program,'(')), '\d', 'n')
+            ELSE
                 '('||REGEXP_REPLACE(REGEXP_REPLACE(a.program, '(.*)@(.*)(\(.*\))', '\1'), '\d', 'n')||')'
-             END || ' ' program2
+            END || ' ' program2
            , CASE WHEN BITAND(time_model, POWER(2, 01)) = POWER(2, 01) THEN 'DBTIME '  END
            ||CASE WHEN BITAND(time_model, POWER(2, 02)) = POWER(2, 02) THEN 'BACKGROUND '  END
            ||CASE WHEN BITAND(time_model, POWER(2, 03)) = POWER(2, 03) THEN 'CONNECTION_MGMT '  END
