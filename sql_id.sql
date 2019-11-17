@@ -2,7 +2,7 @@
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
 col sql_sql_text head SQL_TEXT format a150 word_wrap
-col sql_child_number head CH# for 999
+col sql_child_number head "CH#" for 999
 
 prompt Show SQL text, child cursors and execution stats for SQLID &1 child &2
 

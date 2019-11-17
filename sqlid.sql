@@ -2,7 +2,7 @@
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
 col sql_sql_text head SQL_TEXT format a150 word_wrap
-col sql_child_number head CH# for 9999
+col sql_child_number head "CH#" for 9999
 
 
 col cpu_sec_exec   FOR 999999.999
