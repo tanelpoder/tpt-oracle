@@ -43,6 +43,7 @@ FROM (
   SELECT 'date.sql' AS name, 'Display current date' AS description, '@date'||&nl||'@d sql'||&nl||'@d %' AS usage FROM dual UNION ALL
   SELECT 'ddl.sql' AS name, 'Extracts DDL statements for specified objects' AS description, '@ddl [<owner>.]<object_name>'||&nl||'@ddl sys.dba_users'||&nl||'@ddl sys.%tab%' AS usage FROM dual UNION ALL
   SELECT 'desc.sql' AS name, 'Describe object' AS description, '@desc <object_name>'||&nl||'@desc dba_tables' AS usage FROM dual UNION ALL
+  SELECT 'descx.sql' AS name, 'Describe table columns' AS description, '@descx <owner>.<table_name>'||&nl||'@descx %.t1'||&nl||'@descx sh.t1' AS usage FROM dual UNION ALL
   SELECT 'devent_hist.sql' AS name, 'Display a histogram of the number of waits from AWR (miliseconds)' AS description, '@ash/devent_hist.sql <event> <filter_expression> <from_time> <to_time>'||&nl||'@ash/devent_hist.sql redo 1=1 sysdate-1/24 sysdate'||&nl||'@ash/devent_hist.sql redo|read "wait_class=''User I/O'' AND session_type=''FOREGROUND''" sysdate-1/24 sysdate' AS usage FROM dual UNION ALL
   SELECT 'df.sql' AS name, 'Display tablespace usage (GB)' AS description, '@df' AS usage FROM dual UNION ALL
   SELECT 'dfm.sql' AS name, 'Display tablespace usage (MB)' AS description, '@dfm' AS usage FROM dual UNION ALL
@@ -54,7 +55,7 @@ FROM (
   SELECT 'event_hist_micro.sql' AS name, 'Display a histogram of the number of waits from ASH (microseconds)' AS description, '@ash/event_hist_micro <event> <filter_expression> <from_time> <to_time>'||&nl||'@ash/event_hist_micro redo 1=1 sysdate-1/24 sysdate'||&nl||'@ash/event_hist_micro redo|read "wait_class=''User I/O'' AND session_type=''FOREGROUND''" sysdate-1/24 sysdate' AS usage FROM dual UNION ALL
   SELECT 'evh.sql' AS name, 'Display a histogram of the number of waits' AS description, '@evh <event>'||&nl||'@evh redo'||&nl||'@evh redo|read' AS usage FROM dual UNION ALL
   SELECT 'evo.sql' AS name, 'Disable session event' AS description, '@evo <event>'||&nl||'@evo 10046' AS usage FROM dual UNION ALL
-  SELECT 'fix.sql' AS name, 'Display session fix controls' AS description, '@fix <bugno|description|optimizer_feature_enable|sql_feature>'||&nl||'@fix 13836796'||&nl||'@fix adaptive' AS usage FROM dual UNION ALL
+  SELECT 'fix.sql' AS name, 'Display fix controls description' AS description, '@fix <bugno|description|optimizer_feature_enable|sql_feature>'||&nl||'@fix 13836796'||&nl||'@fix adaptive' AS usage FROM dual UNION ALL
   SELECT 'grp.sql' AS name, 'Group function wrapper' AS description, '@grp <column_name> <table_name>'||&nl||'@grp owner dba_tables'||&nl||'@grp owner,object_type dba_objects' AS usage FROM dual UNION ALL
   SELECT 'help.sql' AS name, 'Display TPT script help' AS description, '@help <search_expression>'||&nl||'@help explain'||&nl||'@help lock|latch.*hold'||&nl||'@help ^ind.*sql|^tab.*sql' AS usage FROM dual UNION ALL
   SELECT 'hash.sql' AS name, 'Display the hash value, sql_id, and child number of the last SQL in session' AS description, '@hash' AS usage FROM dual UNION ALL
@@ -75,6 +76,7 @@ FROM (
   SELECT 'mem.sql' AS name, 'Display information about the dynamic SGA components' AS description, '@mem' AS usage FROM dual UNION ALL
   SELECT 'memres.sql' AS name, 'Display information about the last completed memory resize operations' AS description, '@memres' AS usage FROM dual UNION ALL
   SELECT 'nonshared.sql' AS name, 'Display reasons for non-shared child cursors from v$shared_cursor', '@nonshared <sql_id>'||&nl||'@nonshared 7q729nhdgtsqq' AS usage FROM dual UNION ALL
+  SELECT 'nls.sql' AS name, 'Display NLS parameters at session level', '@nls' AS usage FROM dual UNION ALL
   SELECT 'o.sql' AS name, 'Display database object based on object owner and name', '@o [<owner>.]<object_name>'||&nl||'@o sys.dba_users'||&nl||'@o %.%files' AS usage FROM dual UNION ALL
   SELECT 'oerr.sql' AS name, 'Display Oracle error decription' AS description, '@oerr <error_number>'||&nl||'@oerr 7445' AS usage FROM dual UNION ALL
   SELECT 'oi.sql' AS name, 'Display invalid objects' AS description, '@oi' AS usage FROM dual UNION ALL
@@ -89,6 +91,7 @@ FROM (
   SELECT 'procid.sql' AS name, 'Display functions and procedures' AS description, '@procid <object_id> <subprogram_id>'||&nl||'@procid 13615 84' AS usage FROM dual UNION ALL
   SELECT 'pv.sql' AS name, 'Display parameters based on the current value' AS description, '@pv <value>'||&nl||'@pv MANUAL' AS usage FROM dual UNION ALL
   SELECT 'pvalid.sql' AS name, 'Display valid parameter values' AS description, '@pvalid <parameter_name>'||&nl||'@pvalid optimizer' AS usage FROM dual UNION ALL
+  SELECT 'rowid.sql' AS name, 'Display file, block, row numbers from rowid' AS description, '@rowid <rowid>'||&nl||'@rowid AAAR51AAMAAAACGAAB' AS usage FROM dual UNION ALL
   SELECT 's.sql' AS name, 'Display current session wait and SQL_ID info (10g+)' AS description, '@s <sid>'||&nl||'@s 52,110,225'||&nl||'@s "select sid from v$session where username = ''XYZ''"'||&nl||'@s '||&amp||'mysid' AS usage FROM dual UNION ALL
   SELECT 'sdr.sql' AS name, 'Control direct read in serial (_serial_direct_read)' AS description, '@sdr <TRUE|FALSE>' AS usage FROM dual UNION ALL
   SELECT 'se.sql' AS name, 'Display session events' AS description, '@se <sid>'||&nl||'@se 10' AS usage FROM dual UNION ALL
@@ -140,6 +143,7 @@ FROM (
   SELECT 'xbi.sql' AS name, 'Explain a SQL statements execution plan with execution profile directly from library cache - look up by SQL ID' AS description, '@xbi <sql_id> <sql_child_number>'||&nl||'@xbi a5ks9fhw2v9s1 0' AS usage FROM dual UNION ALL
   SELECT 'xi.sql' AS name, 'Display SQL execution plan from library cache' AS description, '@xi <sql_id> <child#>'||&nl||'@xi 7q729nhdgtsqq 0'||&nl||'@xi 7q729nhdgtsqq %' AS usage FROM dual UNION ALL
   SELECT 'xia.sql' AS name, 'Display SQL execution plan from library cache: ADVANCED' AS description, '@xia <sql_id>'||&nl||'@xia 7q729nhdgtsqq' AS usage FROM dual UNION ALL
+  SELECT 'xp.sql' AS name, 'Run DBMS_SQLTUNE.REPORT_SQL_MONITOR (text mode) for session' AS description, '@xp <session_id>'||&nl||'@xp 47' AS usage FROM dual UNION ALL
   SELECT 'xprof.sql' AS name, 'Run DBMS_SQLTUNE.REPORT_SQL_MONITOR for session' AS description, '@xprof <report_level> <type> <sql_id|session_id> <sql_id|sid>' AS usage FROM dual UNION ALL
   SELECT 'xplto.sql' AS name, 'Display execution plan operations' AS description, '@xplto <name>'||&nl||'@xplto full' AS usage FROM dual UNION ALL
   SELECT '' AS name, '' AS description, '' AS usage FROM dual UNION ALL
