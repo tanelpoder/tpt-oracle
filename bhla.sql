@@ -24,24 +24,26 @@ col bhla_object head object for a40 truncate
 col bhla_DBA head DBA for a20
 col bhla_obj head OBJ for 99999999999
 
-select  /*+ ORDERED */
-	trim(to_char(bh.flag, 'XXXXXXXX'))	||':'||
-	trim(to_char(bh.lru_flag, 'XXXXXXXX')) 	flg_lruflg,
+WITH bclass AS (SELECT class, ROWNUM id from v$waitstat)
+select  /*+ LEADING(bh) */
 	bh.obj bhla_obj,
 	o.object_type,
 	o.owner||'.'||o.object_name		bhla_object,
+  bclass.class,
 	bh.tch,
 	file# ||' '||dbablk			bhla_DBA,
-	bh.class,
 	bh.state,
 	bh.mode_held,
-	bh.dirty_queue				DQ
+	bh.dirty_queue				DQ,
+	trim(to_char(bh.flag, 'XXXXXXXX'))	||':'||trim(to_char(bh.lru_flag, 'XXXXXXXX')) flg_lruflg
 from
 	x$bh		bh,
-	dba_objects	o
+	dba_objects	o,
+  bclass
 where
-	bh.obj = o.data_object_id
+	  bh.obj = o.data_object_id
+and bh.class = bclass.id (+)
 and	hladdr = hextoraw(lpad('&1', vsize(hladdr)*2 , '0'))
 order by
-	tch asc
+	tch desc
 /
