@@ -3,8 +3,6 @@
 --          For coding simplicity (read: lazyness) I'm using custom quotation marks ( q'\ ) so 
 --          this script works only from Oracle 10gR2 onwards
 
-prompt Pivoting output using Tom Kyte's printtab....
-
 def _pr_tmpfile=&_tpt_tempdir/pr_&_tpt_tempfile..tmp
 
 @@saveset

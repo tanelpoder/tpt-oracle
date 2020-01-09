@@ -4,11 +4,9 @@
 -- prototype script for displaying execution plan profile as a flame chart
 -- @sqlflame.sql <sqlid> <child#>
 
-@@saveset
-
 SET HEADING OFF LINESIZE 32767 PAGESIZE 0 TRIMSPOOL ON TRIMOUT ON LONG 9999999 VERIFY OFF LONGCHUNKSIZE 100000 FEEDBACK OFF APPINFO OFF
 SET TERMOUT OFF
-SET TIMING OFF
+--SET TIMING OFF
 
 WITH sq AS (
     SELECT /*+ MATERIALIZE */ 
@@ -38,9 +36,8 @@ spool off
 
 
 SET TERMOUT ON HEADING ON PAGESIZE 5000 LINESIZE 999 FEEDBACK ON 
-SET TIMING ON
+--SET TIMING ON
 
 HOST $HOME/dev/FlameGraph/flamegraph.pl --countname=Milliseconds --title="sql_id=&1" $HOME/sqlflame_stacks.txt > $HOME/sqlflame_&1..svg
 HOST OPEN $HOME/sqlflame_&1..svg
-
 

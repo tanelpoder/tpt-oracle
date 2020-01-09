@@ -20,6 +20,8 @@
 -- to be in library cache). Similarly the DBMS_SQLDIAG.CREATE_PATCH(sql_id=>...) needs the cursor to be
 -- in library cache in order to find the corresponding SQL text.
 
+SET SERVEROUT ON SIZE 1000000
+
 DECLARE
     v_sql_text  CLOB;
     ret         VARCHAR2(100);
@@ -40,4 +42,6 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE(q'[SQL Patch Name = SQL_PATCH_&1]');
 END;
 /
+
+SET SERVEROUT OFF
 

@@ -1,7 +1,7 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
-SELECT /*+ MONITOR PARALLEL(4) */
+SELECT /*+ MONITOR NO_PARALLEL */
     c.customer_id
   , c.cust_first_name
   , c.cust_last_name
@@ -25,6 +25,6 @@ GROUP BY
   , c.credit_limit
   , o.order_mode
 HAVING
-    sum(oi.unit_price) > c.credit_limit * 1000
+    sum(oi.unit_price) > c.credit_limit * 100 
 /
 

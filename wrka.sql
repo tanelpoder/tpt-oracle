@@ -1,7 +1,7 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
--- Purpose:     List SQL workarea memory usage details at session/workarea level.
+-- Purpose:     List ACTIVE SQL workarea memory usage details at session/workarea level.
 --              Show both PGA workarea usage and TEMP usage by workareas (workareas don't include
 --              other PGA/TEMP use like PL/SQL arrays and global temporary tables)
 --

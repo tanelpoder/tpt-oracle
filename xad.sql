@@ -22,11 +22,7 @@ store set &_x_temp_env replace
 save      &_x_temp_sql replace
 set termout on
 
--- 12c ADAPTIVE:
---select * from table(dbms_xplan.display_cursor(null,null,'ALLSTATS LAST  +PEEKED_BINDS +PARALLEL +PARTITION +COST +BYTES +ADAPTIVE'))
--- 19c HINT_REPORTING:
--- select * from table(dbms_xplan.display_cursor(null,null,'ALLSTATS LAST  +PEEKED_BINDS +PARALLEL +PARTITION +COST +BYTES +HINT_REPORT'))
-select * from table(dbms_xplan.display_cursor(null,null,'ALLSTATS LAST  +PEEKED_BINDS +PARALLEL +PARTITION +COST +BYTES'))
+select * from table(dbms_xplan.display_cursor(null,null,'ALLSTATS LAST  +PEEKED_BINDS +PARALLEL +PARTITION +COST +BYTES +ADAPTIVE'))
 where
     plan_table_output not in ('-----', 'Note')
 and plan_table_output not like ('%- Warning: basic plan statistics not available. These are only collected when:%')

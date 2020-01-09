@@ -33,7 +33,7 @@ def xbi_sql_id=&1
 def xbi_sql_child_number=&2
 def xbi_sql_addr="TODO"
 
-prompt -- xbi.sql: eXplain Better v1.01 for sql_id=&xbi_sql_id child=&xbi_sql_child_number - by Tanel Poder (https://blog.tanelpoder.com)
+prompt -- xbi.sql: eXplain Better v1.00 for sql_id=&xbi_sql_id child=&xbi_sql_child_number - by Tanel Poder (https://blog.tanelpoder.com)
 
 set verify off pagesize 5000 tab off lines 999
 
@@ -75,6 +75,7 @@ column xbi_last_disk_reads                          heading "Physical|read blks"
 column xbi_last_disk_writes                         heading "Physical|write blks" for 999999999
 column xbi_last_elapsed_time_ms                     heading "cumulative ms|spent in branch" for 9,999,999.99 noprint
 column xbi_self_elapsed_time_ms                     heading "ms spent in|this operation" for 9,999,999.99
+column xbi_self_iotime_per_blk                      heading "Avg ms|per blk" for 9,999.999
 column xbi_self_cr_buffer_gets                      heading "Consistent|gets" for 999999999
 column xbi_self_cr_buffer_gets_row                  heading "Consistent|gets/row" for 999999999
 column xbi_self_cu_buffer_gets                      heading "Current|gets" for 999999999
@@ -202,8 +203,10 @@ select
 --  lpad(decode(p.id,0,'T ','')||trim(to_char(round(decode(p.id,0,c.last_elapsed_time,c.self_elapsed_time) /1000,2),'9,999,999.00')), 14) xbi_self_elapsed_time_ms,
     round(decode(p.id,0,c.last_elapsed_time,c.self_elapsed_time) /1000,2)          xbi_self_elapsed_time_ms,
     decode(p.id,0,c.last_cr_buffer_gets,c.self_cr_buffer_gets)                     xbi_self_cr_buffer_gets,
+    c.self_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)    xbi_self_cr_buffer_gets_row,
     ps.last_starts                                                                 xbi_last_starts,
     ps.last_output_rows                                                            xbi_last_output_rows,
+    p.cardinality                                                                  xbi_opt_card,
     p.cardinality * ps.last_starts                                                 xbi_opt_card_times_starts,
     regexp_replace(lpad(to_char(round(
                       CASE WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) > 1 THEN  -(NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0))
@@ -212,12 +215,13 @@ select
                       ELSE null
                       END
                  ,0))||'x',15),'^ *x$')   xbi_opt_card_misestimate,
---    c.self_cr_buffer_gets                                                          xbi_self_cr_buffer_gets,
---    c.self_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)    xbi_self_cr_buffer_gets_row,
+--  c.self_cr_buffer_gets                                                          xbi_self_cr_buffer_gets,
+--  c.self_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)    xbi_self_cr_buffer_gets_row,
     decode(p.id,0,c.last_cu_buffer_gets,c.self_cu_buffer_gets)                     xbi_self_cu_buffer_gets,
---    c.self_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)    xbi_self_cu_buffer_gets_row,
+    c.self_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)    xbi_self_cu_buffer_gets_row,
     decode(p.id,0,c.last_disk_reads,c.self_disk_reads)                             xbi_self_disk_reads,
     decode(p.id,0,c.last_disk_writes,c.self_disk_writes)                           xbi_self_disk_writes,
+    round(decode(p.id,0,c.last_elapsed_time,c.self_elapsed_time) / NULLIF(decode(p.id,0,c.last_disk_reads,c.self_disk_reads) + decode(p.id,0,c.last_disk_writes,c.self_disk_writes),0) / 1000, 3) xbi_self_iotime_per_blk,
     round(ps.last_elapsed_time/1000,2)                                             xbi_last_elapsed_time_ms,
 --  ps.last_cr_buffer_gets                                                         xbi_last_cr_buffer_gets,
 --  ps.last_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xbi_last_cr_buffer_gets_row,

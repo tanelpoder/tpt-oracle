@@ -29,11 +29,7 @@
 --
 --------------------------------------------------------------------------------
 
-def xbi_sql_id=&1
-def xbi_sql_child_number=&2
-def xbi_sql_addr="TODO"
-
-prompt -- xbi.sql: eXplain Better v1.01 for sql_id=&xbi_sql_id child=&xbi_sql_child_number - by Tanel Poder (https://blog.tanelpoder.com)
+prompt -- xb.sql: eXplain Better v1.00 for prev SQL in the current session - by Tanel Poder (https://blog.tanelpoder.com)
 
 set verify off pagesize 5000 tab off lines 999
 
@@ -53,6 +49,7 @@ column xbi_optimizer                                heading "Optimizer|Mode" for
 column xbi_plan_step                                heading "Operation" for a55
 column xbi_plan_line                                heading "Row Source" for a72
 column xbi_qblock_name                              heading "Query Block|name" for a20 PRINT
+column xbi_object_alias                             heading "Object|Alias" for a20 PRINT
 column xbi_object_name                              heading "Object|Name" for a30
 column xbi_object_node                              heading "Object|Node" for a10
 column xbi_opt_cost                                 heading "Optimizer|Cost" for 9999999999
@@ -75,6 +72,7 @@ column xbi_last_disk_reads                          heading "Physical|read blks"
 column xbi_last_disk_writes                         heading "Physical|write blks" for 999999999
 column xbi_last_elapsed_time_ms                     heading "cumulative ms|spent in branch" for 9,999,999.99 noprint
 column xbi_self_elapsed_time_ms                     heading "ms spent in|this operation" for 9,999,999.99
+column xbi_self_iotime_per_blk                      heading "Avg ms|per blk" for 9,999.999
 column xbi_self_cr_buffer_gets                      heading "Consistent|gets" for 999999999
 column xbi_self_cr_buffer_gets_row                  heading "Consistent|gets/row" for 999999999
 column xbi_self_cu_buffer_gets                      heading "Current|gets" for 999999999
@@ -110,8 +108,8 @@ from
     all_users   usr
 where
     sql.parsing_user_id = usr.user_id
-and (sql.sql_id,sql.child_number) = (('&xbi_sql_id', TO_NUMBER('&xbi_sql_child_number')))
-and is_obsolete = 'N'
+and (sql.sql_id,sql.child_number,sql.address) = (SELECT prev_sql_id,prev_child_number,prev_sql_addr 
+                                                 FROM v$session WHERE sid = USERENV('SID'))
 /
 
 WITH sq AS (
@@ -195,15 +193,14 @@ select
                                                                                    xbi_plan_line, 
     CASE WHEN p.id = 0 THEN '>>> Plan totals >>>' ELSE p.qblock_name END                                                             xbi_qblock_name,
 --  p.object_node                                                                  xbi_object_node,
---  p.object_owner,
---  p.object_name,
---  p.object_alias,
 --  p.distribution                                                                 xbi_distribution,
 --  lpad(decode(p.id,0,'T ','')||trim(to_char(round(decode(p.id,0,c.last_elapsed_time,c.self_elapsed_time) /1000,2),'9,999,999.00')), 14) xbi_self_elapsed_time_ms,
     round(decode(p.id,0,c.last_elapsed_time,c.self_elapsed_time) /1000,2)          xbi_self_elapsed_time_ms,
     decode(p.id,0,c.last_cr_buffer_gets,c.self_cr_buffer_gets)                     xbi_self_cr_buffer_gets,
+    c.self_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)    xbi_self_cr_buffer_gets_row,
     ps.last_starts                                                                 xbi_last_starts,
     ps.last_output_rows                                                            xbi_last_output_rows,
+    p.cardinality                                                                  xbi_opt_card,
     p.cardinality * ps.last_starts                                                 xbi_opt_card_times_starts,
     regexp_replace(lpad(to_char(round(
                       CASE WHEN (NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0)) > 1 THEN  -(NULLIF(ps.last_output_rows / NULLIF(p.cardinality * ps.last_starts, 0),0))
@@ -215,9 +212,10 @@ select
 --    c.self_cr_buffer_gets                                                          xbi_self_cr_buffer_gets,
 --    c.self_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)    xbi_self_cr_buffer_gets_row,
     decode(p.id,0,c.last_cu_buffer_gets,c.self_cu_buffer_gets)                     xbi_self_cu_buffer_gets,
---    c.self_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)    xbi_self_cu_buffer_gets_row,
+    c.self_cu_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)    xbi_self_cu_buffer_gets_row,
     decode(p.id,0,c.last_disk_reads,c.self_disk_reads)                             xbi_self_disk_reads,
     decode(p.id,0,c.last_disk_writes,c.self_disk_writes)                           xbi_self_disk_writes,
+    round(decode(p.id,0,c.last_elapsed_time,c.self_elapsed_time) / NULLIF(decode(p.id,0,c.last_disk_reads,c.self_disk_reads) + decode(p.id,0,c.last_disk_writes,c.self_disk_writes),0) / 1000, 3) xbi_self_iotime_per_blk,
     round(ps.last_elapsed_time/1000,2)                                             xbi_last_elapsed_time_ms,
 --  ps.last_cr_buffer_gets                                                         xbi_last_cr_buffer_gets,
 --  ps.last_cr_buffer_gets / DECODE(ps.last_output_rows,0,1,ps.last_output_rows)   xbi_last_cr_buffer_gets_row,
@@ -362,4 +360,4 @@ FROM
 /
 
 set feedback on
-PROMPT 
+PROMPT

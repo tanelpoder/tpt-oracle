@@ -15,7 +15,7 @@ run
 
 set termout on
 
-select * from table(dbms_xplan.display(null,null,'ALIAS'));
+select * from table(dbms_xplan.display(null,null,'ALIAS +NOTE'));
 
 set termout off
 @/&_x9_temp_env

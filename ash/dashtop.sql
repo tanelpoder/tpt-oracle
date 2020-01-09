@@ -83,7 +83,7 @@ SELECT * FROM (
                 CASE 
                     WHEN event like 'enq%' AND session_state = 'WAITING'
                     THEN ' [mode='||BITAND(p1, POWER(2,14)-1)||']'
-                    WHEN a.event IN ('buffer busy waits', 'gc buffer busy', 'gc buffer busy acquire', 'gc buffer busy release')
+                    WHEN a.event IN (SELECT name FROM v$event_name WHERE parameter3 = 'class#') 
                     THEN ' ['||CASE WHEN a.p3 <= (SELECT MAX(r) FROM bclass) 
                                THEN (SELECT class FROM bclass WHERE r = a.p3)
                                ELSE (SELECT DECODE(MOD(BITAND(a.p3,TO_NUMBER('FFFF','XXXX')) - 17,2),0,'undo header',1,'undo data', 'error') FROM dual)
