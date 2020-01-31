@@ -1,8 +1,9 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
--- this scripts uses "ASH math" by Graham Wood, Uri Shaft and John Beresniewicz for
--- estimating the event counts (and average durations)
+-- this script uses "ASH math" by John Beresniewicz, Graham Wood and Uri Shaft
+-- for estimating the event counts (and average durations):
+--   https://www.slideshare.net/jberesni/ash-architecture-and-advanced-usage-rmoug2014-36611678
 
 COL evh_event HEAD WAIT_EVENT for A50 TRUNCATE
 COL evh_graph HEAD "Event|Breakdown" JUST CENTER FOR A12
