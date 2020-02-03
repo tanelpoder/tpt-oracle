@@ -110,6 +110,7 @@ FROM (
   SELECT 'sys.sql' AS name, 'Display system statistics' AS description, '@sys <statistic_name>'||&nl||'@sys redo'||&nl||'@sys ''redo write''' AS usage FROM dual UNION ALL
   SELECT 'uu.sql' AS name, 'Display user sessions' AS description, '@uu <username>'||&nl||'@uu %'||&nl||'@uu username'||&nl||'@uu %username%' AS usage FROM dual UNION ALL
   SELECT 'us.sql' AS name, 'Display database usernames from dba_users' AS description, '@us <username>'||&nl||'@us username' AS usage FROM dual UNION ALL
+  SELECT 'usid.sql' AS name, 'Display user sessoin and process information' AS description, '@usid <sid>'||&nl||'@us 1234' AS usage FROM dual UNION ALL
   SELECT 'sl.sql' AS name, 'Set statistics level' AS description, '@sl <statistics_level>'||&nl||'@sl all' AS usage FROM dual UNION ALL
   SELECT 'smem.sql' AS name, 'Display process memory usage' AS description, '@smem <sid>'||&nl||'@smem 1000' AS usage FROM dual UNION ALL
   SELECT 'sqlbinds.sql' AS name, 'Display captured binds from v$sql_bind_capture' AS description, '@sqlbinds <sql_id> <child_number>'||&nl||'@sqlbinds aqjj9h9ms8knh 0'||&nl||'@sqlbinds aqjj9h9ms8knh %' AS usage FROM dual UNION ALL
