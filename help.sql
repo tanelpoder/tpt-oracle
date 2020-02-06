@@ -126,6 +126,7 @@ FROM (
   SELECT 'tabpart.sql' AS name, 'Display table partitions' AS description, '@tabpart [<owner>.]<table_name>'||&nl||'@tabpart soe.orders'||&nl||'@tabpart soe.%' AS usage FROM dual UNION ALL
   SELECT 'tabsubpart' AS name, 'Display table subpartitions' AS description, '@tabsubpart [<owner>.]<table_name>'||&nl||'@tabsubpart soe.orders'||&nl||'@tabsubpart soe.%' AS usage FROM dual UNION ALL
   SELECT 'ti.sql' AS name, 'Force new trace file' AS description, '@ti' AS usage FROM dual UNION ALL
+  SELECT 'tlc.sql' AS name, 'Display top-level call names' AS description, '@tlc <call_name>'||&nl||'@tlc commit' AS usage FROM dual UNION ALL
   SELECT 'topseg.sql' AS name, 'Display top space users per tablespace' AS description, '@topseg <tablespace_name>'||&nl||'@topseg soe'||&nl||'@topseg %' AS usage FROM dual UNION ALL
   SELECT 'topsegstat.sql' AS name, 'Display information about top segment-level statistics' AS description, '@topsegstat <statistic_name>'||&nl||'@topsegstat reads'||&nl||'@topsegstat %' AS usage FROM dual UNION ALL
   SELECT 'trace.sql' AS name, 'Enable tracing' AS description, '@trace <filter_expression>'||&nl||'@trace sid=123'||&nl||'@trace username=''SOE''' AS usage FROM dual UNION ALL
