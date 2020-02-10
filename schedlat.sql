@@ -10,6 +10,13 @@
 
 PROMPT Listing recent non-zero scheduling delays from X$KSO_SCHED_DELAY_HISTORY
 
+SELECT MIN(sample_start_time) history_begin_time, MAX(sample_end_time) history_end_time
+FROM
+    sys.x$kso_sched_delay_history
+/
+
+PROMPT Any noticed scheduling delays during the in-memory history window are listed below:
+
 SELECT 
     sample_start_time
   , sample_end_time
