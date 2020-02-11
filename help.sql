@@ -78,7 +78,8 @@ FROM (
   SELECT 'nonshared.sql' AS name, 'Display reasons for non-shared child cursors from v$shared_cursor', '@nonshared <sql_id>'||&nl||'@nonshared 7q729nhdgtsqq' AS usage FROM dual UNION ALL
   SELECT 'nls.sql' AS name, 'Display NLS parameters at session level', '@nls' AS usage FROM dual UNION ALL
   SELECT 'o.sql' AS name, 'Display database object based on object owner and name', '@o [<owner>.]<object_name>'||&nl||'@o sys.dba_users'||&nl||'@o %.%files' AS usage FROM dual UNION ALL
-  SELECT 'oddc.sql' AS name, 'Display oradebug doc component', '@oddc <component>'||&nl||'@oddc optimizer'||&nl||'@oddc krc' AS usage FROM dual UNION ALL
+  SELECT 'oda.sql' AS name, 'Display oradebug doc event action', '@oda <action>'||&nl||'@oddc latch'||&nl||'@oddc .' AS usage FROM dual UNION ALL
+  SELECT 'oddc.sql' AS name, 'Display oradebug doc component', '@oddc <component>'||&nl||'@oddc optimizer'||&nl||'@oddc .' AS usage FROM dual UNION ALL
   SELECT 'oerr.sql' AS name, 'Display Oracle error decription' AS description, '@oerr <error_number>'||&nl||'@oerr 7445' AS usage FROM dual UNION ALL
   SELECT 'oi.sql' AS name, 'Display invalid objects' AS description, '@oi' AS usage FROM dual UNION ALL
   SELECT 'oid.sql' AS name, 'Display database objects based on object id' AS description, '@oid <object_id>'||&nl||'@oid 10'||&nl||'@oid 10,20' AS usage FROM dual UNION ALL
