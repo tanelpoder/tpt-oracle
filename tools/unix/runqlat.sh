@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Tiny Linux /proc/<pid>/schedstat demo script by Tanel Poder
-#   https://blog.tanelpoder.com
+#   https://tanelpoder.com
 
 PID=$1
 SLEEP=1
