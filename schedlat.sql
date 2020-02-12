@@ -10,7 +10,10 @@
 
 PROMPT Listing recent non-zero scheduling delays from X$KSO_SCHED_DELAY_HISTORY
 
-SELECT MIN(sample_start_time) history_begin_time, MAX(sample_end_time) history_end_time
+SELECT 
+    MIN(sample_start_time) history_begin_time, MAX(sample_end_time) history_end_time
+  , MAX(sched_delay_micro) max_latency_us
+  , AVG(sched_delay_micro) avg_latency_us
 FROM
     sys.x$kso_sched_delay_history
 /
