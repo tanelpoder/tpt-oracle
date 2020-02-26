@@ -10,7 +10,7 @@
 --              function the latch held was taken
 --
 -- Author:      Tanel Poder
---              https://blog.tanelpoder.com
+--              https://tanelpoder.com
 --              
 -- Usage:       @latchprofx <what> <sid> <latch name> <#samples>
 --              @latchprofx name 350 % 100000                   - monitor all latches SID 350 is holding
@@ -28,11 +28,14 @@
 --
 --              @latchprofx sid,name,hmode,func,object % 40D993A0 100000
 --                                                              - monitor for what object's access the child latch at
---                                                              - particular address was taken. for cache buffers chains
+--                                                              - particular address was taken. for "cache buffers chains"
 --                                                              - latch the object means data block address (DBA)
 --                                                              - of the block accessed in buffer cache.
 --                                                              - you can translate the 6-byte DBA to rfile#/block#
 --                                                              - using dbms_utility or dba.sql script from TPT scripts
+--                                                              - for "enqueue hash chains" latch you can look up the locked
+--                                                              - resource via V$RESOURCE.ADDR
+--
 --
 -- Other:
 --              This script is based on X$ tables instead of V$ tables
@@ -104,7 +107,7 @@ BREAK ON lhp_name SKIP 1
 DEF _IF_ORA_11_OR_HIGHER="--"
 
 PROMPT
-PROMPT -- LatchProfX 2.10 by Tanel Poder ( https://blog.tanelpoder.com )
+PROMPT -- LatchProfX 2.11 by Tanel Poder ( https://tanelpoder.com )
 
 COL latchprof_ora_11 NEW_VALUE _IF_ORA_11_OR_HIGHER
 
