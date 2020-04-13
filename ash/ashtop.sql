@@ -48,7 +48,7 @@ COL wait_class          FOR A15
 SELECT
     * 
 FROM (
-    WITH bclass AS (SELECT class, ROWNUM r from v$waitstat)
+    WITH bclass AS (SELECT /*+ INLINE */ class, ROWNUM r from v$waitstat)
     SELECT /*+ LEADING(a) USE_HASH(u) */
         COUNT(*)                                                     totalseconds
       , ROUND(COUNT(*) / ((CAST(&4 AS DATE) - CAST(&3 AS DATE)) * 86400), 1) AAS
