@@ -131,8 +131,8 @@ SELECT * FROM (
     AND &2
     AND a.sample_time BETWEEN &3 AND &4
     AND a.dbid = (SELECT d.dbid FROM v$database d) -- for partition pruning
-    AND a.snap_id IN (SELECT sn.snap_id FROM dba_hist_snapshot sn WHERE sn.begin_interval_time >= &3 AND sn.end_interval_time <= &4) -- for partition pruning
-    --AND snap_id IN (SELECT snap_id FROM dba_hist_snapshot WHERE sample_time BETWEEN &3 AND &4) -- for partition pruning
+    --AND a.snap_id IN (SELECT sn.snap_id FROM dba_hist_snapshot sn WHERE sn.begin_interval_time >= &3 AND sn.end_interval_time <= &4) -- for partition pruning
+    AND snap_id IN (SELECT snap_id FROM dba_hist_snapshot WHERE sample_time BETWEEN &3 AND &4) -- for partition pruning
     --AND (a.dbid, a.snap_id) IN (SELECT d.dbid, sn.snap_id FROM v$database d, dba_hist_snapshot sn WHERE d.dbid = sn.dbid AND sn.begin_interval_time >= &3 AND sn.end_interval_time <= &4) -- for partition pruning
     GROUP BY
         &1
