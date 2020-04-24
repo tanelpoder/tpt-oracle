@@ -1,6 +1,10 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
+DEF atleast=&1
+
+PROMPT Showing SQLs with at least &atleast cursors
+
 COL "MIN(first_load_time)" FOR A20
 COL "MAX(last_load_time)" FOR A20
 
@@ -20,7 +24,7 @@ SELECT
 FROM v$sql
 --WHERE plan_hash_value != 0
 GROUP BY plan_hash_value
-HAVING COUNT(DISTINCT sql_id) > 10
+HAVING COUNT(DISTINCT sql_id) > &atleast
 ORDER BY COUNT(*) DESC
 /
 
@@ -39,7 +43,7 @@ SELECT
   , MAX(last_load_time)
 FROM v$sql
 GROUP BY sql_id
-HAVING COUNT(*) > 10
+HAVING COUNT(*) > &atleast
 ORDER BY COUNT(*) DESC
 /
 

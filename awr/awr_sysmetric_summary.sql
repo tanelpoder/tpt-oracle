@@ -11,7 +11,8 @@ FROM
 NATURAL JOIN
     dba_hist_sysmetric_summary
 WHERE
-    metric_name IN ('Physical Read IO Requests Per Sec', 'Physical Write IO Requests Per Sec')
+      metric_name IN ('User Commits Per Sec', 'User Transaction Per Sec')
+--    metric_name IN ('Physical Read IO Requests Per Sec', 'Physical Write IO Requests Per Sec')
 --    metric_name IN ('Host CPU Utilization (%)')
 --    metric_name IN ('Logons Per Sec')
 AND begin_interval_time > SYSDATE - 15

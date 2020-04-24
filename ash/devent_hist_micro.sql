@@ -28,7 +28,7 @@ FROM (
       , ROUND(SUM(CASE WHEN time_waited >= 1000000 THEN 1 WHEN time_waited = 0 THEN 0 ELSE 1000000 / time_waited END),1) evh_est_event_count
       , ROUND(CASE WHEN time_waited = 0 THEN 0 ELSE CEIL(POWER(2,CEIL(LOG(2,time_waited)))) END * SUM(CASE WHEN time_waited >= 1000000 THEN 1 WHEN time_waited = 0 THEN 0 ELSE 1000000 / time_waited END)/1000000,1) evh_est_total_sec
     FROM 
-        v$active_session_history 
+        dba_hist_active_sess_history
     WHERE 
         regexp_like(event, '&1') 
     AND &2

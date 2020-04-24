@@ -25,6 +25,7 @@ select
     ses.prev_hash_value                                hash_value
   , ses.prev_sql_id                                    sql_id
   , ses.prev_child_number                              child_number
+  , MOD(ses.prev_hash_value, 131072)                   kgl_bucket
   , (select sql.plan_hash_value 
      from v$sql sql 
      where 

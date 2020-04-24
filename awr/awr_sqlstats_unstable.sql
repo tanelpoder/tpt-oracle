@@ -42,7 +42,6 @@ WITH metrics AS(
       , MIN(CAST(begin_interval_time AS DATE)) first_seen
       , MAX(CAST(end_interval_time   AS DATE)) last_seen
       , SUM(executions_delta)     executions
-      --, ROUND(SUM(elapsed_time_delta  ) / NULLIF(SUM(executions_delta),0)) ela_us_per_exec
       , ROUND(SUM(elapsed_time_delta  ) / CASE WHEN SUM(executions_delta) = 0 THEN 1 ELSE SUM(executions_delta) END) ela_us_per_exec
       , ROUND(SUM(cpu_time_delta      ) / NULLIF(SUM(executions_delta),0))      cpu_us_per_exec
       , ROUND(SUM(rows_processed_delta) / NULLIF(SUM(executions_delta),0),1)    rows_per_exec
@@ -96,7 +95,7 @@ FROM
 		norm
 WHERE
     ela_norm_stddev > 3
-AND max_s_per_exec  > 1
+AND max_s_per_exec  > 1  -- avoid reporting very short queries
 ORDER BY
     ela_norm_stddev DESC
 /
