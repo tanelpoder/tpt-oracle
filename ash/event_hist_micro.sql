@@ -1,9 +1,9 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
--- this scripts uses "ASH math" by Graham Wood, Uri Shaft and John Beresniewicz
+-- this script uses "ASH math" by John Beresniewicz, Graham Wood and Uri Shaft
 -- for estimating the event counts (and average durations):
---   http://www.aioug.org/sangam12/Presentations/20130.pdf (ASH Architecture and Advanced Usage)
+--   https://www.slideshare.net/jberesni/ash-architecture-and-advanced-usage-rmoug2014-36611678
 
 COL evh_event HEAD WAIT_EVENT for A50 TRUNCATE
 COL evh_graph HEAD "Estimated|Time Graph" JUST CENTER FOR A12
@@ -28,8 +28,7 @@ FROM (
       , ROUND(SUM(CASE WHEN time_waited >= 1000000 THEN 1 WHEN time_waited = 0 THEN 0 ELSE 1000000 / time_waited END),1) evh_est_event_count
       , ROUND(CASE WHEN time_waited = 0 THEN 0 ELSE CEIL(POWER(2,CEIL(LOG(2,time_waited)))) END * SUM(CASE WHEN time_waited >= 1000000 THEN 1 WHEN time_waited = 0 THEN 0 ELSE 1000000 / time_waited END)/1000000,1) evh_est_total_sec
     FROM 
-        V$ACTIVE_SESSION_HISTORY 
-        --dba_hist_active_sess_history
+        v$active_session_history 
     WHERE 
         regexp_like(event, '&1') 
     AND &2

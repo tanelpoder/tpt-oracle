@@ -4,6 +4,8 @@
 SELECT
     *
 FROM
-    v$db_object_cache WHERE addr = HEXTORAW('&1')
+    v$db_object_cache 
+WHERE 
+    addr = HEXTORAW(LPAD('&1',16,0))
 @pr
 

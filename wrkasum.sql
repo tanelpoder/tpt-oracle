@@ -9,6 +9,13 @@
 --              @wrkasum username='APPUSER'
 --              @wrkasum "program LIKE '%BatchRunner.exe%' AND machine='host123'"
 
+SELECT 
+    SUM(pga_alloc_mem)/1048576 total_alloc_mem
+  , SUM(pga_used_mem) /1048576 total_used_mem
+FROM
+    gv$process
+/
+
 PROMPT Top allocation reason by PGA memory usage
 
 COL wrkasum_operation_type FOR A30

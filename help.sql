@@ -43,25 +43,24 @@ FROM (
   SELECT 'date.sql' AS name, 'Display current date' AS description, '@date'||&nl||'@d sql'||&nl||'@d %' AS usage FROM dual UNION ALL
   SELECT 'ddl.sql' AS name, 'Extracts DDL statements for specified objects' AS description, '@ddl [<owner>.]<object_name>'||&nl||'@ddl sys.dba_users'||&nl||'@ddl sys.%tab%' AS usage FROM dual UNION ALL
   SELECT 'desc.sql' AS name, 'Describe object' AS description, '@desc <object_name>'||&nl||'@desc dba_tables' AS usage FROM dual UNION ALL
-  SELECT 'descx.sql' AS name, 'Describe table columns' AS description, '@descx <owner>.<table_name>'||&nl||'@descx %.t1'||&nl||'@descx sh.t1' AS usage FROM dual UNION ALL
-  SELECT 'devent_hist.sql' AS name, 'Display a histogram of the number of waits from AWR (miliseconds)' AS description, '@ash/devent_hist.sql <event> <filter_expression> <from_time> <to_time>'||&nl||'@ash/devent_hist.sql redo 1=1 sysdate-1/24 sysdate'||&nl||'@ash/devent_hist.sql redo|read "wait_class=''User I/O'' AND session_type=''FOREGROUND''" sysdate-1/24 sysdate' AS usage FROM dual UNION ALL
+  SELECT 'devent_hist.sql' AS name, 'Display a histogram of the number of waits from AWR (milliseconds)' AS description, '@ash/devent_hist.sql <event> <filter_expression> <from_time> <to_time>'||&nl||'@ash/devent_hist.sql log_file 1=1 sysdate-1/24 sysdate'||&nl||'@ash/devent_hist.sql log.file|db.file "wait_class=''User I/O'' AND session_type=''FOREGROUND''" sysdate-1/24 sysdate' AS usage FROM dual UNION ALL
   SELECT 'df.sql' AS name, 'Display tablespace usage (GB)' AS description, '@df' AS usage FROM dual UNION ALL
   SELECT 'dfm.sql' AS name, 'Display tablespace usage (MB)' AS description, '@dfm' AS usage FROM dual UNION ALL
   SELECT 'dirs.sql' AS name, 'Display database directories' AS description, '@dirs' AS usage FROM dual UNION ALL
   SELECT 'drop_sql_patch.sql' AS name, 'Drop SQL patch' AS description, '@drop_sql_patch <patch_name>'||&nl||'@drop_sql_patch SQL_PATCH_g4pkmrqrgxg3b' AS usage FROM dual UNION ALL
   SELECT 'drop_sql_baseline.sql' AS name, 'Drop SQL Plan Baseline' AS description, '@drop_sql_baseline <sql_handle>   (get sql_handle from DBMS_XPLAN notes or DBA_SQL_PLAN_BASELINES)'||&nl||'@drop_sql_baseline SQL_52cb74b7097edbbd' AS usage FROM dual UNION ALL
   SELECT 'ev.sql' AS name, 'Set session event' AS description, '@ev <event> <level>'||&nl||'@ev 10046 12' AS usage FROM dual UNION ALL
-  SELECT 'event_hist.sql' AS name, 'Display a histogram of the number of waits from ASH (miliseconds)' AS description, '@ash/event_hist.sql <event> <filter_expression> <from_time> <to_time>'||&nl||'@ash/event_hist.sql redo 1=1 sysdate-1/24 sysdate'||&nl||'@ash/event_hist.sql redo|read "wait_class=''User I/O'' AND session_type=''FOREGROUND''" sysdate-1/24 sysdate' AS usage FROM dual UNION ALL
-  SELECT 'event_hist_micro.sql' AS name, 'Display a histogram of the number of waits from ASH (microseconds)' AS description, '@ash/event_hist_micro <event> <filter_expression> <from_time> <to_time>'||&nl||'@ash/event_hist_micro redo 1=1 sysdate-1/24 sysdate'||&nl||'@ash/event_hist_micro redo|read "wait_class=''User I/O'' AND session_type=''FOREGROUND''" sysdate-1/24 sysdate' AS usage FROM dual UNION ALL
-  SELECT 'evh.sql' AS name, 'Display a histogram of the number of waits' AS description, '@evh <event>'||&nl||'@evh redo'||&nl||'@evh redo|read' AS usage FROM dual UNION ALL
+  SELECT 'event_hist.sql' AS name, 'Display a histogram of the number of waits from ASH (milliseconds)' AS description, '@ash/event_hist.sql <event> <filter_expression> <from_time> <to_time>'||&nl||'@ash/event_hist.sql log.file 1=1 sysdate-1/24 sysdate'||&nl||'@ash/event_hist.sql log.file|db.file "wait_class=''User I/O'' AND session_type=''FOREGROUND''" sysdate-1/24 sysdate' AS usage FROM dual UNION ALL
+  SELECT 'event_hist_micro.sql' AS name, 'Display a histogram of the number of waits from ASH (microseconds)' AS description, '@ash/event_hist_micro <event> <filter_expression> <from_time> <to_time>'||&nl||'@ash/event_hist_micro log.file 1=1 sysdate-1/24 sysdate'||&nl||'@ash/event_hist_micro log.file|db.file "wait_class=''User I/O'' AND session_type=''FOREGROUND''" sysdate-1/24 sysdate' AS usage FROM dual UNION ALL
+  SELECT 'evh.sql' AS name, 'Display a histogram of the number of waits' AS description, '@evh <event>'||&nl||'@evh log.file'||&nl||'@evh log.file|db.file' AS usage FROM dual UNION ALL
   SELECT 'evo.sql' AS name, 'Disable session event' AS description, '@evo <event>'||&nl||'@evo 10046' AS usage FROM dual UNION ALL
   SELECT 'fix.sql' AS name, 'Display fix controls description' AS description, '@fix <bugno|description|optimizer_feature_enable|sql_feature>'||&nl||'@fix 13836796'||&nl||'@fix adaptive' AS usage FROM dual UNION ALL
   SELECT 'grp.sql' AS name, 'Group function wrapper' AS description, '@grp <column_name> <table_name>'||&nl||'@grp owner dba_tables'||&nl||'@grp owner,object_type dba_objects' AS usage FROM dual UNION ALL
   SELECT 'help.sql' AS name, 'Display TPT script help' AS description, '@help <search_expression>'||&nl||'@help explain'||&nl||'@help lock|latch.*hold'||&nl||'@help ^ind.*sql|^tab.*sql' AS usage FROM dual UNION ALL
   SELECT 'hash.sql' AS name, 'Display the hash value, sql_id, and child number of the last SQL in session' AS description, '@hash' AS usage FROM dual UNION ALL
   SELECT 'hint.sql' AS name, 'Display all available hints' AS description, '@hint <name>'||&nl||'@hint full' AS usage FROM dual UNION ALL
-  SELECT 'hintclass.sql' AS name, 'Display all available hints' AS description, '@hintclass <hint_name>'||&nl||'@hintclass merge' AS usage FROM dual UNION ALL
-  SELECT 'hintfeature.sql' AS name, 'Display all available hints grouped by SQL feature' AS description, '@hintfeature <feature_name>'||&nl||'@hintfeature transformation' AS usage FROM dual UNION ALL
+  SELECT 'hintclass.sql' AS name, 'Display all available hints with hint class info' AS description, '@hintclass <hint_name>'||&nl||'@hintclass merge' AS usage FROM dual UNION ALL
+  SELECT 'hintfeature.sql' AS name, 'Display all available hints with SQL feature info' AS description, '@hintfeature <feature_name>'||&nl||'@hintfeature transformation' AS usage FROM dual UNION ALL
   SELECT 'hinth.sql' AS name, 'Display hint hierarchy' AS description, '@hinth <hint_name>'||&nl||'@hinth merge' AS usage FROM dual UNION ALL
   SELECT 'ind.sql' AS name, 'Display indexes' AS description, '@ind [<owner>.]<index_name|table_name>'||&nl||'@ind orders'||&nl||'@ind soe.ord_customer_ix'||&nl||'@ind soe.%' AS usage FROM dual UNION ALL
   SELECT 'indf.sql' AS name, 'Display function-based index expressions' AS description, '@indf [<owner>.]<index_name|table_name>'||&nl||'@indf orders'||&nl||'@indf soe.ord_customer_ix'||&nl||'@indf soe.%' AS usage FROM dual UNION ALL
@@ -97,7 +96,7 @@ FROM (
   SELECT 's.sql' AS name, 'Display current session wait and SQL_ID info (10g+)' AS description, '@s <sid>'||&nl||'@s 52,110,225'||&nl||'@s "select sid from v$session where username = ''XYZ''"'||&nl||'@s '||&amp||'mysid' AS usage FROM dual UNION ALL
   SELECT 'sdr.sql' AS name, 'Control direct read in serial (_serial_direct_read)' AS description, '@sdr <TRUE|FALSE>' AS usage FROM dual UNION ALL
   SELECT 'se.sql' AS name, 'Display session events' AS description, '@se <sid>'||&nl||'@se 10' AS usage FROM dual UNION ALL
-  SELECT 'sed.sql' AS name, 'Display wait events description' AS description, '@sed <event>'||&nl||'@sed redo'||&nl||'@sed "row lock"' AS usage FROM dual UNION ALL
+  SELECT 'sed.sql' AS name, 'Display wait events description' AS description, '@sed <event>'||&nl||'@sed log_file'||&nl||'@sed "enq: TX"' AS usage FROM dual UNION ALL
   SELECT 'seg.sql' AS name, 'Display segment information' AS description, '@seg [<owner>.]<segment_name>'||&nl||'@seg soe.customers'||&nl||'@seg soe.%' AS usage FROM dual UNION ALL
   SELECT 'segcached.sql' AS name, 'Display number of buffered blocks of a segment' AS description, '@segcached [<owner>.]<object_name>'||&nl||'@segcached soe.orders'||&nl||'@segcached soe.%' AS usage FROM dual UNION ALL
   SELECT 'seq.sql' AS name, 'Display sequence information' AS description, '@seq [<owner>.]<sequence_name>'||&nl||'@seq sys.jobseq'||&nl||'@seq %.jobseq' AS usage FROM dual UNION ALL
@@ -115,8 +114,7 @@ FROM (
   SELECT 'usid.sql' AS name, 'Display user sessoin and process information' AS description, '@usid <sid>'||&nl||'@us 1234' AS usage FROM dual UNION ALL
   SELECT 'sl.sql' AS name, 'Set statistics level' AS description, '@sl <statistics_level>'||&nl||'@sl all' AS usage FROM dual UNION ALL
   SELECT 'smem.sql' AS name, 'Display process memory usage' AS description, '@smem <sid>'||&nl||'@smem 1000' AS usage FROM dual UNION ALL
-  SELECT 'sqlbinds.sql' AS name, 'Display captured binds from v$sql_bind_capture' AS description, '@sqlbinds <sql_id> <child_number>'||&nl||'@sqlbinds aqjj9h9ms8knh 0'||&nl||'@sqlbinds aqjj9h9ms8knh %' AS usage FROM dual UNION ALL
-  SELECT 'sqlbindsummary.sql' AS name, 'Display bind variables metadata' AS description, '@sqlbindsummary <sql_id>'||&nl||'@sqlbindsummary aqjj9h9ms8knh' AS usage FROM dual UNION ALL
+  SELECT 'sqlbinds.sql' AS name, 'Display captured SQL bind variable values' AS description, '@sqlbinds <sql_id> <child_number>'||&nl||'@sqlbinds 2swu3tn1ujzq7 0'||&nl||'@sqlbinds 2swu3tn1ujzq7 %' AS usage FROM dual UNION ALL
   SELECT 'sqlid.sql' AS name, 'Display SQL: text, child cursors and execution statistics' AS description, '@sqlid <sql_id> <child_number>'||&nl||'@sqlid 7q729nhdgtsqq 0'||&nl||'@sqlid 7q729nhdgtsqq %' AS usage FROM dual UNION ALL
   SELECT 'sqlf.sql' AS name, 'Display full sql text from memory' AS description, '@sqlf <sql_id>'||&nl||'@sqlf 7q729nhdgtsqq' AS usage FROM dual UNION ALL
   SELECT 'sqlfn.sql' AS name, 'Display SQL functions' AS description, '@sqlf <name>'||&nl||'@sqlfn date' AS usage FROM dual UNION ALL

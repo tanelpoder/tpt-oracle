@@ -21,11 +21,12 @@
 --              for some reason (this hint works on Oracle 10.2 and higher)
 --
 -- TODO:        Noteworthy outstanding items are:
+--              
 --              * formatting, decide what columns to show by default
---              * clone to an @xbx.sql (eXtended version) with wider output and stuff like plan outline hints shown etc
---                currently you can just comment/uncomment sections in this script
 --              * clone to @xbad.sql for showing full adaptive plans
---              * add an option to gather/report metrics of all PX slaves
+--              * add an option to gather/report metrics of all PX slaves (ALLSTATS ALL)
+--              * currently gaps (NULL values) on some plan lines for COST will
+--                mess up the Self-Cost calculation (need more sophisticated calculation)
 --
 --------------------------------------------------------------------------------
 
@@ -56,6 +57,7 @@ column xbi_qblock_name                              heading "Query Block|name" f
 column xbi_object_name                              heading "Object|Name" for a30
 column xbi_object_node                              heading "Object|Node" for a10
 column xbi_opt_cost                                 heading "Optimizer|Cost" for 9999999999
+column xbi_opt_self_cost                            heading "Optimizer|Self Cost*" for 9999999999
 column xbi_opt_card                                 heading "Est. rows|per Start" for 999999999999
 column xbi_opt_card_times_starts                    heading "Est. rows|total" for 999999999999
 column xbi_opt_card_misestimate                     heading "Opt. Card.|misestimate" for a15 justify right
@@ -117,7 +119,7 @@ and is_obsolete = 'N'
 
 WITH sq AS (
     SELECT 
-        sp.id, sp.parent_id, sp.operation, sp.options, sp.object_owner, sp.object_name
+        sp.id, sp.parent_id, sp.operation, sp.options, sp.object_owner, sp.object_name, sp.cost
       , ss.last_elapsed_time, ss.last_cr_buffer_gets, ss.last_cu_buffer_gets, ss.last_disk_reads, ss.last_disk_writes
     FROM v$sql_plan_statistics_all ss INNER JOIN
          v$sql_plan sp
@@ -138,12 +140,13 @@ WITH sq AS (
       , par.last_cu_buffer_gets - SUM(chi.last_cu_buffer_gets) self_cu_buffer_gets
       , par.last_disk_reads     - SUM(chi.last_disk_reads    ) self_disk_reads  
       , par.last_disk_writes    - SUM(chi.last_disk_writes   ) self_disk_writes  
+      , par.cost                - SUM(chi.cost               ) self_cost
     FROM sq par LEFT OUTER JOIN
          sq chi
       ON chi.parent_id = par.id
     GROUP BY 
         par.id
-      , par.last_elapsed_time, par.last_cr_buffer_gets, par.last_cu_buffer_gets, par.last_disk_reads, par.last_disk_writes   
+      , par.last_elapsed_time, par.last_cr_buffer_gets, par.last_cu_buffer_gets, par.last_disk_reads, par.last_disk_writes, par.cost
 ), combined AS (
     SELECT sq.id, sq.parent_id, sq.operation, sq.options
          , sq.object_owner, sq.object_name
@@ -157,6 +160,7 @@ WITH sq AS (
          , NVL(deltas.self_cu_buffer_gets , sq.last_cu_buffer_gets) self_cu_buffer_gets
          , NVL(deltas.self_disk_reads     , sq.last_disk_reads)     self_disk_reads
          , NVL(deltas.self_disk_writes    , sq.last_disk_writes)    self_disk_writes
+         , NVL(deltas.self_cost           , sq.cost            )    self_cost
     FROM
         sq, deltas
     WHERE
@@ -231,7 +235,8 @@ select
 --  ps.last_disk_writes                                                            xbi_last_disk_writes,
     ps.last_memory_used/1048576                                                    xbi_last_memory_used,
     ps.last_execution                                                              xbi_last_execution,
-    p.cost                                                                         xbi_opt_cost
+    p.cost                                                                         xbi_opt_cost,
+    c.self_cost                                                                    xbi_opt_self_cost
 --  p.bytes                                                                        xbi_opt_bytes,
 --  p.cpu_cost                                                                     xbi_cpu_cost,
 --  p.io_cost                                                                      xbi_io_cost,

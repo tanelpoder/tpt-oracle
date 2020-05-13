@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 --
--- File name:   dash_wait_chains.sql (v0.4 BETA)
+-- File name:   dash_wait_chains.sql (v0.7 BETA)
 -- Purpose:     Display ASH wait chains (multi-session wait signature, a session
 --              waiting for another session etc.)
 --              
@@ -17,14 +17,6 @@
 --     @dash_wait_chains username||':'||program2||event2 session_type='FOREGROUND' sysdate-1 sysdate
 --
 -- Other:
---
---     The this "*2.sql" script is different from normal dash_wait_chains.sql
---     as it doesnt walk samples by sample_id but by actual sample time
---     truncated to 10-second precision. This is needed as in RAC different instances
---     will likely have different sample_id (due to RAC node restarts etc) and
---     clock drift etc. As long as your RAC instances have properly synchronized
---     system clocks, this script will still show correct enough results.
---
 --     This script uses only the DBA_HIST_ACTIVE_SESS_HISTORY view, use
 --     @ash_wait_chains.sql for accessiong the V$ ASH view
 --              
@@ -33,12 +25,13 @@ COL wait_chain FOR A300 WORD_WRAP
 COL "%This" FOR A6
 
 PROMPT
-PROMPT -- Display ASH Wait Chain Signatures script v0.4 BETA by Tanel Poder ( http://blog.tanelpoder.com )
+PROMPT -- Display ASH Wait Chain Signatures script v0.7 BETA by Tanel Poder ( http://blog.tanelpoder.com )
 
 WITH 
-bclass AS (SELECT class, ROWNUM r from v$waitstat),
-ash AS (SELECT /*+ QB_NAME(ash) LEADING(a) USE_HASH(u) SWAP_JOIN_INPUTS(u) */
+bclass AS (SELECT /*+ INLINE */ class, ROWNUM r from v$waitstat),
+ash AS (SELECT /*+ INLINE QB_NAME(ash) LEADING(a) USE_HASH(u) SWAP_JOIN_INPUTS(u) */
             a.*
+          , o.*
           , SUBSTR(TO_CHAR(a.sample_time, 'YYYYMMDDHH24MISS'),1,13) sample_time_10s -- ASH dba_hist_ samples stored every 10sec
           , u.username
           , CASE WHEN a.session_type = 'BACKGROUND' OR REGEXP_LIKE(a.program, '.*\([PJ]\d+\)') THEN
@@ -46,23 +39,54 @@ ash AS (SELECT /*+ QB_NAME(ash) LEADING(a) USE_HASH(u) SWAP_JOIN_INPUTS(u) */
             ELSE
                 '('||REGEXP_REPLACE(REGEXP_REPLACE(a.program, '(.*)@(.*)(\(.*\))', '\1'), '\d', 'n')||')'
             END || ' ' program2
-          , NVL(a.event||CASE WHEN a.event IN (SELECT name FROM v$event_name WHERE parameter3 = 'class#')
-                              THEN ' ['||(SELECT class FROM bclass WHERE r = a.p3)||']' ELSE null END,'ON CPU') 
+          , NVL(a.event||CASE WHEN event like 'enq%' AND session_state = 'WAITING'
+                              THEN ' [mode='||BITAND(p1, POWER(2,14)-1)||']'
+                              WHEN a.event IN (SELECT name FROM v$event_name WHERE parameter3 = 'class#')
+                              THEN ' ['||NVL((SELECT class FROM bclass WHERE r = a.p3),'undo @bclass '||a.p3)||']' ELSE null END,'ON CPU')
                        || ' ' event2
           , TO_CHAR(CASE WHEN session_state = 'WAITING' THEN p1 ELSE null END, '0XXXXXXXXXXXXXXX') p1hex
           , TO_CHAR(CASE WHEN session_state = 'WAITING' THEN p2 ELSE null END, '0XXXXXXXXXXXXXXX') p2hex
           , TO_CHAR(CASE WHEN session_state = 'WAITING' THEN p3 ELSE null END, '0XXXXXXXXXXXXXXX') p3hex
+          , CASE WHEN BITAND(time_model, POWER(2, 01)) = POWER(2, 01) THEN 'DBTIME '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 02)) = POWER(2, 02) THEN 'BACKGROUND '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 03)) = POWER(2, 03) THEN 'CONNECTION_MGMT '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 04)) = POWER(2, 04) THEN 'PARSE '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 05)) = POWER(2, 05) THEN 'FAILED_PARSE '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 06)) = POWER(2, 06) THEN 'NOMEM_PARSE '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 07)) = POWER(2, 07) THEN 'HARD_PARSE '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 08)) = POWER(2, 08) THEN 'NO_SHARERS_PARSE '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 09)) = POWER(2, 09) THEN 'BIND_MISMATCH_PARSE '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 10)) = POWER(2, 10) THEN 'SQL_EXECUTION '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 11)) = POWER(2, 11) THEN 'PLSQL_EXECUTION '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 12)) = POWER(2, 12) THEN 'PLSQL_RPC '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 13)) = POWER(2, 13) THEN 'PLSQL_COMPILATION '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 14)) = POWER(2, 14) THEN 'JAVA_EXECUTION '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 15)) = POWER(2, 15) THEN 'BIND '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 16)) = POWER(2, 16) THEN 'CURSOR_CLOSE '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 17)) = POWER(2, 17) THEN 'SEQUENCE_LOAD '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 18)) = POWER(2, 18) THEN 'INMEMORY_QUERY '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 19)) = POWER(2, 19) THEN 'INMEMORY_POPULATE '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 20)) = POWER(2, 20) THEN 'INMEMORY_PREPOPULATE '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 21)) = POWER(2, 21) THEN 'INMEMORY_REPOPULATE '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 22)) = POWER(2, 22) THEN 'INMEMORY_TREPOPULATE '  END
+          ||CASE WHEN BITAND(time_model, POWER(2, 23)) = POWER(2, 23) THEN 'TABLESPACE_ENCRYPTION ' END time_model_name
         FROM 
             dba_hist_active_sess_history a
           , dba_users u
+          , (SELECT
+                 object_id,data_object_id,owner,object_name,subobject_name,object_type
+               , owner||'.'||object_name obj
+               , owner||'.'||object_name||' ['||object_type||']' objt
+            FROM dba_objects) o
         WHERE
             a.user_id = u.user_id (+)
+        AND a.current_obj# = o.object_id(+)
         AND sample_time BETWEEN &3 AND &4
     ),
-ash_samples AS (SELECT DISTINCT sample_time_10s FROM ash),
-ash_data AS (SELECT * FROM ash),
+ash_samples AS (SELECT /*+ INLINE */ DISTINCT sample_time_10s FROM ash),
+ash_data AS (SELECT /*+ INLINE */ * FROM ash),
 chains AS (
-    SELECT
+    SELECT /*+ INLINE */
         d.sample_time_10s ts
       , level lvl
       , session_id sid
