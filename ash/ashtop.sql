@@ -31,6 +31,7 @@ COL p3text              FOR A30 word_wrap
 COL p1hex               FOR A17
 COL p2hex               FOR A17
 COL p3hex               FOR A17
+COL dop                 FOR 99
 COL AAS                 FOR 9999.9
 COL totalseconds HEAD "Total|Seconds" FOR 99999999
 COL dist_sqlexec_seen HEAD "Distinct|Execs Seen" FOR 999999
@@ -66,6 +67,7 @@ FROM (
            , TO_CHAR(CASE WHEN session_state = 'WAITING' THEN p1 ELSE null END, '0XXXXXXXXXXXXXXX') p1hex
            , TO_CHAR(CASE WHEN session_state = 'WAITING' THEN p2 ELSE null END, '0XXXXXXXXXXXXXXX') p2hex
            , TO_CHAR(CASE WHEN session_state = 'WAITING' THEN p3 ELSE null END, '0XXXXXXXXXXXXXXX') p3hex
+           , TRUNC(px_flags / 2097152) dop
            , NVL(event, session_state)||
                 CASE 
                     WHEN event like 'enq%' AND session_state = 'WAITING'
