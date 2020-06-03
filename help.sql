@@ -17,7 +17,7 @@ DEFINE search_string=&1
 
 COLUMN name FORMAT A25 TRUNC
 COLUMN description FORMAT A60 WORD_WRAP
-COLUMN usage FORMAT A110
+COLUMN usage FORMAT A115
 
 WITH q AS (
 SELECT name, description, usage
