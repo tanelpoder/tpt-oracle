@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 --
--- File name:   dash_wait_chains.sql (v0.5 BETA)
+-- File name:   dash_wait_chains.sql (v0.6 BETA)
 -- Purpose:     Display ASH wait chains (multi-session wait signature, a session
 --              waiting for another session etc.)
 --              
@@ -25,11 +25,11 @@ COL wait_chain FOR A300 WORD_WRAP
 COL "%This" FOR A6
 
 PROMPT
-PROMPT -- Display ASH Wait Chain Signatures script v0.5 BETA by Tanel Poder ( http://blog.tanelpoder.com )
+PROMPT -- Display ASH Wait Chain Signatures script v0.6 BETA by Tanel Poder ( http://blog.tanelpoder.com )
 
 WITH 
-bclass AS (SELECT class, ROWNUM r from v$waitstat),
-ash AS (SELECT /*+ QB_NAME(ash) LEADING(a) USE_HASH(u) SWAP_JOIN_INPUTS(u) */
+bclass AS (SELECT /*+ INLINE */ class, ROWNUM r from v$waitstat),
+ash AS (SELECT /*+ INLINE QB_NAME(ash) LEADING(a) USE_HASH(u) SWAP_JOIN_INPUTS(u) */
             a.*
           , o.*
           , u.username
@@ -82,10 +82,10 @@ ash AS (SELECT /*+ QB_NAME(ash) LEADING(a) USE_HASH(u) SWAP_JOIN_INPUTS(u) */
         AND a.current_obj# = o.object_id(+)
         AND sample_time BETWEEN &3 AND &4
     ),
-ash_samples AS (SELECT DISTINCT sample_id FROM ash),
-ash_data AS (SELECT * FROM ash),
+ash_samples AS (SELECT /*+ INLINE */ DISTINCT sample_id FROM ash),
+ash_data AS (SELECT /*+ INLINE */ * FROM ash),
 chains AS (
-    SELECT
+    SELECT /*+ INLINE */
         sample_time ts
       , level lvl
       , session_id sid

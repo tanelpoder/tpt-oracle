@@ -14,9 +14,9 @@
 --  @ash/devent_hist file 1=1 "TIMESTAMP'2014-06-05 09:30:00'" "TIMESTAMP'2014-06-05 09:35:00'"
 --
 -- Other:       
---   this scripts uses "ASH math" by Graham Wood, Uri Shaft and John Beresniewicz
---   for estimating the event counts (and average durations):
---   http://www.aioug.org/sangam12/Presentations/20130.pdf (ASH Architecture and Advanced Usage)
+-- this script uses "ASH math" by John Beresniewicz, Graham Wood and Uri Shaft
+-- for estimating the event counts (and average durations):
+--   https://www.slideshare.net/jberesni/ash-architecture-and-advanced-usage-rmoug2014-36611678
 --              
 --------------------------------------------------------------------------------------------------
 

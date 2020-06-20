@@ -18,6 +18,7 @@ FROM
 WHERE 
     lc.child# = s.kqrstcln
 AND lc.name   = 'row cache objects'
+AND kqrstcid LIKE '&1'
 ORDER BY
     cache#
   , type

@@ -17,7 +17,7 @@ DEFINE search_string=&1
 
 COLUMN name FORMAT A25 TRUNC
 COLUMN description FORMAT A60 WORD_WRAP
-COLUMN usage FORMAT A110
+COLUMN usage FORMAT A115
 
 WITH q AS (
 SELECT name, description, usage
@@ -28,7 +28,7 @@ FROM (
   SELECT 'awr_sqlid.sql' AS name, 'Display SQL text from AWR' AS description, '@awr/awr_sqlid <sql_id>'||&nl||'@awr/awr_sqlid 7q729nhdgtsqq' AS usage FROM dual UNION ALL
   SELECT 'awr_sqlstats.sql' AS name, 'Display SQL statistics from AWR' AS description, '@awr/awr_sqlstats <sql_id> <plan_hash_value> <from_time> <to_time>'||&nl||'@awr/awr_sqlstats 0sh0fn7r21020 1541789278 sysdate-7 sysdate'||&nl||'@awr/awr_sqlstats 0sh0fn7r21020 % sysdate-7 sysdate' AS usage FROM dual UNION ALL
   SELECT 'awr_sqlstats_per_exec.sql' AS name, 'Display SQL statistics per execution from AWR' AS description, '@awr/awr_sqlstats_per_exec <sql_id> <plan_hash_value> <from_time> <to_time>'||&nl||'@awr/awr_sqlstats_per_exec 0sh0fn7r21020 1541789278 sysdate-7 sysdate'||&nl||'@awr/awr_sqlstats_per_exec 0sh0fn7r21020 % sysdate-7 sysdate' AS usage FROM dual UNION ALL
-  SELECT 'awr_sqlstats_unstable.sql' AS name, 'Display unstable SQL execution plans from AWR' AS description, '@awr/awr_sqlstats_unstable <sql_id> <plan_hash_value> <from_time> <to_time>'||&nl||'@awr/awr_sqlstats_unstable 0sh0fn7r21020 % sysdate-7 sysdate' AS usage FROM dual UNION ALL
+  SELECT 'awr_sqlstats_unstable.sql' AS name, 'Display unstable SQL execution plans from AWR' AS description, '@awr/awr_sqlstats_unstable <group_by_expr1> <group_by_expr2> <from_time> <to_time>'||&nl||'@awr/awr_sqlstats_unstable force_matching_signature plan_hash_value sysdate-7 sysdate' AS usage FROM dual UNION ALL
   SELECT 'bg.sql' AS name, 'Display background processes' AS description, '@bg <process_name|process_description>'||&nl||'@bg dbw'||&nl||'@bg writer'||&nl||'@bg %' AS usage FROM dual UNION ALL
   SELECT 'bhobjects.sql' AS name, 'Display top objects in buffer cache' AS description, '@bhobjects' AS usage FROM dual UNION ALL
   SELECT 'bhobjects2.sql' AS name, 'Display buffer cache statistics' AS description, '@bhobjects2' AS usage FROM dual UNION ALL
@@ -54,7 +54,7 @@ FROM (
   SELECT 'event_hist_micro.sql' AS name, 'Display a histogram of the number of waits from ASH (microseconds)' AS description, '@ash/event_hist_micro <event> <filter_expression> <from_time> <to_time>'||&nl||'@ash/event_hist_micro log.file 1=1 sysdate-1/24 sysdate'||&nl||'@ash/event_hist_micro log.file|db.file "wait_class=''User I/O'' AND session_type=''FOREGROUND''" sysdate-1/24 sysdate' AS usage FROM dual UNION ALL
   SELECT 'evh.sql' AS name, 'Display a histogram of the number of waits' AS description, '@evh <event>'||&nl||'@evh log.file'||&nl||'@evh log.file|db.file' AS usage FROM dual UNION ALL
   SELECT 'evo.sql' AS name, 'Disable session event' AS description, '@evo <event>'||&nl||'@evo 10046' AS usage FROM dual UNION ALL
-  SELECT 'fix.sql' AS name, 'Display session fix controls' AS description, '@fix <bugno|description|optimizer_feature_enable|sql_feature>'||&nl||'@fix 13836796'||&nl||'@fix adaptive' AS usage FROM dual UNION ALL
+  SELECT 'fix.sql' AS name, 'Display fix controls description' AS description, '@fix <bugno|description|optimizer_feature_enable|sql_feature>'||&nl||'@fix 13836796'||&nl||'@fix adaptive' AS usage FROM dual UNION ALL
   SELECT 'grp.sql' AS name, 'Group function wrapper' AS description, '@grp <column_name> <table_name>'||&nl||'@grp owner dba_tables'||&nl||'@grp owner,object_type dba_objects' AS usage FROM dual UNION ALL
   SELECT 'help.sql' AS name, 'Display TPT script help' AS description, '@help <search_expression>'||&nl||'@help explain'||&nl||'@help lock|latch.*hold'||&nl||'@help ^ind.*sql|^tab.*sql' AS usage FROM dual UNION ALL
   SELECT 'hash.sql' AS name, 'Display the hash value, sql_id, and child number of the last SQL in session' AS description, '@hash' AS usage FROM dual UNION ALL
@@ -75,7 +75,10 @@ FROM (
   SELECT 'mem.sql' AS name, 'Display information about the dynamic SGA components' AS description, '@mem' AS usage FROM dual UNION ALL
   SELECT 'memres.sql' AS name, 'Display information about the last completed memory resize operations' AS description, '@memres' AS usage FROM dual UNION ALL
   SELECT 'nonshared.sql' AS name, 'Display reasons for non-shared child cursors from v$shared_cursor', '@nonshared <sql_id>'||&nl||'@nonshared 7q729nhdgtsqq' AS usage FROM dual UNION ALL
+  SELECT 'nls.sql' AS name, 'Display NLS parameters at session level', '@nls' AS usage FROM dual UNION ALL
   SELECT 'o.sql' AS name, 'Display database object based on object owner and name', '@o [<owner>.]<object_name>'||&nl||'@o sys.dba_users'||&nl||'@o %.%files' AS usage FROM dual UNION ALL
+  SELECT 'oda.sql' AS name, 'Display oradebug doc event action', '@oda <action>'||&nl||'@oddc latch'||&nl||'@oddc .' AS usage FROM dual UNION ALL
+  SELECT 'oddc.sql' AS name, 'Display oradebug doc component', '@oddc <component>'||&nl||'@oddc optimizer'||&nl||'@oddc .' AS usage FROM dual UNION ALL
   SELECT 'oerr.sql' AS name, 'Display Oracle error decription' AS description, '@oerr <error_number>'||&nl||'@oerr 7445' AS usage FROM dual UNION ALL
   SELECT 'oi.sql' AS name, 'Display invalid objects' AS description, '@oi' AS usage FROM dual UNION ALL
   SELECT 'oid.sql' AS name, 'Display database objects based on object id' AS description, '@oid <object_id>'||&nl||'@oid 10'||&nl||'@oid 10,20' AS usage FROM dual UNION ALL
@@ -83,11 +86,13 @@ FROM (
   SELECT 'p.sql' AS name, 'Display parameter name and value' AS description, '@p <parameter_name>'||&nl||'@pd optimizer' AS usage FROM dual UNION ALL
   SELECT 'partkeys.sql' AS name, 'Display table partition keys' AS description, '@partkeys [<owner>.]<table_name>'||&nl||'@partkeys soe.orders'||&nl||'@partkeys soe.%' AS usage FROM dual UNION ALL
   SELECT 'pd.sql' AS name, 'Display parameter name, description and value' AS description, '@pd <parameter_description>'||&nl||'@pd optimizer' AS usage FROM dual UNION ALL
+  SELECT 'pga.sql' AS name, 'Display PGA memory usage statistics' AS description, '@pga' AS usage FROM dual UNION ALL
   SELECT 'pmem.sql' AS name, 'Display process memory usage' AS description, '@pmem <spid>'||&nl||'@pmem 1000' AS usage FROM dual UNION ALL
   SELECT 'proc.sql' AS name, 'Display functions and procedures' AS description, '@proc <object_name> <procedure_name>'||&nl||'@proc dbms_stats table'||&nl||'@proc dbms_stats %' AS usage FROM dual UNION ALL
   SELECT 'procid.sql' AS name, 'Display functions and procedures' AS description, '@procid <object_id> <subprogram_id>'||&nl||'@procid 13615 84' AS usage FROM dual UNION ALL
   SELECT 'pv.sql' AS name, 'Display parameters based on the current value' AS description, '@pv <value>'||&nl||'@pv MANUAL' AS usage FROM dual UNION ALL
   SELECT 'pvalid.sql' AS name, 'Display valid parameter values' AS description, '@pvalid <parameter_name>'||&nl||'@pvalid optimizer' AS usage FROM dual UNION ALL
+  SELECT 'rowid.sql' AS name, 'Display file, block, row numbers from rowid' AS description, '@rowid <rowid>'||&nl||'@rowid AAAR51AAMAAAACGAAB' AS usage FROM dual UNION ALL
   SELECT 's.sql' AS name, 'Display current session wait and SQL_ID info (10g+)' AS description, '@s <sid>'||&nl||'@s 52,110,225'||&nl||'@s "select sid from v$session where username = ''XYZ''"'||&nl||'@s '||&amp||'mysid' AS usage FROM dual UNION ALL
   SELECT 'sdr.sql' AS name, 'Control direct read in serial (_serial_direct_read)' AS description, '@sdr <TRUE|FALSE>' AS usage FROM dual UNION ALL
   SELECT 'se.sql' AS name, 'Display session events' AS description, '@se <sid>'||&nl||'@se 10' AS usage FROM dual UNION ALL
@@ -106,6 +111,7 @@ FROM (
   SELECT 'sys.sql' AS name, 'Display system statistics' AS description, '@sys <statistic_name>'||&nl||'@sys redo'||&nl||'@sys ''redo write''' AS usage FROM dual UNION ALL
   SELECT 'uu.sql' AS name, 'Display user sessions' AS description, '@uu <username>'||&nl||'@uu %'||&nl||'@uu username'||&nl||'@uu %username%' AS usage FROM dual UNION ALL
   SELECT 'us.sql' AS name, 'Display database usernames from dba_users' AS description, '@us <username>'||&nl||'@us username' AS usage FROM dual UNION ALL
+  SELECT 'usid.sql' AS name, 'Display user sessoin and process information' AS description, '@usid <sid>'||&nl||'@us 1234' AS usage FROM dual UNION ALL
   SELECT 'sl.sql' AS name, 'Set statistics level' AS description, '@sl <statistics_level>'||&nl||'@sl all' AS usage FROM dual UNION ALL
   SELECT 'smem.sql' AS name, 'Display process memory usage' AS description, '@smem <sid>'||&nl||'@smem 1000' AS usage FROM dual UNION ALL
   SELECT 'sqlbinds.sql' AS name, 'Display captured SQL bind variable values' AS description, '@sqlbinds <sql_id> <child_number>'||&nl||'@sqlbinds 2swu3tn1ujzq7 0'||&nl||'@sqlbinds 2swu3tn1ujzq7 %' AS usage FROM dual UNION ALL
@@ -120,12 +126,14 @@ FROM (
   SELECT 'tabpart.sql' AS name, 'Display table partitions' AS description, '@tabpart [<owner>.]<table_name>'||&nl||'@tabpart soe.orders'||&nl||'@tabpart soe.%' AS usage FROM dual UNION ALL
   SELECT 'tabsubpart' AS name, 'Display table subpartitions' AS description, '@tabsubpart [<owner>.]<table_name>'||&nl||'@tabsubpart soe.orders'||&nl||'@tabsubpart soe.%' AS usage FROM dual UNION ALL
   SELECT 'ti.sql' AS name, 'Force new trace file' AS description, '@ti' AS usage FROM dual UNION ALL
+  SELECT 'tlc.sql' AS name, 'Display top-level call names' AS description, '@tlc <call_name>'||&nl||'@tlc commit' AS usage FROM dual UNION ALL
   SELECT 'topseg.sql' AS name, 'Display top space users per tablespace' AS description, '@topseg <tablespace_name>'||&nl||'@topseg soe'||&nl||'@topseg %' AS usage FROM dual UNION ALL
   SELECT 'topsegstat.sql' AS name, 'Display information about top segment-level statistics' AS description, '@topsegstat <statistic_name>'||&nl||'@topsegstat reads'||&nl||'@topsegstat %' AS usage FROM dual UNION ALL
   SELECT 'trace.sql' AS name, 'Enable tracing' AS description, '@trace <filter_expression>'||&nl||'@trace sid=123'||&nl||'@trace username=''SOE''' AS usage FROM dual UNION ALL
   SELECT 'traceme.sql' AS name, 'Enable tracing for the current session' AS description, '@traceme' AS usage FROM dual UNION ALL
   SELECT 'traceoff.sql' AS name, 'Disable tracing' AS description, '@traceoff <filter_expression>'||&nl||'@traceoff sid=123'||&nl||'@traceoff username=''SOE''' AS usage FROM dual UNION ALL
   SELECT 'trans.sql' AS name, 'Display active transactions' AS description, '@trans' AS usage FROM dual UNION ALL
+  SELECT 'trig.sql' AS name, 'Display trigger information' AS description, '@trig [<owner>.]<trigger_name>'||&nl||'@trig sys.delete_entries'||&nl||'@trig sys.%' AS usage FROM dual UNION ALL
   SELECT 'ts.sql' AS name, 'Display tablespaces' AS description, '@ts <tablespace_name>'||&nl||'@ts soe'||&nl||'@ts %' AS usage FROM dual UNION ALL
   SELECT 'uds.sql' AS name, 'Display undo statistics' AS description, '@uds' AS usage FROM dual UNION ALL
   SELECT 'wrka.sql' AS name, 'Display PGA and TEMP usage' AS description, '@wrka <fileter_expression>'||&nl||'@wrka 1=1'||&nl||'@wrka sid=1000' AS usage FROM dual UNION ALL
@@ -138,6 +146,7 @@ FROM (
   SELECT 'xbi.sql' AS name, 'Explain a SQL statements execution plan with execution profile directly from library cache - look up by SQL ID' AS description, '@xbi <sql_id> <sql_child_number>'||&nl||'@xbi a5ks9fhw2v9s1 0' AS usage FROM dual UNION ALL
   SELECT 'xi.sql' AS name, 'Display SQL execution plan from library cache' AS description, '@xi <sql_id> <child#>'||&nl||'@xi 7q729nhdgtsqq 0'||&nl||'@xi 7q729nhdgtsqq %' AS usage FROM dual UNION ALL
   SELECT 'xia.sql' AS name, 'Display SQL execution plan from library cache: ADVANCED' AS description, '@xia <sql_id>'||&nl||'@xia 7q729nhdgtsqq' AS usage FROM dual UNION ALL
+  SELECT 'xp.sql' AS name, 'Run DBMS_SQLTUNE.REPORT_SQL_MONITOR (text mode) for session' AS description, '@xp <session_id>'||&nl||'@xp 47' AS usage FROM dual UNION ALL
   SELECT 'xprof.sql' AS name, 'Run DBMS_SQLTUNE.REPORT_SQL_MONITOR for session' AS description, '@xprof <report_level> <type> <sql_id|session_id> <sql_id|sid>' AS usage FROM dual UNION ALL
   SELECT 'xplto.sql' AS name, 'Display execution plan operations' AS description, '@xplto <name>'||&nl||'@xplto full' AS usage FROM dual UNION ALL
   SELECT '' AS name, '' AS description, '' AS usage FROM dual UNION ALL

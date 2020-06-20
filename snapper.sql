@@ -50,7 +50,7 @@
 --
 --------------------------------------------------------------------------------
 --
---   The Session Snapper v4.30 ( USE AT YOUR OWN RISK !!! )
+--   The Session Snapper v4.31 ( USE AT YOUR OWN RISK !!! )
 --   (c) Tanel Poder ( http://blog.tanelpoder.com )
 --
 --
@@ -851,6 +851,7 @@ declare
               when mn = 'file io service time'                     then ret := lpad( tptformat(gd(c) / nullif(gd(c, 'STAT', 'physical read total IO requests')+gd(c, 'STAT', 'physical write total IO requests'),0), 'TIME'), 10) || ' bad guess of IO service time per IO request';
               when mn = 'file io wait time'                        then ret := lpad( tptformat(gd(c) / nullif(gd(c, 'STAT', 'physical read total IO requests')+gd(c, 'STAT', 'physical write total IO requests'),0), 'TIME'), 10) || ' bad guess of IO wait time per IO request';
               when mn = 'redo synch time overhead (usec)'          then ret := lpad( tptformat(gd(c) / nullif(gd(c, 'STAT', 'redo synch writes'            ),0), 'TIME'), 10) || ' FG wakeup overhead per log file sync';
+              when mn = 'redo write worker delay (usec)'           then ret := lpad( tptformat(gd(c) / nullif(gd(c, 'STAT', 'redo write worker delay count'),0), 'TIME'), 10) || ' per LGWR post';
               when mn = 'redo write time'                          then ret := lpad( tptformat(gd(c) * 10000 / nullif(gd(c, 'STAT', 'redo writes'          ),0), 'TIME'), 10) || ' per redo write';
               when mn = 'recursive calls'                          then ret := lpad( tptformat(gd(c, 'STAT', 'recursive cpu usage') * 10000 / nullif(gd(c),  0), 'TIME'), 10) || ' recursive CPU per recursive call';
               when mn = 'recursive cpu usage'                      then ret := lpad( tptformat(gd(c) * 10000, 'TIME'), 10) || ' total recursive CPU usage';
@@ -1939,7 +1940,7 @@ begin
  
     if pagesize > 0 then
         output(' ');
-        output('-- Session Snapper v4.30 - by Tanel Poder ( http://blog.tanelpoder.com/snapper ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)');
+        output('-- Session Snapper v4.31 - by Tanel Poder ( http://blog.tanelpoder.com/snapper ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)');
         output(' ');
     end if;
 
