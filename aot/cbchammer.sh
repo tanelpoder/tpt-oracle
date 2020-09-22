@@ -14,7 +14,7 @@
 #  EXEC DBMS_STATS.GATHER_TABLE_STATS(user, 'CBCHAMMER')
 
 
-CONN=system/oracle@oel7/lin183
+CONN=system/oracle@linux01/linprd
 
 
 SQL_CMD="
