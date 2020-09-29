@@ -68,9 +68,9 @@ FROM (
            , TO_CHAR(CASE WHEN session_state = 'WAITING' THEN p2 ELSE null END, '0XXXXXXXXXXXXXXX') p2hex
            , TO_CHAR(CASE WHEN session_state = 'WAITING' THEN p3 ELSE null END, '0XXXXXXXXXXXXXXX') p3hex
            , TRUNC(px_flags / 2097152) dop
-           , NVL(event, session_state)||
+           , NVL(a.event, a.session_state)||
                 CASE 
-                    WHEN event like 'enq%' AND session_state = 'WAITING'
+                    WHEN a.event like 'enq%' AND session_state = 'WAITING'
                     THEN ' [mode='||BITAND(p1, POWER(2,14)-1)||']'
                     WHEN a.event IN (SELECT name FROM v$event_name WHERE parameter3 = 'class#')
                     THEN ' ['||CASE WHEN a.p3 <= (SELECT MAX(r) FROM bclass) 
