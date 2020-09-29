@@ -147,6 +147,7 @@ SELECT * FROM (
       , COUNT(DISTINCT ap.plan_hash_value) dist_plans
       , MIN(ap.sql_id)
       , MAX(ap.sql_id)
+--      , ap.projection
     FROM
         ash_and_plan ap
       , (SELECT tab.*, 'TABLE' object_type, tab.owner object_owner, tab.table_name object_name FROM tab
@@ -167,6 +168,7 @@ SELECT * FROM (
       , ap.executions
       , ap.elapsed_time
       , ap.aindex_predicates
+--      , ap.projection
     ORDER BY
         seconds DESC
 )
