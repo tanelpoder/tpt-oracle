@@ -4,8 +4,21 @@
 SET TERMOUT OFF pagesize 5000 tab off verify off linesize 999 trimspool on trimout on null ""
 SET TERMOUT ON
 
+
+COL exec_per_sec    FOR 99999990
+COL ela_ms_per_sec  FOR 99999990
+COL rows_per_sec    FOR 99999990
+COL lios_per_sec    FOR 99999990
+COL blkrd_per_sec   FOR 99999990
+COL cpu_ms_per_sec  FOR 99999990
+COL iow_ms_per_sec  FOR 99999990
+COL clw_ms_per_sec  FOR 99999990
+COL apw_ms_per_sec  FOR 99999990
+COL ccw_ms_per_sec  FOR 99999990
+
+
 SELECT
-    CAST(begin_interval_time AS DATE) sample_time
+    CAST(begin_interval_time AS DATE) begin_interval_time
   , sql_id
   , plan_hash_value
   , ROUND(SUM(executions_delta    )        / ((CAST(end_interval_time AS DATE) - CAST(begin_interval_time AS DATE)) * 86400), 1) exec_per_sec
@@ -18,7 +31,6 @@ SELECT
   , ROUND(SUM(clwait_delta        ) / 1000 / ((CAST(end_interval_time AS DATE) - CAST(begin_interval_time AS DATE)) * 86400), 1) clw_ms_per_sec
   , ROUND(SUM(apwait_delta        ) / 1000 / ((CAST(end_interval_time AS DATE) - CAST(begin_interval_time AS DATE)) * 86400), 1) apw_ms_per_sec
   , ROUND(SUM(ccwait_delta        ) / 1000 / ((CAST(end_interval_time AS DATE) - CAST(begin_interval_time AS DATE)) * 86400), 1) ccw_ms_per_sec
-  , CAST(end_interval_time AS DATE) sample_end_time
 FROM
     dba_hist_snapshot sn
   , dba_hist_sqlstat st
@@ -36,7 +48,7 @@ GROUP BY
   , sql_id
   , plan_hash_value
 ORDER BY
-    sample_time
+    begin_interval_time
   , sql_id
   , plan_hash_value
 /

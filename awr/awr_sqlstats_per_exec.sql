@@ -6,6 +6,32 @@
 SET TERMOUT OFF pagesize 5000 tab off verify off linesize 999 trimspool on trimout on null ""
 SET TERMOUT ON
 
+COL executions       FOR 99999990
+COL ela_ms_per_exec  FOR 99999990
+COL rows_per_exec    FOR 99999990.0
+COL lios_per_exec    FOR 99999990
+COL blkrd_per_exec   FOR 99999990
+COL cpu_ms_per_exec  FOR 99999990
+COL iow_ms_per_exec  FOR 99999990
+COL avg_iow_ms       FOR 99999990.0
+COL clw_ms_per_exec  FOR 99999990
+COL apw_ms_per_exec  FOR 99999990
+COL ccw_ms_per_exec  FOR 99999990
+
+-- You can configure output column precision here 
+
+-- COL executions       FOR 99999990.0
+-- COL ela_ms_per_exec  FOR 99999990.0
+-- COL rows_per_exec    FOR 99999990.0
+-- COL lios_per_exec    FOR 99999990.0
+-- COL blkrd_per_exec   FOR 99999990.0
+-- COL cpu_ms_per_exec  FOR 99999990.0
+-- COL iow_ms_per_exec  FOR 99999990.0
+-- COL avg_iow_ms      FOR 99999990.0
+-- COL clw_ms_per_exec  FOR 99999990.0
+-- COL apw_ms_per_exec  FOR 99999990.0
+-- COL ccw_ms_per_exec  FOR 99999990.0
+
 SELECT
     CAST(begin_interval_time AS DATE) begin_interval_time
   , sql_id
