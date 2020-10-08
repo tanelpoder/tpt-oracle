@@ -3,7 +3,7 @@
 
 ------------------------------------------------------------------------------------------------------------------------
 --
--- File name:   dasqlmon.sql (v1.1)
+-- File name:   dasqlmon.sql (v1.2)
 --
 -- Purpose:     Report SQL-monitoring-style drill-down into where in an execution plan the execution time is spent
 --
@@ -40,8 +40,7 @@ COL pct_child_vis HEAD "Visual" FOR A12
 COL asqlmon_id        HEAD "ID" FOR 9999
 COL asqlmon_parent_id HEAD "PID"  FOR 9999
 
-
-BREAK ON asqlmon_plan_hash_value SKIP 1 ON asqlmon_sql_id SKIP 1 ON asqlmon_sql_child SKIP 1 ON asqlmon_sample_time SKIP 1 DUP ON asqlmon_operation
+BREAK ON asqlmon_sql_id SKIP 1 ON asqlmon_sql_child SKIP 1 ON asqlmon_plan_hash_value SKIP 1 ON asqlmon_sample_time SKIP 1 DUP ON asqlmon_operation
 
 PROMPT
 PROMPT -- ASQLMon v1.1 - by Tanel Poder ( http://blog.tanelpoder.com ) - Display SQL execution plan line level activity breakdown from ASH

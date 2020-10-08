@@ -92,8 +92,8 @@ SELECT
   , sq.event
 --  , sq.avg_p3 
   , plan.object_alias || CASE WHEN plan.qblock_name IS NOT NULL THEN ' ['|| plan.qblock_name || ']' END obj_alias_qbc_name
-  , CASE WHEN plan.access_predicates IS NOT NULL THEN '[A:] '|| SUBSTR(plan.access_predicates,1,1994) END || CASE WHEN plan.filter_predicates IS NOT NULL THEN ' [F:] ' || SUBSTR(plan.filter_predicates,1,1994) END asqlmon_predicates
---  , plan.projection
+  , CASE WHEN plan.access_predicates IS NOT NULL THEN '[A:] '|| SUBSTR(plan.access_predicates,1,1990) END || CASE WHEN plan.filter_predicates IS NOT NULL THEN ' [F:] ' || SUBSTR(plan.filter_predicates,1,1990) END asqlmon_predicates
+  , plan.projection
 FROM
     v$sql_plan plan
   , sq
