@@ -10,7 +10,7 @@
 -- Copyright:   (c) https://tanelpoder.com
 --              
 -- Usage:       
---     @ashpeak <grouping_cols> <filters> <fromtime> <totime>
+--     @dashpeaktop <grouping_cols> <filters> <fromtime> <totime>
 --
 -- Example:
 --
@@ -52,26 +52,55 @@ WITH bclass AS (SELECT /*+ INLINE */ class, ROWNUM r from v$waitstat)
 SELECT * FROM (
     SELECT
         &1
+      , COUNT(*)                      sessions
       , COUNT(*) * 10                 totalseconds
       , ROUND(COUNT(*) * 10 / NULLIF(CAST(MAX(sample_time) AS DATE) - CAST(MIN(sample_time) AS DATE),0) / 86400, 1) AAS
     FROM (
         SELECT 
-            TRUNC(sample_time, 'DD')  dd
-          , TRUNC(sample_time, 'HH')  hh
-          , TRUNC(sample_time, 'MI')  mi
-          , CAST(sample_time AS DATE) ss
-          , NVL(a.event, a.session_state)||
-               CASE
-                   WHEN a.event like 'enq%' AND session_state = 'WAITING'
-                   THEN ' [mode='||BITAND(p1, POWER(2,14)-1)||']'
-                   WHEN a.event IN (SELECT name FROM v$event_name WHERE parameter3 = 'class#')
-                   THEN ' ['||CASE WHEN a.p3 <= (SELECT MAX(r) FROM bclass)
-                              THEN (SELECT class FROM bclass WHERE r = a.p3)
-                              ELSE (SELECT DECODE(MOD(BITAND(a.p3,TO_NUMBER('FFFF','XXXX')) - 17,2),0,'undo header',1,'undo data', 'error') FROM dual)
-                              END  ||']'
-                   ELSE null
-               END event2 -- event is NULL in ASH if the session is not waiting (session_state = ON CPU)
-          , a.*
+             TRUNC(sample_time, 'DD')  dd
+           , TRUNC(sample_time, 'HH')  hh
+           , TRUNC(sample_time, 'MI')  mi
+           , CAST(sample_time AS DATE) ss
+           , NVL(a.event, a.session_state)||
+                CASE
+                    WHEN a.event like 'enq%' AND session_state = 'WAITING'
+                    THEN ' [mode='||BITAND(p1, POWER(2,14)-1)||']'
+                    WHEN a.event IN (SELECT name FROM v$event_name WHERE parameter3 = 'class#')
+                    THEN ' ['||CASE WHEN a.p3 <= (SELECT MAX(r) FROM bclass)
+                               THEN (SELECT class FROM bclass WHERE r = a.p3)
+                               ELSE (SELECT DECODE(MOD(BITAND(a.p3,TO_NUMBER('FFFF','XXXX')) - 17,2),0,'undo header',1,'undo data', 'error') FROM dual)
+                               END  ||']'
+                    ELSE null
+                END event2 -- event is NULL in ASH if the session is not waiting (session_state = ON CPU)
+           , a.*
+           , CASE WHEN a.session_type = 'BACKGROUND' OR REGEXP_LIKE(a.program, '.*\([PJ]\d+\)') THEN
+                REGEXP_REPLACE(SUBSTR(a.program,INSTR(a.program,'(')), '\d', 'n')
+             ELSE
+                '('||REGEXP_REPLACE(REGEXP_REPLACE(a.program, '(.*)@(.*)(\(.*\))', '\1'), '\d', 'n')||')'
+             END || ' ' program2
+           , CASE WHEN BITAND(time_model, POWER(2, 01)) = POWER(2, 01) THEN 'DBTIME '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 02)) = POWER(2, 02) THEN 'BACKGROUND '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 03)) = POWER(2, 03) THEN 'CONNECTION_MGMT '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 04)) = POWER(2, 04) THEN 'PARSE '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 05)) = POWER(2, 05) THEN 'FAILED_PARSE '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 06)) = POWER(2, 06) THEN 'NOMEM_PARSE '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 07)) = POWER(2, 07) THEN 'HARD_PARSE '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 08)) = POWER(2, 08) THEN 'NO_SHARERS_PARSE '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 09)) = POWER(2, 09) THEN 'BIND_MISMATCH_PARSE '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 10)) = POWER(2, 10) THEN 'SQL_EXECUTION '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 11)) = POWER(2, 11) THEN 'PLSQL_EXECUTION '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 12)) = POWER(2, 12) THEN 'PLSQL_RPC '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 13)) = POWER(2, 13) THEN 'PLSQL_COMPILATION '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 14)) = POWER(2, 14) THEN 'JAVA_EXECUTION '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 15)) = POWER(2, 15) THEN 'BIND '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 16)) = POWER(2, 16) THEN 'CURSOR_CLOSE '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 17)) = POWER(2, 17) THEN 'SEQUENCE_LOAD '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 18)) = POWER(2, 18) THEN 'INMEMORY_QUERY '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 19)) = POWER(2, 19) THEN 'INMEMORY_POPULATE '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 20)) = POWER(2, 20) THEN 'INMEMORY_PREPOPULATE '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 21)) = POWER(2, 21) THEN 'INMEMORY_REPOPULATE '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 22)) = POWER(2, 22) THEN 'INMEMORY_TREPOPULATE '  END
+           ||CASE WHEN BITAND(time_model, POWER(2, 23)) = POWER(2, 23) THEN 'TABLESPACE_ENCRYPTION ' END time_model_name 
         FROM
             dba_hist_active_sess_history a
         WHERE
@@ -84,6 +113,6 @@ SELECT * FROM (
         totalseconds DESC
 )
 WHERE
-    rownum <= 10
+    rownum <= 25
 /
 
