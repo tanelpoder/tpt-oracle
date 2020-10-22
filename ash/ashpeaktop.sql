@@ -53,8 +53,8 @@ SELECT * FROM (
     SELECT
         &1
       , COUNT(*)                      sessions
-      , COUNT(*) * 10                 totalseconds
-      , ROUND(COUNT(*) * 10 / NULLIF(CAST(MAX(sample_time) AS DATE) - CAST(MIN(sample_time) AS DATE),0) / 86400, 1) AAS
+      , COUNT(*)                      totalseconds
+      , ROUND(COUNT(*) / NULLIF(CAST(MAX(sample_time) AS DATE) - CAST(MIN(sample_time) AS DATE),0) / 86400, 1) AAS
     FROM (
         SELECT 
              TRUNC(sample_time, 'DD')  dd
