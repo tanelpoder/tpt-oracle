@@ -45,6 +45,8 @@ FROM
 WHERE
     sql_id = '&1'
 ORDER BY
-    chunk_ptr ASC
+    heap_desc
+  , subheap_desc
+  , chunk_ptr
 /
 
