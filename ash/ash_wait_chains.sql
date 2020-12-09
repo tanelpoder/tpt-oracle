@@ -26,6 +26,7 @@
 --              
 --------------------------------------------------------------------------------
 COL wait_chain FOR A300 WORD_WRAP
+COL distinct_sids FOR 9999 HEAD "#Blkrs"
 COL "%This" FOR A6
 
 PROMPT
@@ -121,10 +122,10 @@ SELECT * FROM (
         LPAD(ROUND(RATIO_TO_REPORT(COUNT(*)) OVER () * 100)||'%',5,' ') "%This"
       , COUNT(*) seconds
       , ROUND(COUNT(*) / ((CAST(&4 AS DATE) - CAST(&3 AS DATE)) * 86400), 1) AAS
+      , COUNT(DISTINCT sids) distinct_sids
       , path wait_chain
       , TO_CHAR(MIN(sample_time), 'YYYY-MM-DD HH24:MI:SS') first_seen
       , TO_CHAR(MAX(sample_time), 'YYYY-MM-DD HH24:MI:SS') last_seen
-      -- , COUNT(DISTINCT sids)
       -- , MIN(sids)
       -- , MAX(sids)
     FROM
