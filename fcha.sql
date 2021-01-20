@@ -28,7 +28,7 @@ pause  Press ENTER to continue, CTRL+C to cancel...
 
 
 select
-    'SGA' LOC,
+    'VSGA' LOC,
     KSMCHPTR,
     KSMCHIDX,
     KSMCHDUR,
@@ -80,4 +80,22 @@ where
     between 
         to_number(ksmchptr,'XXXXXXXXXXXXXXXX')
     and to_number(ksmchptr,'XXXXXXXXXXXXXXXX') + ksmchsiz - 1
+union all
+select
+   'FSGA',
+   ksmfsadr,
+   null,
+   null,
+   ksmfsnam||' '||ksmfstyp,
+   ksmfssiz,
+   null,
+   null,
+   null
+from
+    x$ksmfsv
+where
+    to_number(substr('&1', instr(lower('&1'), 'x')+1) ,'XXXXXXXXXXXXXXXX')
+    between
+        to_number(ksmfsadr,'XXXXXXXXXXXXXXXX')
+    and to_number(ksmfsadr,'XXXXXXXXXXXXXXXX') + ksmfssiz - 1
 /
