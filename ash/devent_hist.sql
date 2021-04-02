@@ -26,7 +26,7 @@ COL pct_evt_time HEAD "% Event|Time"
 COL evh_est_total_sec HEAD "Estimated|Total Sec" FOR 9,999,999.9
 COL evh_millisec HEAD "Wait time|bucket ms+" FOR A15 JUST RIGHT
 COL evh_sample_count HEAD "Num ASH|Samples"
-COL evh_est_event_count HEAD "Estimated|Total Waits"
+COL evh_est_event_count HEAD "Estimated|Total Waits" FOR 999,999,999.9
 COL first_seen FOR A25
 COL last_seen FOR A25
 
