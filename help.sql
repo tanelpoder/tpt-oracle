@@ -117,10 +117,10 @@ FROM (
   SELECT 'usid.sql' AS name, 'Display user sessoin and process information' AS description, '@usid <sid>'||&nl||'@us 1234' AS usage FROM dual UNION ALL
   SELECT 'sl.sql' AS name, 'Set statistics level' AS description, '@sl <statistics_level>'||&nl||'@sl all' AS usage FROM dual UNION ALL
   SELECT 'smem.sql' AS name, 'Display process memory usage' AS description, '@smem <sid>'||&nl||'@smem 1000' AS usage FROM dual UNION ALL
-  SELECT 'sqlbinds.sql' AS name, 'Display captured SQL bind variable values' AS description, '@sqlbinds <sql_id> <child_number>'||&nl||'@sqlbinds 2swu3tn1ujzq7 0'||&nl||'@sqlbinds 2swu3tn1ujzq7 %' AS usage FROM dual UNION ALL
+  SELECT 'sqlbinds.sql' AS name, 'Display captured SQL bind variable values' AS description, '@sqlbinds <sql_id> <child_number> <bindname>'||&nl||'@sqlbinds 2swu3tn1ujzq7 0 %'||&nl||'@sqlbinds 2swu3tn1ujzq7 % sys_b_.*' AS usage FROM dual UNION ALL
   SELECT 'sqlid.sql' AS name, 'Display SQL: text, child cursors and execution statistics' AS description, '@sqlid <sql_id> <child_number>'||&nl||'@sqlid 7q729nhdgtsqq 0'||&nl||'@sqlid 7q729nhdgtsqq %' AS usage FROM dual UNION ALL
   SELECT 'sqlf.sql' AS name, 'Display full sql text from memory' AS description, '@sqlf <sql_id>'||&nl||'@sqlf 7q729nhdgtsqq' AS usage FROM dual UNION ALL
-  SELECT 'sqlfn.sql' AS name, 'Display SQL functions' AS description, '@sqlf <name>'||&nl||'@sqlfn date' AS usage FROM dual UNION ALL
+  SELECT 'sqlfn.sql' AS name, 'Display SQL functions' AS description, '@sqlfn <name>'||&nl||'@sqlfn date' AS usage FROM dual UNION ALL
   SELECT 'sqlmon.sql' AS name, 'Run SQL Monitor report' AS description, '@sqlmon <sid>'||&nl||'@sqlmon 1019' AS usage FROM dual UNION ALL
   SELECT 'syn.sql' AS name, 'Display synonym information' AS description, '@syn [<owner>.]<synonym_name>'||&nl||'@syn system.tab'||&nl||'@syn system.%' AS usage FROM dual UNION ALL
   SELECT 't.sql' AS name, 'Display default trace file' AS description, '@t' AS usage FROM dual UNION ALL
