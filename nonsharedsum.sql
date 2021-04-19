@@ -15,7 +15,8 @@ declare
 
     l_colQuery      varchar2(1000) := 'select * from v$sql_shared_cursor where 1=0';
     l_dynQuery      clob := 'SELECT * FROM (SELECT sql_id, COUNT(DISTINCT address) parent_count, COUNT(*) child_count ' || chr(10);
-    
+    l_versionCount  number;
+
     procedure execute_immediate( p_sql in varchar2 )
     is
     begin
@@ -30,12 +31,19 @@ begin
     -- generate dynamic query
     for i in 1 .. l_colCnt loop
         if l_descTbl(i).col_type = 1 and l_descTbl(i).col_max_len = 1 then
-            l_dynQuery := l_dynQuery || chr(10) || '    , SUM(CASE WHEN ' || (l_descTbl(i).col_name) || ' = ''Y'' THEN 1 ELSE 0 END) AS ' || (l_descTbl(i).col_name);
+            l_dynQuery := l_dynQuery || chr(10) || '    , SUM(CASE WHEN ' || (l_descTbl(i).col_name) 
+                                     || ' = ''Y'' THEN 1 ELSE 0 END) AS ' || (l_descTbl(i).col_name);
         end if;
     end loop;
   
-    l_dynQuery := l_dynQuery || chr(10) || '    FROM v$sql_shared_cursor GROUP BY sql_id HAVING COUNT(*) > 5) ORDER BY child_count DESC';
- 
+    if '&1' = '%' then l_versionCount := 10;  else l_versionCount := 0; end if;
+    l_dynQuery := l_dynQuery || chr(10) 
+                             || '    FROM v$sql_shared_cursor '
+                             || '    WHERE sql_id LIKE ''&1'' GROUP BY sql_id HAVING COUNT(*) > '
+                             || l_versionCount ||') ORDER BY child_count DESC';
+
+    if l_versionCount != 0 then dbms_output.put_line('Showing statements with version count > '||l_versionCount); end if;
+    dbms_output.put_line(chr(8));
     -- run dynamic query
     dbms_sql.parse(l_theCursor, l_dynQuery, dbms_sql.native);
     dbms_sql.describe_columns(l_theCursor, l_colCnt, l_descTbl);

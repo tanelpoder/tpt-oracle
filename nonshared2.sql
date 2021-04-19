@@ -43,7 +43,7 @@ FROM TABLE (
             v$sql_shared_cursor c
           , TABLE(XMLSEQUENCE(XMLTYPE('<doc>'||c.reason||'</doc>'))) x
         WHERE
-          c.sql_id = '&2'
+          c.sql_id = '&2' and c.child_number < 5
     )
 ) xs
 /

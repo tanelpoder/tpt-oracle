@@ -8,9 +8,10 @@ SELECT * FROM (
       , bind_name
       , COUNT(DISTINCT s.address)      parents
       , COUNT(DISTINCT RAWTOHEX(s.address||':'||s.child_number)) children
-      , COUNT(DISTINCT datatype) datatypes
-      , COUNT(DISTINCT max_length) maxlengths
-      , COUNT(DISTINCT array_len)  maxarraylens
+      , COUNT(DISTINCT datatype)       datatypes
+    --, COUNT(DISTINCT datatype)||CASE WHEN COUNT(DISTINCT datatype) > 1 THEN ' ('||TO_CHAR(MIN(datatype))||'..'||TO_CHAR(MAX(datatype))||')' END for_example
+      , COUNT(DISTINCT max_length)     maxlengths
+      , COUNT(DISTINCT array_len)      maxarraylens
     FROM
         v$sql s
       , v$sql_bind_metadata sbm
