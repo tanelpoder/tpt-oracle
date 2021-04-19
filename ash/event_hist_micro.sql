@@ -17,9 +17,15 @@ COL evh_est_event_count HEAD "Estimated|Total Waits"
 BREAK ON evh_event SKIP 1
 
 SELECT
-    e.*
+    e.evh_event
+  , evh_millisec
+  , evh_sample_count
+  , evh_est_event_count
+  , evh_est_total_sec
   , ROUND ( 100 * RATIO_TO_REPORT(evh_est_total_sec) OVER (PARTITION BY evh_event) , 1 ) pct_evt_time
   , '|'||RPAD(NVL(RPAD('#', ROUND (10 * RATIO_TO_REPORT(evh_est_total_sec) OVER (PARTITION BY evh_event)), '#'),' '), 10)||'|' evh_graph
+  , first_seen
+  , last_seen
 FROM (
     SELECT 
         event evh_event
@@ -27,6 +33,8 @@ FROM (
       , COUNT(*)  evh_sample_count
       , ROUND(SUM(CASE WHEN time_waited >= 1000000 THEN 1 WHEN time_waited = 0 THEN 0 ELSE 1000000 / time_waited END),1) evh_est_event_count
       , ROUND(CASE WHEN time_waited = 0 THEN 0 ELSE CEIL(POWER(2,CEIL(LOG(2,time_waited)))) END * SUM(CASE WHEN time_waited >= 1000000 THEN 1 WHEN time_waited = 0 THEN 0 ELSE 1000000 / time_waited END)/1000000,1) evh_est_total_sec
+      , TO_CHAR(MIN(sample_time), 'YYYY-MM-DD HH24:MI:SS') first_seen
+      , TO_CHAR(MAX(sample_time), 'YYYY-MM-DD HH24:MI:SS') last_seen
     FROM 
         v$active_session_history 
     WHERE 

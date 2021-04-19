@@ -32,7 +32,7 @@ PROMPT
 PROMPT -- Santa's Little (Index) Helper BETA v0.5 - by Tanel Poder ( https://tanelpoder.com ) 
 
 WITH 
-tab AS (SELECT /*+ MATERIALIZE */ owner, table_name, num_rows 
+tab AS (SELECT /*+ NO_MERGE */ owner, table_name, num_rows 
         FROM dba_tables
         WHERE UPPER(table_name) LIKE 
                 UPPER(CASE 
@@ -49,7 +49,7 @@ tab AS (SELECT /*+ MATERIALIZE */ owner, table_name, num_rows
               user
             END ESCAPE '\'
 ),
-ind AS (SELECT /*+ MATERIALIZE */ owner, index_name, table_owner, table_name 
+ind AS (SELECT /*+ NO_MERGE */ owner, index_name, table_owner, table_name 
         FROM dba_indexes
         WHERE (table_owner, table_name) IN (SELECT owner, table_name FROM tab)),
 sample_times AS (

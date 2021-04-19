@@ -8,7 +8,7 @@
 --              waiting for another session etc.)
 --              
 -- Author:      Tanel Poder
--- Copyright:   (c) http://blog.tanelpoder.com
+-- Copyright:   (c) https://tanelpoder.com
 --              
 -- Usage:       
 --     @dash_wait_chains <grouping_cols> <filters> <fromtime> <totime>
@@ -26,7 +26,7 @@ COL distinct_sids FOR 9999 HEAD "#Blkrs"
 COL "%This" FOR A6
 
 PROMPT
-PROMPT -- Display ASH Wait Chain Signatures script v0.6 BETA by Tanel Poder ( http://blog.tanelpoder.com )
+PROMPT -- Display ASH Wait Chain Signatures script v0.6 BETA by Tanel Poder ( https://tanelpoder.com )
 
 WITH 
 bclass AS (SELECT /*+ INLINE */ class, ROWNUM r from v$waitstat),
