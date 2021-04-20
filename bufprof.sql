@@ -52,7 +52,7 @@ WITH
     samples AS (
         SELECT /*+ ORDERED NO_MERGE USE_NL(bf) USE_NL(m) USE_NL(p) USE_NL(w) */
         &bufprof_cols,
-        m.ksmmmval                  proc_so,
+        --m.ksmmmval                  proc_so,
 --        bf.KCBBPBF,
         COUNT(*)                    total_samples
         FROM 
@@ -65,20 +65,20 @@ WITH
                     AND bitand(b.KCBBFSO_FLG,1) = 1
                     --AND b.KCBBFCM > 0
             ) bf,
-            X$KSMMEM m,
+            --X$KSMMEM m,
             p,
             x$kcbwh w
         WHERE
           1=1
-        AND bf.call_so = m.addr
-        AND rawtohex(bf.call_so) > '00000002'
-        AND m.ksmmmval = p.paddr -- compare the fetched word to process state object address
+        --AND bf.call_so = m.addr
+        ---AND rawtohex(bf.call_so) > '0000000000000002'
+        --AND m.ksmmmval = p.paddr -- compare the fetched word to process state object address
         AND BITAND(bf.KCBBFSO_FLG,1) = 1  -- buffer handle in use
         AND bf.kcbbfwhr = w.indx
         --AND (p.sid LIKE '&1' OR p.sid IS NULL)
         AND (p.sid LIKE '&1')
         AND (p.sid != (select sid from v$mystat where rownum = 1))
-        GROUP BY &bufprof_cols , m.ksmmmval --,bf.KCBBPBF
+        GROUP BY &bufprof_cols --, m.ksmmmval --,bf.KCBBPBF
     ),
     t2 AS (SELECT hsecs FROM v$timer)
 SELECT /*+ ORDERED */
