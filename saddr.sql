@@ -10,6 +10,7 @@ col u_machine head MACHINE for a18 truncate
 col u_program head PROGRAM for a20 truncate
 
 select s.username u_username, ' ''' || s.sid || ',' || s.serial# || '''' u_sid, 
+       s.logon_time,
        s.audsid u_audsid,
        s.osuser u_osuser, 
        substr(s.machine,instr(s.machine,'\')) u_machine, 
@@ -22,7 +23,6 @@ select s.username u_username, ' ''' || s.sid || ',' || s.serial# || '''' u_sid,
        s.sql_hash_value, 
        s.last_call_et lastcall, 
        s.status 
-       --, s.logon_time
 from 
     v$session s,
     v$process p
