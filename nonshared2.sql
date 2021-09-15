@@ -8,7 +8,7 @@
 --              reusing old ones
 --              
 -- Author:      Tanel Poder
--- Copyright:   (c) http://www.e2sn.com
+-- Copyright:   (c) https://tanelpoder.com
 --              
 -- Usage:       @nonshared2.sql <PRINT|NOPRINT> <sqlid>
 --
@@ -43,7 +43,7 @@ FROM TABLE (
             v$sql_shared_cursor c
           , TABLE(XMLSEQUENCE(XMLTYPE('<doc>'||c.reason||'</doc>'))) x
         WHERE
-            c.sql_id = '&2'
+          c.sql_id = '&2' and c.child_number < 5
     )
 ) xs
 /

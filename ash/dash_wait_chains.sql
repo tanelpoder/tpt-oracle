@@ -8,7 +8,7 @@
 --              waiting for another session etc.)
 --              
 -- Author:      Tanel Poder
--- Copyright:   (c) http://blog.tanelpoder.com
+-- Copyright:   (c) https://tanelpoder.com
 --              
 -- Usage:       
 --     @dash_wait_chains <grouping_cols> <filters> <fromtime> <totime>
@@ -22,10 +22,11 @@
 --              
 --------------------------------------------------------------------------------
 COL wait_chain FOR A300 WORD_WRAP
+COL distinct_sids FOR 9999 HEAD "#Blkrs"
 COL "%This" FOR A6
 
 PROMPT
-PROMPT -- Display ASH Wait Chain Signatures script v0.6 BETA by Tanel Poder ( http://blog.tanelpoder.com )
+PROMPT -- Display ASH Wait Chain Signatures script v0.6 BETA by Tanel Poder ( https://tanelpoder.com )
 
 WITH 
 bclass AS (SELECT /*+ INLINE */ class, ROWNUM r from v$waitstat),
@@ -114,9 +115,9 @@ SELECT * FROM (
         LPAD(ROUND(RATIO_TO_REPORT(COUNT(*)) OVER () * 100)||'%',5,' ') "%This"
       , COUNT(*) * 10 seconds
       , ROUND(COUNT(*) * 10 / ((CAST(&4 AS DATE) - CAST(&3 AS DATE)) * 86400), 1) AAS
-      -- , COUNT(DISTINCT sids)
       -- , MIN(sids)
       -- , MAX(sids)
+      , COUNT(DISTINCT sids) distinct_sids
       , path wait_chain
       , TO_CHAR(MIN(sample_time), 'YYYY-MM-DD HH24:MI:SS') first_seen
       , TO_CHAR(MAX(sample_time), 'YYYY-MM-DD HH24:MI:SS') last_seen

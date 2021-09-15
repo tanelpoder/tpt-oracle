@@ -108,7 +108,7 @@ SELECT
   , sq.event
   , plan.object_alias || CASE WHEN plan.qblock_name IS NOT NULL THEN ' ['|| plan.qblock_name || ']' END obj_alias_qbc_name
   , CASE WHEN plan.access_predicates IS NOT NULL THEN '[A:] '|| SUBSTR(plan.access_predicates,1,1994) END || CASE WHEN plan.filter_predicates IS NOT NULL THEN ' [F:] ' || SUBSTR(plan.filter_predicates,1,1994) END aindex_predicates
---  , plan.projection
+  , plan.projection
 FROM
     v$sql_plan plan
   , v$sqlstats_plan_hash stat
@@ -147,7 +147,7 @@ SELECT * FROM (
       , COUNT(DISTINCT ap.plan_hash_value) dist_plans
       , MIN(ap.sql_id)
       , MAX(ap.sql_id)
---      , ap.projection
+      , ap.projection
     FROM
         ash_and_plan ap
       , (SELECT tab.*, 'TABLE' object_type, tab.owner object_owner, tab.table_name object_name FROM tab
@@ -168,7 +168,7 @@ SELECT * FROM (
       , ap.executions
       , ap.elapsed_time
       , ap.aindex_predicates
---      , ap.projection
+      , ap.projection
     ORDER BY
         seconds DESC
 )

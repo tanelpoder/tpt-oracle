@@ -2,7 +2,8 @@
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
 SELECT
-    CAST(begin_interval_time AS DATE) begin_time
+--  CAST(begin_interval_time AS DATE) begin_time
+    begin_time 
   , metric_name
   , metric_unit
   , value
@@ -15,7 +16,7 @@ WHERE
 --    metric_name IN ('Physical Reads Per Sec')
 --    metric_name IN ('Host CPU Utilization (%)')
 --    metric_name IN ('Logons Per Sec')
-AND begin_interval_time > SYSDATE - 15
+AND begin_interval_time > SYSDATE - 1
 ORDER BY
     metric_name
   , begin_time

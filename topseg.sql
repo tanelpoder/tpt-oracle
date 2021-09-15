@@ -22,7 +22,7 @@ select * from (
 		owner, 
 		segment_name,
 		segment_type 
-	order by MB desc
+	order by MB desc nulls last
 )
 where rownum <= 30;
 

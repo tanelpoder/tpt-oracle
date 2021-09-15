@@ -90,7 +90,7 @@ SELECT
 --  , sq.avg_p3 
   , plan.object_alias || CASE WHEN plan.qblock_name IS NOT NULL THEN ' ['|| plan.qblock_name || ']' END obj_alias_qbc_name
   , CASE WHEN plan.access_predicates IS NOT NULL THEN '[A:] '|| plan.access_predicates END || CASE WHEN plan.filter_predicates IS NOT NULL THEN ' [F:]' || plan.filter_predicates END asqlmon_predicates
---  , plan.projection
+  , plan.projection
 FROM
     dba_hist_sql_plan plan
   , sq

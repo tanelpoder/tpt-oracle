@@ -27,6 +27,7 @@ WHERE
 -- changing ignoring the join order specified in the GV$ view hints
 
 SELECT /*+ NO_MERGE(@sel$2) NO_MERGE(@sel$3) LEADING(@sel$3 c) */
+-- SELECT /*+ NO_MERGE(@sel$2) NO_MERGE(@sel$3) LEADING(@sel$4 c) xNO_MERGE(@"SEL$4") */
 --    sql_text
 --  , sql_fulltext
 --    hash_value

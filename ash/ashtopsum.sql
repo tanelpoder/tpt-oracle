@@ -3,9 +3,9 @@
 
 --------------------------------------------------------------------------------
 -- 
--- File name:   ashtop.sql v1.2
+-- File name:   ashtopsum.sql v1.3
 -- Purpose:     Display top ASH time (count of ASH samples) grouped by your
---              specified dimensions
+--              specified dimensions AND (potentially lossy) SUM of IO rate metrics
 --              
 -- Author:      Tanel Poder
 -- Copyright:   (c) http://blog.tanelpoder.com
@@ -47,6 +47,18 @@ COL sql_opname          FOR A20
 COL top_level_call_name FOR A30
 COL wait_class          FOR A15
 
+COL rd_rq               FOR 9,999,999
+COL wr_rq               FOR 9,999,999
+COL rd_mb               FOR 9,999,999
+COL wr_mb               FOR 9,999,999
+COL pgamem_mb              FOR 9,999,999
+COL tempspc_mb             FOR 9,999,999
+
+PROMPT This is an experimental script as some documentation/explanation is needed.
+PROMPT The ASH "delta" metrics are not tied to individual SQL_IDs or wait events,
+PROMPT They increase in the session scope (which SQL_ID/operation happens to be
+PROMPT active when ASH samples its data is just matter of luck). 
+
 SELECT
     * 
 FROM (
@@ -55,6 +67,14 @@ FROM (
         COUNT(*)                                                     totalseconds
       , ROUND(COUNT(*) / ((CAST(&4 AS DATE) - CAST(&3 AS DATE)) * 86400), 1) AAS
       , LPAD(ROUND(RATIO_TO_REPORT(COUNT(*)) OVER () * 100)||'%',5,' ')||' |' "%This"
+      , SUM(delta_read_io_requests)  rd_rq
+      , SUM(delta_write_io_requests) wr_rq
+      , SUM(delta_read_io_bytes)/1048576     rd_mb   
+      , SUM(delta_write_io_bytes)/1048576    wr_mb
+      --, SUM(delta_interconnect_io_bytes)
+      --, SUM(delta_read_mem_bytes)       
+      , MAX(pga_allocated)/1048576           pgamem_mb              
+      , MAX(temp_space_allocated)/1048576    tempspc_mb
       , &1
       , TO_CHAR(MIN(sample_time), 'YYYY-MM-DD HH24:MI:SS') first_seen
       , TO_CHAR(MAX(sample_time), 'YYYY-MM-DD HH24:MI:SS') last_seen
@@ -128,6 +148,6 @@ FROM (
        , &1
 )
 WHERE
-    ROWNUM <= 15
+    ROWNUM <= 20
 /
 

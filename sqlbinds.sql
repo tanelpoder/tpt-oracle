@@ -9,6 +9,7 @@ COL value_anydata FOR A100
 COL sqlbinds_pos  HEAD POS FOR 9999
 COL sqlbinds_chld HEAD CHLD FOR 9999
 COL sqlbinds_datatype HEAD DATATYPE FOR A15
+BREAK ON sqlbinds_chld SKIP 1
 
 SELECT
 --  ADDRESS         parent_cursor
@@ -19,21 +20,23 @@ SELECT
 --, DUP_POSITION        
 --, DATATYPE            
 , DATATYPE_STRING sqlbinds_datatype 
-, VALUE_STRING        
 , CHARACTER_SID       
+, MAX_LENGTH          
 , PRECISION           
 , SCALE               
-, MAX_LENGTH          
+, VALUE_STRING        
 , WAS_CAPTURED        
 , LAST_CAPTURED       
 , VALUE_ANYDATA  
 FROM
-  v$sql_bind_capture
+  v$sql_bind_capture c
 WHERE
     sql_id like '&1'
 AND child_number like '&2'
+AND (c.name like '&3' escape '\' OR REGEXP_LIKE(name, '&3', 'i'))
 ORDER BY
      address
   ,  sql_id
   , child_number
+  , position
 /

@@ -63,6 +63,9 @@ select  /*+ ORDERED */
     decode(bitand(bh.flag,1536), 0, 'N', 'Y')   ping,
     decode(bitand(bh.flag,16384), 0, 'N', 'Y')  stale,
     decode(bitand(bh.flag,65536), 0, 'N', 'Y')  direct, 
+  bh.cr_scn_bas,
+  bh.cr_scn_wrp,
+  cr_scn_wrp * power(2, 32) + cr_scn_bas full_scn,
 	trim(to_char(bh.flag, 'XXXXXXXX'))	||':'||
 	trim(to_char(bh.lru_flag, 'XXXXXXXX')) 	flg_lruflg,
 	bh.dirty_queue				DQ
