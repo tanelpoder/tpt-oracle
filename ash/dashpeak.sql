@@ -60,6 +60,7 @@ FROM (
         TRUNC(sample_time, 'DD')  dd
       , TRUNC(sample_time, 'HH')  hh
       , TRUNC(sample_time, 'MI')  mi
+      , TO_DATE(SUBSTR(TO_CHAR(sample_time, 'YYYY-MM-DD HH24:MI'), 1, 15)||'0', 'YYYY-MM-DD HH24:MI') mt
       , CAST(sample_time AS DATE) ss
       , NVL(a.event, a.session_state)||
            CASE
@@ -73,10 +74,20 @@ FROM (
                ELSE null
            END event2 -- event is NULL in ASH if the session is not waiting (session_state = ON CPU)
       , a.*
+      , u.username
+      , o.*
     FROM
         dba_hist_active_sess_history a
+      , dba_users u
+      , (SELECT
+             object_id,data_object_id,owner,object_name,subobject_name,object_type
+           , owner||'.'||object_name obj
+           , owner||'.'||object_name||' ['||object_type||']' objt
+         FROM dba_objects) o
     WHERE
-        &2
+        a.user_id = u.user_id (+)
+    AND a.current_obj# = o.object_id(+)
+    AND &2
     AND sample_time BETWEEN &3 AND &4
 )
 GROUP BY
