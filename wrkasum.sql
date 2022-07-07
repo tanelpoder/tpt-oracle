@@ -9,9 +9,11 @@
 --              @wrkasum username='APPUSER'
 --              @wrkasum "program LIKE '%BatchRunner.exe%' AND machine='host123'"
 
+PROMPT Total PGA allocation from V$PROCESS (excluding MGA)
+
 SELECT 
-    SUM(pga_alloc_mem)/1048576 total_alloc_mem
-  , SUM(pga_used_mem) /1048576 total_used_mem
+    ROUND(SUM(pga_alloc_mem)/1048576,1) total_alloc_pga
+  , ROUND(SUM(pga_used_mem) /1048576,1) total_used_pga
 FROM
     gv$process
 /
