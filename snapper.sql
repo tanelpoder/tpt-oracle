@@ -50,7 +50,7 @@
 --
 --------------------------------------------------------------------------------
 --
---   The Session Snapper v4.33 ( USE AT YOUR OWN RISK !!! )
+--   The Session Snapper v4.34 ( USE AT YOUR OWN RISK !!! )
 --   (c) Tanel Poder ( https://tanelpoder.com )
 --
 --
@@ -274,6 +274,8 @@ define _USE_DBMS_LOCK=""
 -- set the noprint's value to "noprint" if you don't want these temporary variables to show up in a sqlplus spool file
 -- however, setting noprint="noprint" can cause errors in Oracle SQL Developer v4.0.x for some reason (OK in v4.1)
 DEF noprint=""
+col snapper_howtosleep     &noprint new_value _HOW_TO_SLEEP
+col snapper_ora18higher    &noprint new_value _IF_ORA18_OR_HIGHER
 col snapper_ora12higher    &noprint new_value _IF_ORA12_OR_HIGHER
 col snapper_ora12lower     &noprint new_value _IF_LOWER_THAN_ORA12
 col snapper_ora12          &noprint new_value _IF_ORA12_OR_HIGHER
@@ -424,6 +426,8 @@ with mod_banner as (
     where rownum = 1
 )
 select
+    case when substr(banner, instr(banner, 'Release ')+8,2) >= '18' then 'dbms_session.sleep' else 'dbms_lock.sleep' end snapper_howtosleep,
+    case when substr(banner, instr(banner, 'Release ')+8,2) >= '18' then '' else '--' end snapper_ora18higher,
     case when substr(banner, instr(banner, 'Release ')+8,2) >= '12' then '' else '--' end snapper_ora12higher,
     case when substr(banner, instr(banner, 'Release ')+8,2)  < '12' then '' else '--' end snapper_ora12lower,
     case when substr(banner, instr(banner, 'Release ')+8,2)  = '11' then '' else '--' end snapper_ora11higher,
@@ -1964,7 +1968,7 @@ begin
  
     if pagesize > 0 then
         output(' ');
-        output('-- Session Snapper v4.33 - by Tanel Poder ( https://tanelpoder.com/snapper ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)');
+        output('-- Session Snapper v4.34 - by Tanel Poder ( https://tanelpoder.com/snapper ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)');
         output(' ');
     end if;
 
@@ -2115,6 +2119,7 @@ begin
 
 
         -- ASH style sampling 
+
 &_USE_DBMS_LOCK ash_date1 := sysdate; 
 &_USE_DBMS_LOCK if gather_ash = 1 then 
 &_USE_DBMS_LOCK     while sysdate < (ash_date1 + (&snapper_sleep/86400)) loop
@@ -2124,10 +2129,10 @@ begin
 &_USE_DBMS_LOCK         -- sleep timeout backoff depending on the duration sampled (for up to 10 seconds total sampling time will get max 100 Hz sampling)
 &_USE_DBMS_LOCK         -- for longer duration sampling the algorithm will back off and for long durations (over 100 sec) the sampling rate will stabilize
 &_USE_DBMS_LOCK         -- at 1Hz
-&_USE_DBMS_LOCK         dbms_lock.sleep( greatest(0.1,(least(1,&snapper_sleep*&snapper_count/100))) );
+&_USE_DBMS_LOCK         &_HOW_TO_SLEEP( greatest(0.1,(least(1,&snapper_sleep*&snapper_count/100))) );
 &_USE_DBMS_LOCK     end loop;
 &_USE_DBMS_LOCK else
-&_USE_DBMS_LOCK     dbms_lock.sleep( ((ash_date1+(&snapper_sleep/86400)) - sysdate)*86400 ); 
+&_USE_DBMS_LOCK     &_HOW_TO_SLEEP( ((ash_date1+(&snapper_sleep/86400)) - sysdate)*86400 ); 
 &_USE_DBMS_LOCK     null;
 &_USE_DBMS_LOCK end if;
 &_USE_DBMS_LOCK ash_date2 := sysdate; 
@@ -2310,6 +2315,8 @@ undefine _IF_DBMS_SYSTEM_ACCESSIBLE
 undefine _IF_X_ACCESSIBLE
 undefine _MANUAL_SNAPSHOT
 undefine _USE_DBMS_LOCK
+col snapper_howtosleep     clear
+col snapper_ora18higher    clear
 col snapper_ora12higher    clear
 col snapper_ora12lower     clear
 col snapper_ora11higher    clear
