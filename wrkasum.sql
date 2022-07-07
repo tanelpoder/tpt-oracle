@@ -12,10 +12,15 @@
 PROMPT Total PGA allocation from V$PROCESS (excluding MGA)
 
 SELECT 
-    ROUND(SUM(pga_alloc_mem)/1048576,1) total_alloc_pga
+    inst_id
+  , ROUND(SUM(pga_alloc_mem)/1048576,1) total_alloc_pga
   , ROUND(SUM(pga_used_mem) /1048576,1) total_used_pga
 FROM
     gv$process
+GROUP BY
+    inst_id
+ORDER BY
+    inst_id
 /
 
 PROMPT Top allocation reason by PGA memory usage
