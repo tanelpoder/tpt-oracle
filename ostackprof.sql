@@ -4,20 +4,22 @@
 -- Purpose:     Take target process stack samples and show an execution profile
 --
 -- Author:      Tanel Poder
--- Copyright:   2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
+-- Copyright:   2008 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 --              Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 --              
 -- Usage:       @ostackprof <sid> <interval> <#samples>
 --               	        
---              @stackprof  <148> <0> <100>  
+--              @stackprof  <148> <0> <100>  
 
 --                - takes 100 stack samples of server process tied to SID 148
 --                  with not waiting between samples
 --
---              @stackprof  <148> <1> <60>  
+--              @stackprof  <148> <1> <60>  
 
 --                - takes 60 stack samples of process tied to sid 148 with 1
 --                  second interval
+--
+-- Updates:     Version 1.2 - support also Unix/Mac clients via Python based stack_helper
 --	        
 -- Other:       WARNING!!! This tool is experimental and not meant for use in
 --                         production environments. This is due oradebug short_stack
@@ -37,7 +39,7 @@
 -------------------------------------------------------------------------------------
 
 PROMPT
-PROMPT -- oStackProf v1.01 - EXPERIMENTAL script by Tanel Poder ( http://www.tanelpoder.com )
+PROMPT -- oStackProf v1.2 - EXPERIMENTAL script by Tanel Poder ( https://tanelpoder.com )
 PROMPT
 PROMPT WARNING! This script can crash the target process on Oracle 9.2 on Windows
 PROMPT and maybe other versions/platforms as well. Test this script out thorouhgly 
@@ -88,5 +90,14 @@ PROMPT ------------------------------------------------------------------------&
 PROMPT Frame->function()
 PROMPT ------------------------------------------------------------------------&_nothing
 
-HOST "cscript //nologo %SQLPATH%\stack_helper.vbs -strip < ostackprof_&ostackprof_spid..txt | sort | cscript //nologo %SQLPATH%\stack_helper.vbs -report | sort /r"
-HOST del ostackprof_&ostackprof_spid..tmp ostackprof_&ostackprof_spid..txt
+-- Windows client
+--HOST "cscript //nologo %SQLPATH%\stack_helper.vbs -strip < ostackprof_&ostackprof_spid..txt | sort | cscript //nologo %SQLPATH%\stack_helper.vbs -report | sort /r"
+
+-- Unix/Mac client
+HOST $SQLPATH/stack_helper.py prefix  < ostackprof_&ostackprof_spid..txt 
+PROMPT ----------------------------------------------------------------------&_nothing
+PROMPT - Num.Samples -> in call stack()
+PROMPT ----------------------------------------------------------------------&_nothing
+HOST $SQLPATH/stack_helper.py details < ostackprof_&ostackprof_spid..txt | sort | uniq -c | sort -nbr
+
+HOST &_delete ostackprof_&ostackprof_spid..tmp ostackprof_&ostackprof_spid..txt
