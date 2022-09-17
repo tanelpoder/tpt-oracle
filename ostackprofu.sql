@@ -101,4 +101,4 @@ PROMPT -- # Num additional functions in call stack
 PROMPT ----------------------------------------------------------------------&_nothing
 HOST $SQLPATH/stack_helper.py details < ostackprof_&ostackprof_spid..txt | sort | uniq -c | sort -nbr
 
---HOST &_delete ostackprof_&ostackprof_spid..tmp ostackprof_&ostackprof_spid..txt
+HOST &_delete ostackprof_&ostackprof_spid..tmp ostackprof_&ostackprof_spid..txt
