@@ -1,3 +1,11 @@
+COL wait_chain FOR A300 WORD_WRAP
+COL distinct_sids FOR 9999 HEAD "#Blkrs"
+COL "%This" FOR A6
+
+PROMPT
+PROMPT -- Display Session Wait Chain Signatures script v0.1 BETA by Tanel Poder ( https://tanelpoder.com )
+
+
 WITH 
     bclass AS (SELECT /*+ INLINE */ class, ROWNUM r from v$waitstat)
   , sq AS (
@@ -35,7 +43,7 @@ WITH
 )
 SELECT
     COUNT(*) sessions
-  , path
+  , path     wait_chain
 FROM
     sq
 GROUP BY
