@@ -13,8 +13,9 @@ FROM
 NATURAL JOIN
     dba_hist_system_event
 WHERE
-    event_name IN ('log file sync', 'log file parallel write', 'ksfd: async disk IO') 
-AND begin_interval_time > SYSDATE - 15
+--    event_name IN ('log file sync', 'log file parallel write', 'ksfd: async disk IO') 
+    event_name LIKE 'SQL*Net vector data%'
+AND begin_interval_time > SYSDATE - 5
 ORDER BY
     event_name
   , begin_time
