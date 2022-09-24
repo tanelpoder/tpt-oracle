@@ -124,6 +124,7 @@ FROM (
   SELECT 'sqlf.sql' AS name, 'Display full sql text from memory' AS description, '@sqlf <sql_id>'||&nl||'@sqlf 7q729nhdgtsqq' AS usage FROM dual UNION ALL
   SELECT 'sqlfn.sql' AS name, 'Display SQL functions' AS description, '@sqlfn <name>'||&nl||'@sqlfn date' AS usage FROM dual UNION ALL
   SELECT 'sqlmon.sql' AS name, 'Run SQL Monitor report' AS description, '@sqlmon <sid>'||&nl||'@sqlmon 1019' AS usage FROM dual UNION ALL
+  SELECT 'swc.sql' AS name, 'Display current wait chains (multi-session wait signature, a session waiting for another session etc.) from GV$SESSION' AS description, '@swc <grouping_cols> <filters>'||&nl||'@swc program2||event2 1=1' AS usage FROM dual UNION ALL
   SELECT 'syn.sql' AS name, 'Display synonym information' AS description, '@syn [<owner>.]<synonym_name>'||&nl||'@syn system.tab'||&nl||'@syn system.%' AS usage FROM dual UNION ALL
   SELECT 't.sql' AS name, 'Display default trace file' AS description, '@t' AS usage FROM dual UNION ALL
   SELECT 'tab.sql' AS name, 'Display table information' AS description, '@tab [<owner>.]<table_name>'||&nl||'@tab soe.orders'||&nl||'@tab soe.%' AS usage FROM dual UNION ALL
