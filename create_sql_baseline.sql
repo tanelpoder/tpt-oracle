@@ -47,7 +47,7 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Found: '||SUBSTR(v_sql_text,1,80)||'...');
 
     DBMS_OUTPUT.PUT_LINE(q'[Signature = ]'||v_signature);
-    SELECT sql_handle INTO v_sql_handle FROM dba_sql_plan_baselines WHERE signature = v_signature;
+    SELECT sql_handle INTO v_sql_handle FROM dba_sql_plan_baselines WHERE signature = v_signature AND rownum = 1;
     DBMS_OUTPUT.PUT_LINE(q'[Handle    = ]'||v_sql_handle);
 
     -- associate good SQL_IDs plan outline with the bad SQL_ID
@@ -58,7 +58,7 @@ BEGIN
              , sql_handle => v_sql_handle
            );
 
-    DBMS_OUTPUT.PUT_LINE(q'[SQL Baseline Name = SQL_BASELINE_&1] return=]'||ret);
+    DBMS_OUTPUT.PUT_LINE(q'[SQL Baseline Name = SQL_BASELINE_&1 return=]'||ret);
 END;
 /
 
