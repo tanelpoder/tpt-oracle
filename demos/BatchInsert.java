@@ -4,6 +4,19 @@
 // requires:
 // CREATE TABLE t(a NUMBER, b VARCHAR2(150));
 
+// results in these metrics (Starts=10) for a single *batch* execution of the SQL (v$sql.executions=1)
+//
+// INSERT INTO t SELECT :1 , :2  FROM dual
+// 
+// --------------------------------------------------------------------------------------------------------
+// | Id  | Operation                | Name | Starts | E-Rows | Cost (%CPU)| A-Rows |   A-Time   | Buffers |
+// --------------------------------------------------------------------------------------------------------
+// |   0 | INSERT STATEMENT         |      |     10 |        |     2 (100)|      0 |00:00:00.01 |      13 |
+// |   1 |  LOAD TABLE CONVENTIONAL | T    |     10 |        |            |      0 |00:00:00.01 |      13 |
+// |   2 |   FAST DUAL              |      |     10 |      1 |     2   (0)|     10 |00:00:00.01 |       0 |
+// --------------------------------------------------------------------------------------------------------
+
+
 import java.sql.*;
 import oracle.jdbc.OracleConnection;
 
