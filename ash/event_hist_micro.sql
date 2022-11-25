@@ -5,14 +5,14 @@
 -- for estimating the event counts (and average durations):
 --   https://www.slideshare.net/jberesni/ash-architecture-and-advanced-usage-rmoug2014-36611678
 
-COL evh_event HEAD WAIT_EVENT for A50 TRUNCATE
+COL evh_event HEAD "Wait Event" for A50 TRUNCATE
 COL evh_graph HEAD "Estimated|Time Graph" JUST CENTER FOR A12
-COL pct_evt_time HEAD "% Event|Time"
-COL evh_est_total_sec HEAD "Estimated|Total Sec" FOR 9,999,999.9
+COL pct_evt_time HEAD "% Event|Time" FOR 990.9
+COL evh_est_total_sec HEAD "Estimated|Total Sec" FOR 9,999,990.9
 COL evh_millisec HEAD "Wait time|bucket us+" FOR A15 JUST RIGHT
-COL evh_event HEAD "Wait Event"
 COL evh_sample_count HEAD "Num ASH|Samples"
-COL evh_est_event_count HEAD "Estimated|Total Waits"
+COL evh_est_event_count HEAD "Estimated|Total Waits" FOR 999,999,990.9
+
 
 BREAK ON evh_event SKIP 1
 

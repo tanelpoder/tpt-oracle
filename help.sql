@@ -85,6 +85,8 @@ FROM (
   SELECT 'oerr.sql' AS name, 'Display Oracle error decription' AS description, '@oerr <error_number>'||&nl||'@oerr 7445' AS usage FROM dual UNION ALL
   SELECT 'oi.sql' AS name, 'Display invalid objects' AS description, '@oi' AS usage FROM dual UNION ALL
   SELECT 'oid.sql' AS name, 'Display database objects based on object id' AS description, '@oid <object_id>'||&nl||'@oid 10'||&nl||'@oid 10,20' AS usage FROM dual UNION ALL
+  SELECT 'ostackprofw.sql' AS name, 'Sample Oracle process call stacks and show a profile (Windows sqlplus)' AS description, '@ostackprofw <SID> <SLEEP> <NUM_SAMPLES>'||&nl||'@ostackprofw 123 0.1 100' AS usage FROM dual UNION ALL
+  SELECT 'ostackprofu.sql' AS name, 'Sample Oracle process call stacks and show a profile (Unix/Linux/Mac sqlplus)' AS description, '@ostackprofu <SID> <SLEEP> <NUM_SAMPLES>'||&nl||'@ostackprofu 123 0.1 100' AS usage FROM dual UNION ALL
   SELECT 'otherxml.sql' AS name, 'Display outline hints from library cache' AS description, '@otherxml <sql_id> <child#>'||&nl||'@otherxml 1fbwxvngasv1f 1' AS usage FROM dual UNION ALL
   SELECT 'p.sql' AS name, 'Display parameter name and value' AS description, '@p <parameter_name>'||&nl||'@pd optimizer' AS usage FROM dual UNION ALL
   SELECT 'partkeys.sql' AS name, 'Display table partition keys' AS description, '@partkeys [<owner>.]<table_name>'||&nl||'@partkeys soe.orders'||&nl||'@partkeys soe.%' AS usage FROM dual UNION ALL
@@ -122,6 +124,7 @@ FROM (
   SELECT 'sqlf.sql' AS name, 'Display full sql text from memory' AS description, '@sqlf <sql_id>'||&nl||'@sqlf 7q729nhdgtsqq' AS usage FROM dual UNION ALL
   SELECT 'sqlfn.sql' AS name, 'Display SQL functions' AS description, '@sqlfn <name>'||&nl||'@sqlfn date' AS usage FROM dual UNION ALL
   SELECT 'sqlmon.sql' AS name, 'Run SQL Monitor report' AS description, '@sqlmon <sid>'||&nl||'@sqlmon 1019' AS usage FROM dual UNION ALL
+  SELECT 'swc.sql' AS name, 'Display current wait chains (multi-session wait signature, a session waiting for another session etc.) from GV$SESSION' AS description, '@swc <grouping_cols> <filters>'||&nl||'@swc program2||event2 1=1' AS usage FROM dual UNION ALL
   SELECT 'syn.sql' AS name, 'Display synonym information' AS description, '@syn [<owner>.]<synonym_name>'||&nl||'@syn system.tab'||&nl||'@syn system.%' AS usage FROM dual UNION ALL
   SELECT 't.sql' AS name, 'Display default trace file' AS description, '@t' AS usage FROM dual UNION ALL
   SELECT 'tab.sql' AS name, 'Display table information' AS description, '@tab [<owner>.]<table_name>'||&nl||'@tab soe.orders'||&nl||'@tab soe.%' AS usage FROM dual UNION ALL

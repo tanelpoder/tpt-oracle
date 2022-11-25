@@ -3,7 +3,7 @@
 
 ------------------------------------------------------------------------------------------------------------------------
 --
--- File name:   asqlmon.sql (v1.2)
+-- File name:   asqlmon.sql (v1.3)
 --
 -- Purpose:     Report SQL-monitoring-style drill-down into where in an execution plan the execution time is spent
 --
@@ -23,16 +23,14 @@
 ------------------------------------------------------------------------------------------------------------------------
 SET LINESIZE 999 PAGESIZE 5000 TRIMOUT ON TRIMSPOOL ON 
 
-COL asqlmon_operation  HEAD Plan_Operation FOR a72
+COL asqlmon_operation  HEADING Plan_Operation FORMAT A72
 COL asqlmon_predicates HEAD PREDICATES     FOR a100 word_wrap
 COL obj_alias_qbc_name FOR a40
 COL options   FOR a30
 
-COL asqlmon_plan_hash_value HEAD PLAN_HASH_VALUE   PRINT
-COL asqlmon_sql_id          HEAD SQL_ID          NOPRINT
-COL asqlmon_sql_child       HEAD "CHILD"          PRINT
-COL asqlmon_sample_time     HEAD SAMPLE_HOUR
-COL projection FOR A520
+COL asqlmon_plan_hash_value HEAD PLAN_HASH_VALUE FOR 99999999999
+COL asqlmon_sql_id          HEAD SQL_ID 
+COL asqlmon_sql_child       HEAD CHILD FOR 999999          
 
 COL pct_child HEAD "Activity %" FOR A8
 COL pct_child_vis HEAD "Visual" FOR A12
@@ -41,10 +39,10 @@ COL asqlmon_id        HEAD "ID" FOR 9999
 COL asqlmon_parent_id HEAD "PID"  FOR 9999
 
 
-BREAK ON asqlmon_sql_id SKIP 1 ON asqlmon_sql_child SKIP 1 ON asqlmon_plan_hash_value SKIP 1 ON asqlmon_sample_time SKIP 1 DUP ON asqlmon_operation
+BREAK ON asqlmon_sql_id SKIP 1 ON asqlmon_sql_child SKIP 1 ON asqlmon_plan_hash_value SKIP 1 ON asqlmon_operation 
 
 PROMPT
-PROMPT -- ASQLMon v1.1 - by Tanel Poder ( http://blog.tanelpoder.com ) - Display SQL execution plan line level activity breakdown from ASH
+PROMPT -- ASQLMon v1.3 - by Tanel Poder ( https://tanelpoder.com ) - Display SQL execution plan line level activity breakdown from ASH
 
 WITH  sample_times AS (
     select * from dual
@@ -79,8 +77,8 @@ GROUP BY
   , ash.event
 )
 SELECT
-    plan.sql_id            asqlmon_sql_id
-  , plan.child_number      asqlmon_sql_child
+  --  plan.sql_id            asqlmon_sql_id
+    plan.child_number      asqlmon_sql_child
   , plan.plan_hash_value asqlmon_plan_hash_value
   , sq.samples seconds
   , LPAD(TO_CHAR(ROUND(RATIO_TO_REPORT(sq.samples) OVER (PARTITION BY sq.sql_id, sq.sql_plan_hash_value) * 100, 1), 999.9)||' %',8) pct_child
