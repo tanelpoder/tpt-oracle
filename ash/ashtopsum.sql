@@ -11,14 +11,14 @@
 -- Copyright:   (c) http://blog.tanelpoder.com
 --              
 -- Usage:       
---     @ashtop <grouping_cols> <filters> <fromtime> <totime>
+--     @ashtopsum <grouping_cols> <filters> <fromtime> <totime>
 --
 -- Example:
---     @ashtop username,sql_id session_type='FOREGROUND' sysdate-1/24 sysdate
+--     @ashtopsum username,sql_id session_type='FOREGROUND' sysdate-1/24 sysdate
 --
 -- Other:
 --     This script uses only the in-memory GV$ACTIVE_SESSION_HISTORY, use
---     @dashtop.sql for accessiong the DBA_HIST_ACTIVE_SESS_HISTORY archive
+--     @dashtopsum.sql for accessiong the DBA_HIST_ACTIVE_SESS_HISTORY archive
 --              
 --------------------------------------------------------------------------------
 COL "%This" FOR A7
@@ -47,12 +47,12 @@ COL sql_opname          FOR A20
 COL top_level_call_name FOR A30
 COL wait_class          FOR A15
 
-COL rd_rq               FOR 9,999,999
-COL wr_rq               FOR 9,999,999
-COL rd_mb               FOR 9,999,999
-COL wr_mb               FOR 9,999,999
+COL rd_rq               FOR 999,999,999
+COL wr_rq               FOR 999,999,999
+COL rd_mb               FOR 999,999,999
+COL wr_mb               FOR 999,999,999
 COL pgamem_mb              FOR 9,999,999
-COL tempspc_mb             FOR 9,999,999
+COL tempspc_mb             FOR 99,999,999
 
 PROMPT This is an experimental script as some documentation/explanation is needed.
 PROMPT The ASH "delta" metrics are not tied to individual SQL_IDs or wait events,

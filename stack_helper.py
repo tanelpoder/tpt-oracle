@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-# Copyright 2022 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
+# Copyright 2022 Tanel Poder. All rights reserved. More info at https://tanelpoder.com
 # Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
 from __future__ import print_function
 import sys, os
 
-stringlist = []
+full_stringlist = []
 
 # parse stacks
 for l in sys.stdin:
@@ -15,22 +15,25 @@ for l in sys.stdin:
     
     x = []
     for f in l:
-        x.append(f.split('+')[0])
+        if f.startswith("__sighandler()"):
+            break
+        else:
+            x.append(f.split('+')[0])
 
     s = ""
     for f in x:
-        s += "%s->" % f
+        s += "%s/" % f
 
-    stringlist.append(s) 
+    full_stringlist.append(s) 
 
-prefixlength = len(os.path.commonprefix(stringlist)) - 2
-s = os.path.commonprefix(stringlist).split("->")
+prefixlength = len(os.path.commonpath(full_stringlist))
+common_funclist = os.path.commonpath(full_stringlist).split("/")
 
 # report
 if sys.argv[1] == "prefix":
-    for (i,f) in enumerate(s):
-        print("#%3d %s %s" % (len(s)-i, " "*i, f))
+    for (i,f) in enumerate(common_funclist):
+        print("#%3d %s %s" % (len(common_funclist)-i, " "*i, f))
 else:
-    for s in stringlist:
-        print(" ", s[prefixlength:-2])
+    for suffix_funcs in full_stringlist:
+        print(" ", suffix_funcs[prefixlength:-1].replace('/','->'))
 
