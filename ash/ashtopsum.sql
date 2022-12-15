@@ -56,8 +56,9 @@ COL tempspc_mb             FOR 9,999,999
 
 PROMPT This is an experimental script as some documentation/explanation is needed.
 PROMPT The ASH "delta" metrics are not tied to individual SQL_IDs or wait events,
-PROMPT They increase in the session scope (which SQL_ID/operation happens to be
-PROMPT active when ASH samples its data is just matter of luck). 
+PROMPT They are valid in the session scope (and related mostly static attributes,
+PROMPT like PROGRAM, MACHINE, MODULE). Which SQL_ID/operation/event happens to be
+PROMPT active when ASH samples its data is just matter of luck. 
 
 SELECT
     * 
