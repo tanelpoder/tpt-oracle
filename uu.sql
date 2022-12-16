@@ -13,8 +13,13 @@ select s.username||CASE WHEN s.sid = SYS_CONTEXT('userenv','sid') THEN ' (me)' W
        s.sql_id, --s.sql_hash_value, 
        s.audsid u_audsid,
        s.osuser u_osuser, 
-       substr(s.machine,instr(s.machine,'\')) u_machine, 
-       substr(s.program,instr(s.program,'(')) u_program, 
+       substr(s.machine,instr(s.machine,'\')) u_machine,
+       CASE WHEN s.type = 'BACKGROUND' OR REGEXP_LIKE(s.program, '.*\([PJ]\d+\)') THEN
+          REGEXP_REPLACE(SUBSTR(s.program,INSTR(s.program,'(')), '\d', 'n')
+       ELSE
+          '('||REGEXP_REPLACE(REGEXP_REPLACE(s.program, '(.*)@(.*)(\(.*\))', '\1'), '\d', 'n')||')'
+       END u_program,
+       --substr(s.program,instr(s.program,'(')) u_program, 
        -- s.sql_address, 
        s.last_call_et lastcall, 
        s.status 
