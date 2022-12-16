@@ -8,7 +8,7 @@ col u_osuser head OSUSER for a16
 col u_machine head MACHINE for a25 truncate
 col u_program head PROGRAM for a20
 
-select s.username u_username, ' ''' || s.sid || ',' || s.serial# || '''' u_sid, 
+select s.username||CASE WHEN s.sid = SYS_CONTEXT('userenv','sid') THEN ' (me)' WHEN s.type = 'BACKGROUND' THEN ' (bg)' END u_username, ' ''' || s.sid || ',' || s.serial# || '''' u_sid, 
        p.spid, 
        s.sql_id, --s.sql_hash_value, 
        s.audsid u_audsid,
@@ -25,7 +25,7 @@ from
 where
     s.paddr=p.addr
 --and s.type!='BACKGROUND'
-and lower(s.username) like lower('&1')
+and (lower(s.username) like lower('&1') or (nvl(s.username,'%') = '%' and s.type = 'USER'))
 --and s.status='ACTIVE'
 /
 
