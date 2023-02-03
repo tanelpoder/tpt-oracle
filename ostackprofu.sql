@@ -97,7 +97,7 @@ PROMPT ------------------------------------------------------------------------&
 -- Unix/Mac client
 HOST $SQLPATH/stack_helper.py prefix  < ostackprof_&ostackprof_spid..txt 
 PROMPT ----------------------------------------------------------------------&_nothing
-PROMPT -- # Num additional functions in call stack
+PROMPT -- # Num additional function samples in call stack
 PROMPT ----------------------------------------------------------------------&_nothing
 HOST $SQLPATH/stack_helper.py details < ostackprof_&ostackprof_spid..txt | sort | uniq -c | sort -nbr
 
