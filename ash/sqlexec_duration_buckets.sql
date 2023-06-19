@@ -16,6 +16,7 @@ WITH ash AS (
           AS TIMESTAMP) elapsed_time
       , sql_exec_start
       , sql_exec_id
+      , COUNT(*) seconds
     FROM
         gv$active_session_history
     WHERE
@@ -46,7 +47,7 @@ SELECT
           (EXTRACT(MINUTE FROM MAX(elapsed_time)) * 60) +
           (EXTRACT(SECOND FROM MAX(elapsed_time)))
     ) as approx_elapsed_sec
-  , COUNT(*) seconds
+  , SUM(seconds) sqlexec_db_time
   , COUNT(DISTINCT session_id) sessions
 FROM longrunning
 GROUP BY
@@ -60,6 +61,7 @@ ORDER BY
 SELECT
     sql_id as ash_sql_id
   , approx_elapsed_sec
+  , SUM(sqlexec_db_time) total_db_time
   , MIN(sql_exec_start)  first_seen_start
   , MAX(sql_exec_start)  last_seen_start
 FROM
