@@ -51,16 +51,17 @@ BEGIN
                v_begin_snap - 1
              , v_end_snap
              , basic_filter => q'[sql_id = '&good_sql_id' AND plan_hash_value = TO_NUMBER('&good_sql_phv')]'
-             , enabled=>'NO'
+             , enabled=>'YES'
+             , fixed=>'YES'
           );
 
-    DBMS_OUTPUT.put_line('Number of plans loaded: '||ret);
+    DBMS_OUTPUT.put_line('Number of plans loaded and fixed: '||ret);
 
-    FOR i IN (SELECT sql_handle, plan_name FROM dba_sql_plan_baselines WHERE signature = v_signature) LOOP
-        ret  := DBMS_SPM.ALTER_SQL_PLAN_BASELINE(i.sql_handle, i.plan_name, 'ENABLED', 'YES');
-        ret2 := DBMS_SPM.ALTER_SQL_PLAN_BASELINE(i.sql_handle, i.plan_name, 'FIXED',   'YES');
-        DBMS_OUTPUT.PUT_LINE('handle='||i.sql_handle||' plan_name='||i.plan_name||' ret='||ret ||' ret2='||ret2);
-    END LOOP;
+    -- FOR i IN (SELECT sql_handle, plan_name FROM dba_sql_plan_baselines WHERE signature = v_signature) LOOP
+    --     ret  := DBMS_SPM.ALTER_SQL_PLAN_BASELINE(i.sql_handle, i.plan_name, 'ENABLED', 'YES');
+    --     ret2 := DBMS_SPM.ALTER_SQL_PLAN_BASELINE(i.sql_handle, i.plan_name, 'FIXED',   'YES');
+    --     DBMS_OUTPUT.PUT_LINE('handle='||i.sql_handle||' plan_name='||i.plan_name||' ret='||ret ||' ret2='||ret2);
+    -- END LOOP;
 
 END;
 /
