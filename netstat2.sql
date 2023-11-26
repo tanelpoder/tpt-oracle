@@ -9,9 +9,9 @@ FROM
     x$ksugblnetstat
 WHERE 
     ksugblnetstatsid IN (&1)
+AND ksugblnetstatval != 0
 ORDER BY
-    ksugblnetstatsid 
+    ksugblnetstatsid
   , ksugblnetstatname
-    ksugblnetstatval != 0
 /
 
