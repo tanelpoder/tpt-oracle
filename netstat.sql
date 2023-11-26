@@ -7,7 +7,10 @@ SELECT
   , ksugblnetstatval       
 FROM
     x$ksugblnetstat
+WHERE 
+    ksugblnetstatsid IN (&1)
 ORDER BY
-    ksugblnetstatname
+    ksugblnetstatsid
+  , ksugblnetstatname
 /
 

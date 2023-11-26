@@ -7,9 +7,11 @@ SELECT
   , ksugblnetstatval       
 FROM
     x$ksugblnetstat
-WHERE
-    ksugblnetstatval != 0
+WHERE 
+    ksugblnetstatsid IN (&1)
 ORDER BY
-    ksugblnetstatname
+    ksugblnetstatsid 
+  , ksugblnetstatname
+    ksugblnetstatval != 0
 /
 
