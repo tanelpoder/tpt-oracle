@@ -1,6 +1,6 @@
 -- awr/dstat.sql by Tanel Poder v0.1
 
-PROMPT This is a prototype script v0.1. It does not work correctly
+PROMPT This is a prototype script v0.2. It does not work correctly
 PROMPT RAC and CDB databases yet and other things may change too...
 
 COL AAS           HEAD "(#ses)|AAS"       FOR 9999.9
@@ -8,12 +8,13 @@ COL SBRLATms      HEAD "(ms)|SBRLAT"      FOR 99.90
 COL DBCPU         HEAD "(%aCPU)|DBCPU"    FOR 99999.90 
 COL BGCPU         HEAD "(%aCPU)|BGCPU"    FOR 99999.90 
 COL OSCPU         HEAD "(%aCPU)|OSCPU"    FOR 99999.90 
-COL IOSIZE        HEAD "(kB)|IOSIZE"      FOR 99999.0
+COL IOSIZE        HEAD "(kB)|IOSIZE"      FOR 99999
 COL "BLKCHG/tx"   HEAD "BLKCHG/tx"        FOR 9999999.0
 COL "REDOKB/s"    HEAD "(kB/s)|REDOKB/s"  FOR 9999999.0
 COL "NETKB/s"     HEAD "(kB/s)|NETKB/s"   FOR 9999999.0
-COL "IOMB/s"      HEAD "(MB/s)|IOMB/s"    FOR 99999.0
-COL "LOGONS/s"    HEAD "LOGONS/s"         FOR 999.0
+COL "IOMB/s"      HEAD "(MB/s)|IOMB/s"    FOR 999999.0
+COL "IOPS"        HEAD "IOPS"             FOR 99999999
+COL "LOGONS/s"    HEAD "LOGONS/s"         FOR 99999.0
 COL "EXECS/s"     HEAD "EXECS/s"          FOR 999999.0
 
 COL "PARSE/tx"    HEAD "PARSE/tx" FOR 9999999.0
