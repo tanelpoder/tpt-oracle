@@ -1,7 +1,7 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
-prompt Show shared pool memory usage of SQL statement with SQL_ID &1
+prompt Show shared pool memory usage of SQL statement with hash value &1
 
 -- uncomment the chunk_ptr and/or subheap_desc if you want more detailed breakdown of individual chunk allocations
 
@@ -44,12 +44,12 @@ SELECT /*+ NO_MERGE(@sel$2) NO_MERGE(@sel$3) LEADING(@sel$3 c) */
 --  , subheap_desc
 FROM
     v$sql_shared_memory s
-WHERE
+WHERE    
     hash_value = &1
 GROUP BY
-    hash_value
-  , sql_id
-  , heap_desc
+--    hash_value
+--  , sql_id
+   heap_desc
   , structure
   , function
   , chunk_com
