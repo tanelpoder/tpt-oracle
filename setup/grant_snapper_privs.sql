@@ -24,8 +24,10 @@ GRANT SELECT ON sys.v_$statname TO &snapper_role;
 GRANT SELECT ON sys.v_$version TO &snapper_role;
 
 
--- Oracle 12.2 and lower
+-- On Oracle 18 and higher, Snapper automatically uses DBMS_SESSION.SLEEP which is accessible to PUBLIC by default
+-- On Oracle 12.2 and lower, DBMS_LOCK access is needed:
 GRANT EXECUTE ON sys.dbms_lock TO &snapper_role;
 
--- Oracle 18 and higher automatically use DBMS_SESSION.SLEEP which is accessible to everyone by default
+-- This optional, if you want Snapepr to log its output into a tracefile instead of DBMS_OUTPUT:
+-- GRANT EXECUTE ON sys.dbms_system TO &snapper_role;
 
