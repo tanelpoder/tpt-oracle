@@ -1,5 +1,7 @@
 -- generated using this OS command (and manually edited to remove duplicates):
 -- for word in $(grep -i 'v\$' snapper.sql) ; do echo $word ; done | sort | fgrep 'v$' | sort | uniq > snapper_privs.txt
+--
+-- You have to run this script as SYS!
 
 DEFINE snapper_role=SNAPPER_ROLE
 
