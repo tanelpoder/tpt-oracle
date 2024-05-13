@@ -30,7 +30,8 @@ GRANT SELECT ON sys.v_$version TO &snapper_role;
 -- On Oracle 12.2 and lower, DBMS_LOCK access is needed:
 GRANT EXECUTE ON sys.dbms_lock TO &snapper_role;
 
--- This optional, if you want Snapepr to log its output into a tracefile instead of DBMS_OUTPUT:
+-- This optional, if you want Snapepr to log its output into a tracefile instead of DBMS_OUTPUT.
+-- Note that in latest Oracle versions, you need to be SYS for DBMS_SYSTEM tracing to work, regardless of the grant
 -- GRANT EXECUTE ON sys.dbms_system TO &snapper_role;
 
 -- If you granted the privileges to a role (SNAPPER_ROLE) now you can grant this role to users that need it
