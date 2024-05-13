@@ -33,3 +33,4 @@ GRANT EXECUTE ON sys.dbms_lock TO &snapper_role;
 -- This optional, if you want Snapepr to log its output into a tracefile instead of DBMS_OUTPUT:
 -- GRANT EXECUTE ON sys.dbms_system TO &snapper_role;
 
+-- If you granted the privileges to a role (SNAPPER_ROLE) now you can grant this role to users that need it
