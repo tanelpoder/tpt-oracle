@@ -1,6 +1,8 @@
-COL wait_chain FOR A300 WORD_WRAP
+COL obj           FOR A30
+COL objt          FOR A50
+COL wait_chain    FOR A300 WORD_WRAP
 COL distinct_sids FOR 9999 HEAD "#Blkrs"
-COL "%This" FOR A6
+COL "%This"       FOR A6
 
 PROMPT
 PROMPT -- Display Session Wait Chain Signatures script v0.1 BETA by Tanel Poder ( https://tanelpoder.com )
@@ -34,7 +36,13 @@ WITH
           , TO_CHAR(CASE WHEN state = 'WAITING' THEN p3 ELSE null END, '0XXXXXXXXXXXXXXX') p3hex
         FROM
             gv$session s
-    ) ses
+    ) ses, (SELECT
+             object_id,data_object_id,owner,object_name,subobject_name,object_type
+           , owner||'.'||object_name obj
+           , owner||'.'||object_name||' ['||object_type||']' objt
+         FROM dba_objects) o
+    WHERE
+        ses.row_wait_obj# = o.object_id(+)
     CONNECT BY NOCYCLE
         (    PRIOR ses.blocking_session  = ses.sid
          AND PRIOR ses.blocking_instance = ses.inst_id
