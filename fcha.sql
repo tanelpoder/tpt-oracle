@@ -16,9 +16,10 @@
 --              to *your* process/session (x$ksmup and x$ksmpp do not see other
 --              session/process memory)
 --              
+-- History:     Jan 20 2021 Frits Hoogland Added query for fixed sga (x$ksmfsv)
 --------------------------------------------------------------------------------
 
-prompt Find in which heap (UGA, PGA or Shared Pool) the memory address &1 resides...
+prompt Find in which heap (UGA, PGA, fixed SGA or Shared Pool) the memory address &1 resides...
 prompt
 prompt WARNING!!! This script will query X$KSMSP, which will cause heavy shared pool latch contention 
 prompt in systems under load and with large shared pool. This may even completely hang 
@@ -28,7 +29,7 @@ pause  Press ENTER to continue, CTRL+C to cancel...
 
 
 select
-    'SGA' LOC,
+    'VSGA' LOC,
     KSMCHPTR,
     KSMCHIDX,
     KSMCHDUR,
@@ -80,4 +81,22 @@ where
     between 
         to_number(ksmchptr,'XXXXXXXXXXXXXXXX')
     and to_number(ksmchptr,'XXXXXXXXXXXXXXXX') + ksmchsiz - 1
+union all
+select
+   'FSGA',
+   ksmfsadr,
+   null,
+   null,
+   ksmfsnam||' '||ksmfstyp,
+   ksmfssiz,
+   null,
+   null,
+   null
+from
+    x$ksmfsv
+where
+    to_number(substr('&1', instr(lower('&1'), 'x')+1) ,'XXXXXXXXXXXXXXXX')
+    between
+        to_number(ksmfsadr,'XXXXXXXXXXXXXXXX')
+    and to_number(ksmfsadr,'XXXXXXXXXXXXXXXX') + ksmfssiz - 1
 /
