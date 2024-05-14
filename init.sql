@@ -23,10 +23,9 @@ def SQLPATH=""
 def SQLPATH=$SQLPATH -- (Unix/Mac OSX)
 --def SQLPATH=%SQLPATH% -- (Windows)
 
-
--- def _start=start   -- Windows
--- def _start=firefox -- Unix/Linux
-def _start=open -- MacOS
+-- def _start=start    -- Windows
+-- def _start=xdg-open -- Unix/Linux
+def _start=open        -- MacOS
 
 def _delete="rm -f" -- Unix/MacOSX
 -- def _delete="del" -- Windows
@@ -68,11 +67,11 @@ def _tpt_tempdir=&SQLPATH/tmp
 
   set pagesize 5000
 
--- fetch 10000000 bytes of long datatypes. good for
+-- fetch 1000000 bytes of long datatypes. good for
 -- querying DBA_VIEWS and DBA_TRIGGERS
 
-  set long 10000000
-  set longchunksize 10000000
+  set long 1000000
+  set longchunksize 1000000
 
 -- larger arraysize for faster fetching of data
 -- note that arraysize can affect outcome of experiments

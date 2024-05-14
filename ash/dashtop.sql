@@ -26,31 +26,30 @@
 --     (due to a DB issue) but DBA_HIST_ASH samples are there
 --------------------------------------------------------------------------------
 
-COL "%This" FOR A7
---COL p1     FOR 99999999999999
---COL p2     FOR 99999999999999
---COL p3     FOR 99999999999999
-COL p1text      FOR A30 word_wrap
-COL p2text      FOR A30 word_wrap
-COL p3text      FOR A30 word_wrap
-COL p1hex       FOR A17
-COL p2hex       FOR A17
-COL p3hex       FOR A17
-COL AAS         FOR 9999.9
-COL totalseconds HEAD "Total|Seconds" FOR 99999999
-COL dist_sqlexec_seen HEAD "Distinct|Execs Seen"
-COL event       FOR A42 WORD_WRAP
-COL event2      FOR A46 WORD_WRAP
-COL time_model_name FOR A50 WORD_WRAP
-COL program2    FOR A40 TRUNCATE
-COL username    FOR A20 wrap
-COL obj         FOR A30
-COL objt        FOR A50
-COL sql_opname  FOR A20
+COL "%This"             FOR A7
+COL p1text              FOR A30 word_wrap
+COL p2text              FOR A30 word_wrap
+COL p3text              FOR A30 word_wrap
+COL p1hex               FOR A17
+COL p2hex               FOR A17
+COL p3hex               FOR A17
+COL AAS                 FOR 9999.9
+COL totalseconds        HEAD "Total|Seconds" FOR 99999999
+COL dist_sqlexec_seen   HEAD "Distinct|Execs Seen" FOR 999999
+COL dist_timestamps     HEAD "Distinct|Tstamps" FOR 999999
+COL event               FOR A42 WORD_WRAP
+COL event2              FOR A46 WORD_WRAP
+COL time_model_name     FOR A50 WORD_WRAP
+COL program2            FOR A40 TRUNCATE
+COL username            FOR A20 wrap
+COL obj                 FOR A30
+COL objt                FOR A50
+COL sql_opname          FOR A20
 COL top_level_call_name FOR A30
-COL wait_class  FOR A15
+COL wait_class          FOR A15
+COL sql_plan_op         FOR A40
 
-SELECT * FROM (
+SELECT /*+ qb_name(main) */ * FROM (
     WITH bclass AS (SELECT class, ROWNUM r from v$waitstat)
     SELECT /*+ LEADING(a) USE_HASH(u) */
         10 * COUNT(*)                                                      "TotalSeconds"
@@ -73,10 +72,13 @@ SELECT * FROM (
 --      , 10 * SUM(CASE WHEN wait_class ='Other'          THEN 1 ELSE 0 END) "Other"
       , TO_CHAR(MIN(sample_time), 'YYYY-MM-DD HH24:MI:SS') first_seen
       , TO_CHAR(MAX(sample_time), 'YYYY-MM-DD HH24:MI:SS') last_seen
+      , COUNT(DISTINCT sql_exec_start||':'||sql_exec_id) dist_sqlexec_seen
+      , COUNT(DISTINCT sample_time) dist_timestamps
     FROM
         (SELECT
              a.*
            , a.instance_number AS inst_id
+           , a.sql_plan_operation||' '||a.sql_plan_options sql_plan_op
            , TO_CHAR(CASE WHEN session_state = 'WAITING' THEN p1 ELSE null END, '0XXXXXXXXXXXXXXX') p1hex
            , TO_CHAR(CASE WHEN session_state = 'WAITING' THEN p2 ELSE null END, '0XXXXXXXXXXXXXXX') p2hex
            , TO_CHAR(CASE WHEN session_state = 'WAITING' THEN p3 ELSE null END, '0XXXXXXXXXXXXXXX') p3hex
@@ -90,7 +92,8 @@ SELECT * FROM (
                                ELSE (SELECT DECODE(MOD(BITAND(a.p3,TO_NUMBER('FFFF','XXXX')) - 17,2),0,'undo header',1,'undo data', 'error') FROM dual)
                                END  ||']' 
                     ELSE null 
-                END event2 -- event is NULL in ASH if the session is not waiting (session_state = ON CPU)
+                    -- event is NULL in ASH if the session is not waiting (session_state = ON CPU)
+                END event2 
            , CASE WHEN a.session_type = 'BACKGROUND' OR REGEXP_LIKE(a.program, '.*\([PJ]\d+\)') THEN
                 REGEXP_REPLACE(SUBSTR(a.program,INSTR(a.program,'(')), '\d', 'n')
              ELSE
@@ -131,7 +134,7 @@ SELECT * FROM (
     AND a.current_obj# = o.object_id(+)
     AND &2
     AND a.sample_time BETWEEN &3 AND &4
-    AND a.dbid = (SELECT d.dbid FROM v$database d) -- for partition pruning
+    --AND a.dbid = (SELECT d.dbid FROM v$database d) -- for partition pruning
     --AND a.snap_id IN (SELECT sn.snap_id FROM dba_hist_snapshot sn WHERE sn.begin_interval_time >= &3 AND sn.end_interval_time <= &4) -- for partition pruning
     AND snap_id IN (SELECT snap_id FROM dba_hist_snapshot WHERE sample_time BETWEEN &3 AND &4) -- for partition pruning
     --AND (a.dbid, a.snap_id) IN (SELECT d.dbid, sn.snap_id FROM v$database d, dba_hist_snapshot sn WHERE d.dbid = sn.dbid AND sn.begin_interval_time >= &3 AND sn.end_interval_time <= &4) -- for partition pruning

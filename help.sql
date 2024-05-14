@@ -113,6 +113,8 @@ FROM (
   SELECT 'sgares.sql' AS name, 'Display information about the last completed SGA resize operations from v$sga_resize_ops' AS description, '@sgares' AS usage FROM dual UNION ALL
   SELECT 'sgastat.sql' AS name, 'Display detailed information on the SGA from v$sgastat' AS description, '@sgastat <name|pool>'||&nl||'@sgastat %'||&nl||'@sgastat result' AS usage FROM dual UNION ALL
   SELECT 'sgastatx.sql' AS name, 'Display shared pool stats by sub-pool from X$KSMSS' AS description, '@sgastatx <statistic_name>'||&nl||'@sgastatx "free memory"'||&nl||'@sgastatx cursor' AS usage FROM dual UNION ALL
+  SELECT 'sqlmem.sql' AS name, 'Display shared pool memory usage of SQL statement' AS description, '@sqlmem <sql_id>'||&nl||'@sqlmem 7q729nhdgtsqq' AS usage FROM dual UNION ALL
+  SELECT 'sqlmemh.sql' AS name, 'Display shared pool memory usage of SQL statement' AS description, '@sqlmemh <hash_value>'||&nl||'@sqlmemh 900835192' AS usage FROM dual UNION ALL
   SELECT 'sys.sql' AS name, 'Display system statistics' AS description, '@sys <statistic_name>'||&nl||'@sys redo'||&nl||'@sys ''redo write''' AS usage FROM dual UNION ALL
   SELECT 'uu.sql' AS name, 'Display user sessions' AS description, '@uu <username>'||&nl||'@uu %'||&nl||'@uu username'||&nl||'@uu %username%' AS usage FROM dual UNION ALL
   SELECT 'us.sql' AS name, 'Display database usernames from dba_users' AS description, '@us <username>'||&nl||'@us username' AS usage FROM dual UNION ALL
@@ -138,7 +140,7 @@ FROM (
   SELECT 'trace.sql' AS name, 'Enable tracing' AS description, '@trace <filter_expression>'||&nl||'@trace sid=123'||&nl||'@trace username=''SOE''' AS usage FROM dual UNION ALL
   SELECT 'traceme.sql' AS name, 'Enable tracing for the current session' AS description, '@traceme' AS usage FROM dual UNION ALL
   SELECT 'traceoff.sql' AS name, 'Disable tracing' AS description, '@traceoff <filter_expression>'||&nl||'@traceoff sid=123'||&nl||'@traceoff username=''SOE''' AS usage FROM dual UNION ALL
-  SELECT 'trans.sql' AS name, 'Display active transactions' AS description, '@trans' AS usage FROM dual UNION ALL
+  SELECT 'trans.sql' AS name, 'Display active transactions from v$transaction' AS description, '@trans <filter_expression>'||&nl||'@trans sid=123'||&nl||'@trans username=''SYS''' AS usage FROM dual UNION ALL
   SELECT 'trig.sql' AS name, 'Display trigger information' AS description, '@trig [<owner>.]<trigger_name>'||&nl||'@trig sys.delete_entries'||&nl||'@trig sys.%' AS usage FROM dual UNION ALL
   SELECT 'ts.sql' AS name, 'Display tablespaces' AS description, '@ts <tablespace_name>'||&nl||'@ts soe'||&nl||'@ts %' AS usage FROM dual UNION ALL
   SELECT 'uds.sql' AS name, 'Display undo statistics' AS description, '@uds' AS usage FROM dual UNION ALL
