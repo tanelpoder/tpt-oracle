@@ -77,6 +77,7 @@ SELECT /*+ qb_name(main) */ * FROM (
     FROM
         (SELECT
              a.*
+           , a.instance_number AS inst_id
            , a.sql_plan_operation||' '||a.sql_plan_options sql_plan_op
            , TO_CHAR(CASE WHEN session_state = 'WAITING' THEN p1 ELSE null END, '0XXXXXXXXXXXXXXX') p1hex
            , TO_CHAR(CASE WHEN session_state = 'WAITING' THEN p2 ELSE null END, '0XXXXXXXXXXXXXXX') p2hex
