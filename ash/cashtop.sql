@@ -3,7 +3,7 @@
 
 --------------------------------------------------------------------------------
 --
--- File name:   cashtop.sql v1.2
+-- File name:   cashtop.sql
 -- Purpose:     Display top ASH time (count of ASH samples) grouped by your
 --              specified dimensions
 --              
@@ -11,14 +11,14 @@
 -- Copyright:   (c) http://blog.tanelpoder.com
 --              
 -- Usage:       
---     @dashtop <grouping_cols> <filters> <fromtime> <totime>
+--     @cashtop <grouping_cols> <filters> <fromtime> <totime>
 --
 -- Example:
---     @dashtop username,sql_id session_type='FOREGROUND' sysdate-1/24 sysdate
+--     @cashtop pdb_name,username,sql_id session_type='FOREGROUND' sysdate-1/24 sysdate
 --
 -- Other:
---     This script uses only the AWR's DBA_HIST_ACTIVE_SESS_HISTORY, use
---     @dashtop.sql for accessiong the V$ ASH view
+--     This script uses only the AWR's CDB_HIST_ACTIVE_SESS_HISTORY, use
+--     @ashtop.sql for accessiong the V$ ASH view
 --              
 --
 -- TODO:
