@@ -138,7 +138,7 @@ FROM (
   SELECT 'trace.sql' AS name, 'Enable tracing' AS description, '@trace <filter_expression>'||&nl||'@trace sid=123'||&nl||'@trace username=''SOE''' AS usage FROM dual UNION ALL
   SELECT 'traceme.sql' AS name, 'Enable tracing for the current session' AS description, '@traceme' AS usage FROM dual UNION ALL
   SELECT 'traceoff.sql' AS name, 'Disable tracing' AS description, '@traceoff <filter_expression>'||&nl||'@traceoff sid=123'||&nl||'@traceoff username=''SOE''' AS usage FROM dual UNION ALL
-  SELECT 'trans.sql' AS name, 'Display active transactions' AS description, '@trans' AS usage FROM dual UNION ALL
+  SELECT 'trans.sql' AS name, 'Display active transactions from v$transaction' AS description, '@trans <filter_expression>'||&nl||'@trans sid=123'||&nl||'@trans username=''SYS''' AS usage FROM dual UNION ALL
   SELECT 'trig.sql' AS name, 'Display trigger information' AS description, '@trig [<owner>.]<trigger_name>'||&nl||'@trig sys.delete_entries'||&nl||'@trig sys.%' AS usage FROM dual UNION ALL
   SELECT 'ts.sql' AS name, 'Display tablespaces' AS description, '@ts <tablespace_name>'||&nl||'@ts soe'||&nl||'@ts %' AS usage FROM dual UNION ALL
   SELECT 'uds.sql' AS name, 'Display undo statistics' AS description, '@uds' AS usage FROM dual UNION ALL
