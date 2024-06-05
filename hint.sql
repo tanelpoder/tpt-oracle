@@ -12,10 +12,10 @@ select
     version,
     version_outline,
     inverse,
-    decode(bitand(target_level,1),0,'','STATEMENT ') ||
-    decode(bitand(target_level,2),0,'','QUERY_BLOCK ')  ||
-    decode(bitand(target_level,4),0,'','OBJECT ')  ||
-    decode(bitand(target_level,8),0,'','JOIN ') hint_scope
+    decode(bitand(target_level,1),1,'STATEMENT ')    ||
+    decode(bitand(target_level,2),2,'QBLOCK ')  ||
+    decode(bitand(target_level,4),4,'OBJECT ')  ||
+    decode(bitand(target_level,8),8,'JOIN ') hint_scope
 from v$sql_hint 
 where lower(name) like lower('%&1%')
 /
