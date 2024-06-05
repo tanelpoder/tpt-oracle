@@ -5,7 +5,7 @@ col version for a15
 col version_outline for a15
 col inverse for a35
 
-col hint_scope for a25
+col hint_scope for a27
 
 select 
     name,
