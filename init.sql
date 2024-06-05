@@ -67,11 +67,11 @@ def _tpt_tempdir=&SQLPATH/tmp
 
   set pagesize 5000
 
--- fetch 10000000 bytes of long datatypes. good for
+-- fetch 1000000 bytes of long datatypes. good for
 -- querying DBA_VIEWS and DBA_TRIGGERS
 
-  set long 10000000
-  set longchunksize 10000000
+  set long 1000000
+  set longchunksize 1000000
 
 -- larger arraysize for faster fetching of data
 -- note that arraysize can affect outcome of experiments
