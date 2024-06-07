@@ -20,7 +20,7 @@
 
 COL sqlfh_feature HEAD SQL_FEATURE FOR A55
 COL hinth_path HEAD PATH FOR A150
-COL hinth_name FOR A35
+COL hinth_name HEAD NAME FOR A35
 
 PROMPT Display Hint feature hierarchy for hints like &1
 
