@@ -1,10 +1,8 @@
 -- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
--- descxx.sql requires the display_raw function which is included in the comment section below.
--- the display_raw function is taken from Greg Rahn's blog as I'm too lazy to write one myself
---     http://structureddata.org/2007/10/16/how-to-display-high_valuelow_value-columns-from-user_tab_col_statistics/
---
+-- requires 12c or later as it uses inline WITH PL/SQL functions. It is possible to convert this
+-- to 11g too, using the function which is included in the comment section below (see descxx11.sql)
 
 COL column_id       HEAD "Col#"         FOR A4
 COL column_name     HEAD "Column Name"  FOR A30
@@ -67,6 +65,7 @@ SELECT
     , cs.num_buckets
     , display_raw(cs.low_value, data_type) AS low_value 
     , display_raw(cs.high_value, data_type) AS high_value
+    , notes
 FROM dba_tab_cols tc,
      dba_part_col_statistics cs
 WHERE
@@ -88,6 +87,7 @@ AND upper(tc.table_name) LIKE
                     user
                 END
     AND UPPER(cs.partition_name) LIKE UPPER('&2')
+    AND UPPER(tc.column_name) LIKE UPPER('&3')
 ORDER BY
     tc.owner, tc.table_name, tc.column_id,
     cs.partition_name
