@@ -20,6 +20,7 @@
 
 COL sqlfh_feature HEAD SQL_FEATURE FOR A55
 COL hinth_path HEAD PATH FOR A150
+COL hinth_name HEAD NAME FOR A35
 
 PROMPT Display Hint feature hierarchy for hints like &1
 
@@ -36,8 +37,12 @@ CONNECT BY fh.parent_id = PRIOR f.sql_Feature
 START WITH fh.sql_feature = 'QKSFM_ALL'
 )
 SELECT
-    hi.name
+    hi.name hinth_name
   , REGEXP_REPLACE(fh.path, '^ -> ', '') hinth_path
+  , DECODE(BITAND(target_level,1),1,'STATEMENT ')    ||
+    DECODE(BITAND(target_level,2),2,'QBLOCK ')  ||
+    DECODE(BITAND(target_level,4),4,'OBJECT ')  ||
+    DECODE(BITAND(target_level,8),8,'JOIN ') hint_scope
 FROM
     v$sql_hint hi
   , feature_hierarchy fh
