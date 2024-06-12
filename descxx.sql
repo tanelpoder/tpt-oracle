@@ -10,10 +10,10 @@ COL column_id       HEAD "Col#"         FOR A4
 COL column_name     HEAD "Column Name"  FOR A30
 COL nullable        HEAD "Null?"        FOR A10
 COL data_type       HEAD "Type"         FOR A25 WORD_WRAP
-COL num_distinct    HEAD "# distinct"   FOR 999999
+COL num_distinct    HEAD "# distinct"   FOR 9999999999999
 COL density         HEAD "Density"      FOR 9.99999999999
-COL num_nulls       HEAD "# nulls"      FOR 999999
-COL histogram       HEAD "Histogram"    FOR A10
+COL num_nulls       HEAD "# nulls"      FOR 9999999999999
+COL histogram       HEAD "Histogram"    FOR A10 TRUNCATE
 COL num_buckets     HEAD "# buckets"    FOR 999999
 COL low_value       HEAD "Low Value"    FOR A32
 COL high_value      HEAD "High Value"   FOR A32
@@ -32,7 +32,7 @@ WITH
         IF (type = 'NUMBER') THEN
             dbms_stats.convert_raw_value(rawval, cn);
             RETURN to_char(cn);
-        ELSIF (type = 'VARCHAR2') THEN
+        ELSIF (type = 'VARCHAR2' OR type = 'CHAR') THEN
             dbms_stats.convert_raw_value(rawval, cv);
             RETURN to_char(cv);
         ELSIF (type = 'DATE') THEN
@@ -83,5 +83,5 @@ WHERE
                     user
                 END
 ORDER BY
-    column_id ASC
+    owner, table_name, column_id ASC
 /
