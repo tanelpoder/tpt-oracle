@@ -3,18 +3,18 @@
 
 --------------------------------------------------------------------------------
 --
--- File name:   lpstat
+-- File name:   lpstat.sql
 -- Purpose:     Show large pool stats by sub-pool from X$KSMLS
 --
 -- Author:      Tanel Poder
--- Copyright:   (c) http://www.tanelpoder.com
+-- Copyright:   (c) https://tanelpoder.com
 --              
 -- Usage:       @lpstat <statistic name>
 -- 	            @lpstat "free memory"
 --	            @lpstat cursor
 --
 -- Other:       The other script for querying V$SGASTAT is called sgastat.sql
---              
+--              and shows many more pools of interest (but not break down by subpool) 
 --              
 --
 --------------------------------------------------------------------------------
