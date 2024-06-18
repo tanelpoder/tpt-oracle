@@ -35,7 +35,7 @@ SELECT
   , sum(ksmnslen) mem_total
 from x$ksmns    
 group by
-    'numa pool' pool_name
+    'numa pool' 
   , ksmnssidx
   , ksmnsprocgrp
 --  , ksmnsnam
@@ -45,7 +45,7 @@ order by
 /
 
 SELECT
-    'numa pool'
+    'numa pool' pool_name
   , ksmnssidx
   , ksmnsprocgrp
   , ksmnsnam
