@@ -25,7 +25,7 @@ PROMPT
 PROMPT -- All allocations:
 
 SELECT
-    'numa pool'
+    'numa pool' pool_name
   , ksmnssidx
   , ksmnsprocgrp
 --  , ksmnsnam
@@ -35,7 +35,7 @@ SELECT
   , sum(ksmnslen) mem_total
 from x$ksmns    
 group by
-    'numa pool'
+    'numa pool' pool_name
   , ksmnssidx
   , ksmnsprocgrp
 --  , ksmnsnam
