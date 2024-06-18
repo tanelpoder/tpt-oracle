@@ -4,7 +4,6 @@
 -- requires 12c or later as it uses inline WITH PL/SQL functions. It is possible to convert this
 -- to 11g too, using the function which is included in the comment section below (see descxx11.sql)
 
-
 COL column_id       HEAD "Col#"         FOR A4
 COL column_name     HEAD "Column Name"  FOR A30
 COL nullable        HEAD "Null?"        FOR A10
