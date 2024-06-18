@@ -22,7 +22,7 @@
 COL lpstat_subpool HEAD SUBPOOL FOR a30
 
 PROMPT
-PROMPT -- All allocations:
+PROMPT -- Subpool sizes:
 
 SELECT
     'large pool ('||NVL(DECODE(TO_CHAR(ksmdsidx),'0','0 - Unused',ksmdsidx), 'Total')||'):'  lpstat_subpool

@@ -22,7 +22,7 @@
 COL sgastatx_subpool HEAD SUBPOOL FOR a30
 
 PROMPT
-PROMPT -- All allocations:
+PROMPT -- Subpool sizes:
 
 SELECT
     'shared pool ('||NVL(DECODE(TO_CHAR(ksmdsidx),'0','0 - Unused',ksmdsidx), 'Total')||'):'  sgastatx_subpool
