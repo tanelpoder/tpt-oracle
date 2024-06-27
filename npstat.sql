@@ -25,32 +25,27 @@ PROMPT
 PROMPT -- All allocations:
 
 SELECT
-    'numa pool'
+    'numa pool' pool_name
   , ksmnssidx
   , ksmnsprocgrp
---  , ksmnsnam
-  , ksmssgbl
-  , sum(CASE WHEN ksmnsnam = 'free memory' THEN 0 ELSE ksmnslen END) mem_used
-  , sum(CASE WHEN ksmnsnam = 'free memory' THEN ksmnslen ELSE 0 END) mem_free
-  , sum(ksmnslen) mem_total
+  , ROUND(SUM(CASE WHEN ksmnsnam = 'free memory' THEN 0 ELSE ksmnslen END)/1048576) mb_used
+  , ROUND(SUM(CASE WHEN ksmnsnam = 'free memory' THEN ksmnslen ELSE 0 END)/1048576) mb_free
+  , ROUND(SUM(ksmnslen)/1048576) mem_total
 from x$ksmns    
 group by
-    'numa pool'
+    'numa pool' 
   , ksmnssidx
   , ksmnsprocgrp
---  , ksmnsnam
-  , ksmssgbl
 order by
     1,2,3
 /
 
 SELECT
-    'numa pool'
+    'numa pool' pool_name
   , ksmnssidx
   , ksmnsprocgrp
   , ksmnsnam
-  , ksmssgbl
-  , sum(ksmnslen)
+  , ROUND(sum(ksmnslen)/1048576) mb
 from x$ksmns
 where lower(ksmnsnam) like lower('%&1%')   
 group by
@@ -58,51 +53,9 @@ group by
   , ksmnssidx
   , ksmnsprocgrp
   , ksmnsnam
-  , ksmssgbl
 order by
     1,2,3
 /
 
--- SELECT
---     'shared pool ('||NVL(DECODE(TO_CHAR(ksmdsidx),'0','0 - Unused',ksmdsidx), 'Total')||'):'  sgastatx_subpool
---   , SUM(ksmsslen) bytes
---   , ROUND(SUM(ksmsslen)/1048576,2) MB
--- FROM 
---     x$ksmss
--- WHERE
---     ksmsslen > 0
--- --AND ksmdsidx > 0 
--- GROUP BY ROLLUP
---    ( ksmdsidx )
--- ORDER BY
---     sgastatx_subpool ASC
--- /
--- 
--- BREAK ON sgastatx_subpool SKIP 1
--- PROMPT -- Allocations matching "&1":
--- 
--- SELECT 
---     subpool sgastatx_subpool
---   , name
---   , SUM(bytes)                  
---   , ROUND(SUM(bytes)/1048576,2) MB
--- FROM (
---     SELECT
---         'shared pool ('||DECODE(TO_CHAR(ksmdsidx),'0','0 - Unused',ksmdsidx)||'):'      subpool
---       , ksmssnam      name
---       , ksmsslen      bytes
---     FROM 
---         x$ksmss
---     WHERE
---         ksmsslen > 0
---     AND LOWER(ksmssnam) LIKE LOWER('%&1%')
--- )
--- GROUP BY
---     subpool
---   , name
--- ORDER BY
---     subpool    ASC
---   , SUM(bytes) DESC
--- /
 
 BREAK ON sgastatx_subpool DUP
