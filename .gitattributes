@@ -1,1 +1,1 @@
-*.py linguist-language=PLSQL
+*.sql linguist-language=PLSQL
