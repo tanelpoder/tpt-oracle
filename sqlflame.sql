@@ -27,7 +27,7 @@
 --              with the GATHER_PLAN_STATISTICS hint.
 --
 -- Credits:     Brendan Gregg invented and popularized FlameGraphs, if you want to
---              understand theri logic better, read the articles at:
+--              understand their logic better, read the articles at:
 --              http://www.brendangregg.com/flamegraphs.html          
 --
 --------------------------------------------------------------------------------
