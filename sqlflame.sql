@@ -1,4 +1,4 @@
--- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
+-- Copyright 2018 Tanel Poder. All rights reserved. More info at https://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
 --------------------------------------------------------------------------------
@@ -38,14 +38,14 @@
 SET HEADING OFF LINESIZE 32767 PAGESIZE 0 TRIMSPOOL ON TRIMOUT ON LONG 9999999 VERIFY OFF LONGCHUNKSIZE 100000 FEEDBACK OFF APPINFO OFF
 
 PROMPT
-PROMPT -- SQLFlame 0.3 by Tanel Poder ( https://tanelpoder.com )
+PROMPT -- SQLFlame 0.4 by Tanel Poder ( https://tanelpoder.com )
 
 SET TERMOUT OFF
 
 WITH sq AS (
     SELECT /*+ MATERIALIZE */ 
         sp.id, sp.parent_id, sp.operation, sp.options
-      , sp.object_owner, sp.object_name, ss.last_elapsed_time, ss.elapsed_time, ss.last_starts
+      , sp.object_owner, sp.object_name, ss.last_elapsed_time, ss.elapsed_time, ss.last_starts, ss.last_output_rows
     FROM v$sql_plan_statistics_all ss INNER JOIN 
          v$sql_plan sp 
       ON (
@@ -64,7 +64,7 @@ WITH sq AS (
     GROUP BY par.id, par.elapsed_time
 ), combined AS (
     SELECT sq.id, sq.parent_id, sq.operation, sq.options
-         , sq.object_owner, sq.object_name, sq.last_elapsed_time, sq.elapsed_time, sq.last_starts
+         , sq.object_owner, sq.object_name, sq.last_elapsed_time, sq.elapsed_time, sq.last_starts, sq.last_output_rows
          , NVL(deltas.self_elapsed_time, sq.elapsed_time) self_elapsed_time
     FROM 
         sq, deltas
@@ -72,7 +72,9 @@ WITH sq AS (
         sq.id = deltas.id 
 )
 SELECT
-    '0 - SELECT STATEMENT'||TRIM(SYS_CONNECT_BY_PATH(id||' - '||operation||NVL2(options,' '||options,NULL)||NVL2(object_owner||object_name, ' ['||object_owner||'.'||object_name||']', NULL)||' starts='||last_starts, ';'))||' '||TRIM(ROUND(self_elapsed_time/1000))
+    '0 - SELECT STATEMENT'||TRIM(SYS_CONNECT_BY_PATH(id||' - '||operation||NVL2(options,' '||options,NULL)
+                          ||NVL2(object_owner||object_name, ' ['||object_owner||'.'||object_name||']', NULL)
+                          ||' starts='||last_starts|| ' rows='||last_output_rows, ';'))||' '||TRIM(ROUND(self_elapsed_time/1000))
 FROM
     combined
 CONNECT BY
