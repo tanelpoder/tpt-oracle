@@ -18,7 +18,7 @@
 -- Author:      Tanel Poder - https://tanelpoder.com 
 -- 
 -- Examples:    https://tanelpoder.com/posts/visualizing-sql-plan-execution-time-with-flamegraphs/
---              https://tanelpoder.com/posts/visualizing-sql-plan-execution-time-with-flamegraphs-starts/
+--              https://tanelpoder.com/posts/sql-plan-flamegraph-loop-row-counts/
 -- 
 -- Other:       This is an early version mostly meant as a proof of concept for
 --              illustrating that a modern RDBMS SQL execution plan profile 
