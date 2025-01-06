@@ -93,7 +93,7 @@ SET TERMOUT ON HEADING ON PAGESIZE 5000 LINESIZE 999 FEEDBACK ON
 HOST flamegraph.pl --countname=Milliseconds --title="sql_id=&1" sqlflame_stacks.txt > sqlflame_&1..svg
 
 -- Windows 
--- HOST OPEN sqlflame_&1..svg
+-- HOST START sqlflame_&1..svg
 
 -- MacOS
 HOST OPEN sqlflame_&1..svg
