@@ -29,36 +29,40 @@ DEF bad_sql_id   = &3
 
 DECLARE
     ret          NUMBER;
+    ret2         NUMBER;
     v_signature  NUMBER; -- hash value of normalized SQL text
     v_sql_text   CLOB;
     v_sql_handle VARCHAR2(100);
+    v_plan_name  VARCHAR2(100);
+    v_begin_snap NUMBER;
+    v_end_snap NUMBER;
+
 BEGIN
-    ret := DBMS_SPM.LOAD_PLANS_FROM_CURSOR_CACHE('&bad_sql_id', enabled=>'NO');
-    
-    DBMS_OUTPUT.PUT_LINE(q'[Looking up SQL_ID &bad_sql_id]');
 
-    -- rownum = 1 because there may be multiple children with this SQL_ID
-    SELECT sql_fulltext, exact_matching_signature INTO v_sql_text, v_signature 
-    FROM v$sql 
-    WHERE 
-        sql_id          = '&bad_sql_id' 
-    AND rownum = 1;
+    SELECT sql_text, DBMS_SQLTUNE.SQLTEXT_TO_SIGNATURE(sql_text, 0) exact_matching_signature INTO v_sql_text, v_signature 
+    FROM dba_hist_sqltext
+    WHERE sql_id = '&bad_sql_id'; -- AND dbid = ...
 
-    DBMS_OUTPUT.PUT_LINE('Found: '||SUBSTR(v_sql_text,1,80)||'...');
+    SELECT MIN(snap_id), MAX(snap_id) INTO v_begin_snap, v_end_snap
+    FROM dba_hist_sqlstat 
+    WHERE sql_id = '&good_sql_id' AND plan_hash_value = TO_NUMBER('&good_sql_phv') AND rownum = 1;
 
-    DBMS_OUTPUT.PUT_LINE(q'[Signature = ]'||v_signature);
-    SELECT sql_handle INTO v_sql_handle FROM dba_sql_plan_baselines WHERE signature = v_signature AND rownum = 1;
-    DBMS_OUTPUT.PUT_LINE(q'[Handle    = ]'||v_sql_handle);
+    ret := DBMS_SPM.LOAD_PLANS_FROM_AWR(
+               v_begin_snap - 1
+             , v_end_snap
+             , basic_filter => q'[sql_id = '&good_sql_id' AND plan_hash_value = TO_NUMBER('&good_sql_phv')]'
+             , enabled=>'YES'
+             , fixed=>'YES'
+          );
 
-    -- associate good SQL_IDs plan outline with the bad SQL_ID
+    DBMS_OUTPUT.put_line('Number of plans loaded and fixed: '||ret);
 
-    ret := DBMS_SPM.LOAD_PLANS_FROM_CURSOR_CACHE(
-               sql_id => '&good_sql_id'
-             , plan_hash_value => &good_sql_phv
-             , sql_handle => v_sql_handle
-           );
+    -- FOR i IN (SELECT sql_handle, plan_name FROM dba_sql_plan_baselines WHERE signature = v_signature) LOOP
+    --     ret  := DBMS_SPM.ALTER_SQL_PLAN_BASELINE(i.sql_handle, i.plan_name, 'ENABLED', 'YES');
+    --     ret2 := DBMS_SPM.ALTER_SQL_PLAN_BASELINE(i.sql_handle, i.plan_name, 'FIXED',   'YES');
+    --     DBMS_OUTPUT.PUT_LINE('handle='||i.sql_handle||' plan_name='||i.plan_name||' ret='||ret ||' ret2='||ret2);
+    -- END LOOP;
 
-    DBMS_OUTPUT.PUT_LINE(q'[SQL Baseline Name = SQL_BASELINE_&1 return=]'||ret);
 END;
 /
 

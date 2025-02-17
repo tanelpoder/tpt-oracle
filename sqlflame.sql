@@ -1,4 +1,4 @@
--- Copyright 2018 Tanel Poder. All rights reserved. More info at http://tanelpoder.com
+-- Copyright 2018 Tanel Poder. All rights reserved. More info at https://tanelpoder.com
 -- Licensed under the Apache License, Version 2.0. See LICENSE.txt for terms & conditions.
 
 --------------------------------------------------------------------------------
@@ -15,7 +15,10 @@
 --              Note that you'll have to replace HOST OPEN with HOST START in the 
 --              end of this file if you're using sqlplus client on Windows
 --
--- Author:      Tanel Poder - https://blog.tanelpoder.com 
+-- Author:      Tanel Poder - https://tanelpoder.com 
+-- 
+-- Examples:    https://tanelpoder.com/posts/visualizing-sql-plan-execution-time-with-flamegraphs/
+--              https://tanelpoder.com/posts/sql-plan-flamegraph-loop-row-counts/
 -- 
 -- Other:       This is an early version mostly meant as a proof of concept for
 --              illustrating that a modern RDBMS SQL execution plan profile 
@@ -27,7 +30,7 @@
 --              with the GATHER_PLAN_STATISTICS hint.
 --
 -- Credits:     Brendan Gregg invented and popularized FlameGraphs, if you want to
---              understand theri logic better, read the articles at:
+--              understand their logic better, read the articles at:
 --              http://www.brendangregg.com/flamegraphs.html          
 --
 --------------------------------------------------------------------------------
@@ -35,14 +38,14 @@
 SET HEADING OFF LINESIZE 32767 PAGESIZE 0 TRIMSPOOL ON TRIMOUT ON LONG 9999999 VERIFY OFF LONGCHUNKSIZE 100000 FEEDBACK OFF APPINFO OFF
 
 PROMPT
-PROMPT -- SQLFlame 0.2 by Tanel Poder ( https://blog.tanelpoder.com )
+PROMPT -- SQLFlame 0.4 by Tanel Poder ( https://tanelpoder.com )
 
 SET TERMOUT OFF
 
 WITH sq AS (
     SELECT /*+ MATERIALIZE */ 
         sp.id, sp.parent_id, sp.operation, sp.options
-      , sp.object_owner, sp.object_name, ss.last_elapsed_time, ss.elapsed_time
+      , sp.object_owner, sp.object_name, ss.last_elapsed_time, ss.elapsed_time, ss.last_starts, ss.last_output_rows
     FROM v$sql_plan_statistics_all ss INNER JOIN 
          v$sql_plan sp 
       ON (
@@ -61,7 +64,7 @@ WITH sq AS (
     GROUP BY par.id, par.elapsed_time
 ), combined AS (
     SELECT sq.id, sq.parent_id, sq.operation, sq.options
-         , sq.object_owner, sq.object_name, sq.last_elapsed_time, sq.elapsed_time
+         , sq.object_owner, sq.object_name, sq.last_elapsed_time, sq.elapsed_time, sq.last_starts, sq.last_output_rows
          , NVL(deltas.self_elapsed_time, sq.elapsed_time) self_elapsed_time
     FROM 
         sq, deltas
@@ -69,7 +72,9 @@ WITH sq AS (
         sq.id = deltas.id 
 )
 SELECT
-    '0 - SELECT STATEMENT'||TRIM(SYS_CONNECT_BY_PATH(id||' - '||operation||NVL2(options,' '||options,NULL)||NVL2(object_owner||object_name, ' ['||object_owner||'.'||object_name||']', NULL), ';'))||' '||TRIM(ROUND(self_elapsed_time/1000))
+    '0 - SELECT STATEMENT'||TRIM(SYS_CONNECT_BY_PATH(id||' - '||operation||NVL2(options,' '||options,NULL)
+                          ||NVL2(object_owner||object_name, ' ['||object_owner||'.'||object_name||']', NULL)
+                          ||' starts='||last_starts|| ' rows='||last_output_rows, ';'))||' '||TRIM(ROUND(self_elapsed_time/1000))
 FROM
     combined
 CONNECT BY
@@ -88,7 +93,7 @@ SET TERMOUT ON HEADING ON PAGESIZE 5000 LINESIZE 999 FEEDBACK ON
 HOST flamegraph.pl --countname=Milliseconds --title="sql_id=&1" sqlflame_stacks.txt > sqlflame_&1..svg
 
 -- Windows 
--- HOST OPEN sqlflame_&1..svg
+-- HOST START sqlflame_&1..svg
 
 -- MacOS
 HOST OPEN sqlflame_&1..svg

@@ -57,6 +57,7 @@ FROM (
   SELECT 'event_hist_micro.sql' AS name, 'Display a histogram of the number of waits from ASH (microseconds)' AS description, '@ash/event_hist_micro <event> <filter_expression> <from_time> <to_time>'||&nl||'@ash/event_hist_micro log.file 1=1 sysdate-1/24 sysdate'||&nl||'@ash/event_hist_micro log.file|db.file "wait_class=''User I/O'' AND session_type=''FOREGROUND''" sysdate-1/24 sysdate' AS usage FROM dual UNION ALL
   SELECT 'evh.sql' AS name, 'Display a histogram of the number of waits' AS description, '@evh <event>'||&nl||'@evh log.file'||&nl||'@evh log.file|db.file' AS usage FROM dual UNION ALL
   SELECT 'evo.sql' AS name, 'Disable session event' AS description, '@evo <event>'||&nl||'@evo 10046' AS usage FROM dual UNION ALL
+  SELECT 'f.sql' AS  name, 'Search for Fixed view (V$ view) text' AS description, '@f <text>'||&nl||'@f sql_shared' AS usage FROM dual UNION ALL 
   SELECT 'fix.sql' AS name, 'Display fix controls description' AS description, '@fix <bugno|description|optimizer_feature_enable|sql_feature>'||&nl||'@fix 13836796'||&nl||'@fix adaptive' AS usage FROM dual UNION ALL
   SELECT 'grp.sql' AS name, 'Group function wrapper' AS description, '@grp <column_name> <table_name>'||&nl||'@grp owner dba_tables'||&nl||'@grp owner,object_type dba_objects' AS usage FROM dual UNION ALL
   SELECT 'help.sql' AS name, 'Display TPT script help' AS description, '@help <search_expression>'||&nl||'@help explain'||&nl||'@help lock|latch.*hold'||&nl||'@help ^ind.*sql|^tab.*sql' AS usage FROM dual UNION ALL
@@ -85,6 +86,8 @@ FROM (
   SELECT 'oerr.sql' AS name, 'Display Oracle error decription' AS description, '@oerr <error_number>'||&nl||'@oerr 7445' AS usage FROM dual UNION ALL
   SELECT 'oi.sql' AS name, 'Display invalid objects' AS description, '@oi' AS usage FROM dual UNION ALL
   SELECT 'oid.sql' AS name, 'Display database objects based on object id' AS description, '@oid <object_id>'||&nl||'@oid 10'||&nl||'@oid 10,20' AS usage FROM dual UNION ALL
+  SELECT 'ostackprofw.sql' AS name, 'Sample Oracle process call stacks and show a profile (Windows sqlplus)' AS description, '@ostackprofw <SID> <SLEEP> <NUM_SAMPLES>'||&nl||'@ostackprofw 123 0.1 100' AS usage FROM dual UNION ALL
+  SELECT 'ostackprofu.sql' AS name, 'Sample Oracle process call stacks and show a profile (Unix/Linux/Mac sqlplus)' AS description, '@ostackprofu <SID> <SLEEP> <NUM_SAMPLES>'||&nl||'@ostackprofu 123 0.1 100' AS usage FROM dual UNION ALL
   SELECT 'otherxml.sql' AS name, 'Display outline hints from library cache' AS description, '@otherxml <sql_id> <child#>'||&nl||'@otherxml 1fbwxvngasv1f 1' AS usage FROM dual UNION ALL
   SELECT 'p.sql' AS name, 'Display parameter name and value' AS description, '@p <parameter_name>'||&nl||'@pd optimizer' AS usage FROM dual UNION ALL
   SELECT 'partkeys.sql' AS name, 'Display table partition keys' AS description, '@partkeys [<owner>.]<table_name>'||&nl||'@partkeys soe.orders'||&nl||'@partkeys soe.%' AS usage FROM dual UNION ALL
@@ -111,6 +114,8 @@ FROM (
   SELECT 'sgares.sql' AS name, 'Display information about the last completed SGA resize operations from v$sga_resize_ops' AS description, '@sgares' AS usage FROM dual UNION ALL
   SELECT 'sgastat.sql' AS name, 'Display detailed information on the SGA from v$sgastat' AS description, '@sgastat <name|pool>'||&nl||'@sgastat %'||&nl||'@sgastat result' AS usage FROM dual UNION ALL
   SELECT 'sgastatx.sql' AS name, 'Display shared pool stats by sub-pool from X$KSMSS' AS description, '@sgastatx <statistic_name>'||&nl||'@sgastatx "free memory"'||&nl||'@sgastatx cursor' AS usage FROM dual UNION ALL
+  SELECT 'sqlmem.sql' AS name, 'Display shared pool memory usage of SQL statement' AS description, '@sqlmem <sql_id>'||&nl||'@sqlmem 7q729nhdgtsqq' AS usage FROM dual UNION ALL
+  SELECT 'sqlmemh.sql' AS name, 'Display shared pool memory usage of SQL statement' AS description, '@sqlmemh <hash_value>'||&nl||'@sqlmemh 900835192' AS usage FROM dual UNION ALL
   SELECT 'sys.sql' AS name, 'Display system statistics' AS description, '@sys <statistic_name>'||&nl||'@sys redo'||&nl||'@sys ''redo write''' AS usage FROM dual UNION ALL
   SELECT 'uu.sql' AS name, 'Display user sessions' AS description, '@uu <username>'||&nl||'@uu %'||&nl||'@uu username'||&nl||'@uu %username%' AS usage FROM dual UNION ALL
   SELECT 'us.sql' AS name, 'Display database usernames from dba_users' AS description, '@us <username>'||&nl||'@us username' AS usage FROM dual UNION ALL
@@ -122,6 +127,7 @@ FROM (
   SELECT 'sqlf.sql' AS name, 'Display full sql text from memory' AS description, '@sqlf <sql_id>'||&nl||'@sqlf 7q729nhdgtsqq' AS usage FROM dual UNION ALL
   SELECT 'sqlfn.sql' AS name, 'Display SQL functions' AS description, '@sqlfn <name>'||&nl||'@sqlfn date' AS usage FROM dual UNION ALL
   SELECT 'sqlmon.sql' AS name, 'Run SQL Monitor report' AS description, '@sqlmon <sid>'||&nl||'@sqlmon 1019' AS usage FROM dual UNION ALL
+  SELECT 'swc.sql' AS name, 'Display current wait chains (multi-session wait signature, a session waiting for another session etc.) from GV$SESSION' AS description, '@swc <grouping_cols> <filters>'||&nl||'@swc program2||event2 1=1' AS usage FROM dual UNION ALL
   SELECT 'syn.sql' AS name, 'Display synonym information' AS description, '@syn [<owner>.]<synonym_name>'||&nl||'@syn system.tab'||&nl||'@syn system.%' AS usage FROM dual UNION ALL
   SELECT 't.sql' AS name, 'Display default trace file' AS description, '@t' AS usage FROM dual UNION ALL
   SELECT 'tab.sql' AS name, 'Display table information' AS description, '@tab [<owner>.]<table_name>'||&nl||'@tab soe.orders'||&nl||'@tab soe.%' AS usage FROM dual UNION ALL
@@ -135,7 +141,7 @@ FROM (
   SELECT 'trace.sql' AS name, 'Enable tracing' AS description, '@trace <filter_expression>'||&nl||'@trace sid=123'||&nl||'@trace username=''SOE''' AS usage FROM dual UNION ALL
   SELECT 'traceme.sql' AS name, 'Enable tracing for the current session' AS description, '@traceme' AS usage FROM dual UNION ALL
   SELECT 'traceoff.sql' AS name, 'Disable tracing' AS description, '@traceoff <filter_expression>'||&nl||'@traceoff sid=123'||&nl||'@traceoff username=''SOE''' AS usage FROM dual UNION ALL
-  SELECT 'trans.sql' AS name, 'Display active transactions' AS description, '@trans' AS usage FROM dual UNION ALL
+  SELECT 'trans.sql' AS name, 'Display active transactions from v$transaction' AS description, '@trans <filter_expression>'||&nl||'@trans sid=123'||&nl||'@trans username=''SYS''' AS usage FROM dual UNION ALL
   SELECT 'trig.sql' AS name, 'Display trigger information' AS description, '@trig [<owner>.]<trigger_name>'||&nl||'@trig sys.delete_entries'||&nl||'@trig sys.%' AS usage FROM dual UNION ALL
   SELECT 'ts.sql' AS name, 'Display tablespaces' AS description, '@ts <tablespace_name>'||&nl||'@ts soe'||&nl||'@ts %' AS usage FROM dual UNION ALL
   SELECT 'uds.sql' AS name, 'Display undo statistics' AS description, '@uds' AS usage FROM dual UNION ALL

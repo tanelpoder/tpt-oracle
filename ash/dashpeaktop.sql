@@ -60,6 +60,7 @@ SELECT * FROM (
              TRUNC(sample_time, 'DD')  dd
            , TRUNC(sample_time, 'HH')  hh
            , TRUNC(sample_time, 'MI')  mi
+           , TO_DATE(SUBSTR(TO_CHAR(sample_time, 'YYYY-MM-DD HH24:MI'), 1, 15)||'0', 'YYYY-MM-DD HH24:MI') mt
            , CAST(sample_time AS DATE) ss
            , NVL(a.event, a.session_state)||
                 CASE

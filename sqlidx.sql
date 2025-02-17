@@ -5,7 +5,7 @@
 -- Purpose:     A temporary script/hack to display exadata-specific metrics along normal SQL stuff from V$SQL
  
 col sql_sql_text head SQL_TEXT format a150 word_wrap
-col sql_child_number head CH# for 999
+col sql_child_number head "CH#" for 999
 col offl_attempted_mb HEAD OFFLOAD_MB FOR A14 JUST RIGHT
 
 prompt Show SQL text, child cursors and execution stats for SQLID &1 child &2

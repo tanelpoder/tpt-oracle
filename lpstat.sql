@@ -3,57 +3,57 @@
 
 --------------------------------------------------------------------------------
 --
--- File name:   sgastatx
--- Purpose:     Show shared pool stats by sub-pool from X$KSMSS
+-- File name:   lpstat.sql
+-- Purpose:     Show large pool stats by sub-pool from X$KSMLS
 --
 -- Author:      Tanel Poder
--- Copyright:   (c) http://www.tanelpoder.com
+-- Copyright:   (c) https://tanelpoder.com
 --              
--- Usage:       @sgastatx <statistic name>
--- 	        @sgastatx "free memory"
---	        @sgastatx cursor
+-- Usage:       @lpstat <statistic name>
+-- 	            @lpstat "free memory"
+--	            @lpstat cursor
 --
 -- Other:       The other script for querying V$SGASTAT is called sgastat.sql
---              
+--              and shows many more pools of interest (but not break down by subpool) 
 --              
 --
 --------------------------------------------------------------------------------
 
-COL sgastatx_subpool HEAD SUBPOOL FOR a30
+COL lpstat_subpool HEAD SUBPOOL FOR a30
 
 PROMPT
 PROMPT -- Subpool sizes:
 
 SELECT
-    'shared pool ('||NVL(DECODE(TO_CHAR(ksmdsidx),'0','0 - Unused',ksmdsidx), 'Total')||'):'  sgastatx_subpool
+    'large pool ('||NVL(DECODE(TO_CHAR(ksmdsidx),'0','0 - Unused',ksmdsidx), 'Total')||'):'  lpstat_subpool
   , SUM(ksmsslen) bytes
   , ROUND(SUM(ksmsslen)/1048576,2) MB
 FROM 
-    x$ksmss
+    x$ksmls
 WHERE
     ksmsslen > 0
 --AND ksmdsidx > 0 
 GROUP BY ROLLUP
    ( ksmdsidx )
 ORDER BY
-    sgastatx_subpool ASC
+    lpstat_subpool ASC
 /
 
-BREAK ON sgastatx_subpool SKIP 1
+BREAK ON lpstat_subpool SKIP 1
 PROMPT -- Allocations matching "&1":
 
 SELECT 
-    subpool sgastatx_subpool
+    subpool lpstat_subpool
   , name
   , SUM(bytes)                  
   , ROUND(SUM(bytes)/1048576,2) MB
 FROM (
     SELECT
-        'shared pool ('||DECODE(TO_CHAR(ksmdsidx),'0','0 - Unused',ksmdsidx)||'):'      subpool
+        'large pool ('||DECODE(TO_CHAR(ksmdsidx),'0','0 - Unused',ksmdsidx)||'):'      subpool
       , ksmssnam      name
       , ksmsslen      bytes
     FROM 
-        x$ksmss
+        x$ksmls
     WHERE
         ksmsslen > 0
     AND LOWER(ksmssnam) LIKE LOWER('%&1%')
@@ -66,4 +66,4 @@ ORDER BY
   , SUM(bytes) DESC
 /
 
-BREAK ON sgastatx_subpool DUP
+BREAK ON lpstat_subpool DUP
