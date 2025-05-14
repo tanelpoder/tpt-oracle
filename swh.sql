@@ -19,8 +19,8 @@ SELECT
   , CASE swh.seq# WHEN 1 THEN s.sql_id WHEN 2 THEN s.prev_sql_id END curr_prev_sql_id
   , s.machine  swh_machine
 --  , s.program  swh_program
-  , swh.event swh_event
   , swh.seq# waits_ago
+  , swh.event swh_event
   , swh.wait_time_micro swh_wait_time_us
   , swh.time_since_last_wait_micro swh_prev_wait_end_us 
 --  , swh.p1text
