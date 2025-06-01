@@ -8,9 +8,9 @@ WITH
         RETURN SQLERRM(-oerr);
     END;
 SELECT
-    c.command_type cmd
+    e.error_number oraerr
+--  , c.command_type cmd
   , c.command_name oerr_command_name
-  , e.error_number oraerr
   , errtext(e.error_number) oerr_error_text
 FROM
     v$app_ignorable_errors e
@@ -18,7 +18,6 @@ FROM
 WHERE 
     e.command_type = c.command_type 
 ORDER BY 
-    cmd
-  , error_number
+    error_number
 /
 
