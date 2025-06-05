@@ -13,8 +13,8 @@ BREAK ON sqlbinds_chld SKIP 1
 
 SELECT
 --  ADDRESS         parent_cursor
---  SQL_ID              
-  CHILD_NUMBER    sqlbinds_chld    
+  SQL_ID              
+, CHILD_NUMBER    sqlbinds_chld    
 , POSITION        sqlbinds_pos       
 , NAME            sqlbinds_name              
 --, DUP_POSITION        
