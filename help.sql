@@ -132,6 +132,7 @@ FROM (
   SELECT 't.sql' AS name, 'Display default trace file' AS description, '@t' AS usage FROM dual UNION ALL
   SELECT 'tab.sql' AS name, 'Display table information' AS description, '@tab [<owner>.]<table_name>'||&nl||'@tab soe.orders'||&nl||'@tab soe.%' AS usage FROM dual UNION ALL
   SELECT 'tabhist.sql' AS name, 'Display column histograms' AS description, '@tabhist [<owner>.]<table_name> <column_name>'||&nl||'@tabhist soe.orders order_mode'||&nl||'@tabhist soe.orders %' AS usage FROM dual UNION ALL
+  SELECT 'tabhisthybrid.sql' AS name, 'Display hybrid histogram cardinality estimates for equality filter' AS description, '@tabhisthybrid [<owner>.]<table_name> <column_name>'||&nl||'@tabhisthybrid soe.customers account_mgr_id' AS usage FROM dual UNION ALL
   SELECT 'tabpart.sql' AS name, 'Display table partitions' AS description, '@tabpart [<owner>.]<table_name>'||&nl||'@tabpart soe.orders'||&nl||'@tabpart soe.%' AS usage FROM dual UNION ALL
   SELECT 'tabsubpart' AS name, 'Display table subpartitions' AS description, '@tabsubpart [<owner>.]<table_name>'||&nl||'@tabsubpart soe.orders'||&nl||'@tabsubpart soe.%' AS usage FROM dual UNION ALL
   SELECT 'ti.sql' AS name, 'Force new trace file' AS description, '@ti' AS usage FROM dual UNION ALL
