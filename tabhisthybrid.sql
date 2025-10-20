@@ -1,11 +1,11 @@
 -- script:  tabhisthybrid.sql
--- author:  Tanel Poder [tanelpoder.com)
+-- author:  Tanel Poder [tanelpoder.com]
 -- created: Oct 2025 
 -- usage:   @tabhisthybrid [<owner>.]<table_name> <column_name>
 -- example: @tabhisthybrid soe.customers account_mgr_id
 -- 
 -- notes:
---   I reused the bucket/NewDensity logic already written by Mohamed Houri (and Alberto Dell'Era, Jonathan Lewis)
+--   I reused the NewDensity logic already written by Mohamed Houri (and Alberto Dell'Era, Jonathan Lewis)
 --   https://www.red-gate.com/simple-talk/databases/oracle-databases/12c-hybrid-histogram/
 --
 --   This script works with HYBRID histograms on NUMBER columns only for now.
