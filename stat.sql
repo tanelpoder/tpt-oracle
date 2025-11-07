@@ -29,7 +29,7 @@ clear buffer
 select 
    stat_name
  , CASE stat_name
-   WHEN 'user calls'                THEN value - 2    -- substract @stat scripts overhead
+   WHEN 'user calls'                THEN value - 2    -- subtract @stat scripts overhead
    WHEN 'execute count'             THEN value - 1
    WHEN 'parse count (total)'       THEN value - 1
    WHEN 'opened cursors cumulative' THEN value - 1
