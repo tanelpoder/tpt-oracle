@@ -1,8 +1,8 @@
--- awr/dstat.sql by Tanel Poder v0.3 (beta)
+-- vstat.sql by Tanel Poder v0.3 (beta)
 
 PROMPT
-PROMPT awr/dstat.sql: Show system metrics with per-minute granularity for current container/PDB
-PROMPT AWR might not have the latest data flushed yet, use vstat.sql for recent activity from GV$
+PROMPT vstat.sql: Show system metrics with per-minute granularity for current container/PDB
+PROMPT Only last hour is shown in gv$sysmetric_history (use awr/dstat.sql for AWR history)
 
 COL AAS           HEAD "(#ses)|AAS"       FOR 9999.9
 COL SBRLATms      HEAD "(ms)|SBRLAT"      FOR 99.90
@@ -31,7 +31,7 @@ COL "ENQRQ/tx"    HEAD "ENQRQ/tx" FOR 9999999.0
 COL "UTRANS/s"    HEAD "UTRANS/s" FOR 9999999.0
 COL "BLKRD/tx"    HEAD "BLKRD/tx" FOR 9999999.0
 
-COL dstat_inst    HEAD "I#" FOR 90 
+COL dstat_inst     HEAD "I#" FOR 90 
 COL dstat_con_name HEAD CON_NAME FOR A30
 COL dstat_dbid     HEAD DBID FOR A30
 
@@ -44,7 +44,7 @@ FROM dual;
 -- we actually will get only one row per grouping, so MAX is ok (ANY_VALUE won't work on 12c)
 
 SELECT
-    instance_number AS dstat_inst
+    inst_id AS dstat_inst
   , begin_time
 --  , MAX(ROUND(intsize / 100)) seconds
   , ROUND(MAX(CASE WHEN metric_name = 'Average Active Sessions'        THEN value END),2) "AAS"
@@ -57,7 +57,7 @@ SELECT
   , ROUND(MAX(CASE WHEN metric_name = 'I/O Megabytes per Second'       THEN value END),2) "IOMB/s"
   , ROUND(MAX(CASE WHEN metric_name = 'I/O Requests per Second'        THEN value END),2) "IOPS"
   , ROUND(SUM(CASE WHEN metric_name = 'I/O Megabytes per Second'       THEN value END) * 1024 /
-          NULLIF(SUM(CASE WHEN metric_name = 'I/O Requests per Second'        THEN value END),0),2) "IOSIZE"
+          NULLIF(SUM(CASE WHEN metric_name = 'I/O Requests per Second'        THEN value END), 0), 2) "IOSIZE"
   , ROUND(MAX(CASE WHEN metric_name = 'Logical Reads Per Txn'          THEN value END)) "LIOs/tx"
   , ROUND(MAX(CASE WHEN metric_name = 'DB Block Changes Per Txn'       THEN value END),1) "BLKCHG/tx"
   , ROUND(MAX(CASE WHEN metric_name = 'User Transaction Per Sec'       THEN value END),2) "UTRANS/s" 
@@ -76,16 +76,14 @@ SELECT
   --, value
   --, metric_unit
 FROM
-    dba_hist_sysmetric_history h
+    gv$sysmetric_history h
 WHERE
     group_id = 2 -- get 60 sec granularity metrics
-AND dbid = SYS_CONTEXT('userenv', 'dbid')
 AND begin_time >= &1 AND end_time <= &2
 GROUP BY
-    instance_number
+    inst_id
   , begin_time
 ORDER BY
-    instance_number
+    inst_id
   , begin_time
 /
-
