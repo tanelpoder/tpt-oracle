@@ -93,7 +93,7 @@ nd AS (
         bkt
 )
 SELECT
-    rownum                             AS phys_bucket
+    ROW_NUMBER() OVER (ORDER BY h.endpoint_number) AS phys_bucket
   , data_type                          AS data_type
   , histogram                          AS histogram_type
   , endpoint_value                     AS endpoint_value
@@ -118,7 +118,7 @@ SELECT
     END                                AS card_thisval
   , TRUNC(c.num_rows * nd.newdensity)  AS card_non_pop
 --  , NVL(endpoint_repeat_count,0)       AS endpoint_repeat_count
---  , endpoint_number                    AS endpoint_number
+  , endpoint_number                    AS endpoint_number
 --  , endpoint_actual_value              AS endpoint_actual_value
 --  , olddensity                         AS olddensity
 FROM
