@@ -52,6 +52,7 @@ FROM (
   SELECT 'dirs.sql' AS name, 'Display database directories' AS description, '@dirs' AS usage FROM dual UNION ALL
   SELECT 'drop_sql_patch.sql' AS name, 'Drop SQL patch' AS description, '@drop_sql_patch <patch_name>'||&nl||'@drop_sql_patch SQL_PATCH_g4pkmrqrgxg3b' AS usage FROM dual UNION ALL
   SELECT 'drop_sql_baseline.sql' AS name, 'Drop SQL Plan Baseline' AS description, '@drop_sql_baseline <sql_handle>   (get sql_handle from DBMS_XPLAN notes or DBA_SQL_PLAN_BASELINES)'||&nl||'@drop_sql_baseline SQL_52cb74b7097edbbd' AS usage FROM dual UNION ALL
+  SELECT 'dstat.sql' AS name, 'Display system metrics history from AWR' AS description, '@awr/dstat <from_time> <to_time>'||&nl||'@awr/dstat "timestamp''2025-10-07 07:00:00''" "timestamp''2025-10-07 08:00:00''"' AS usage FROM dual UNION ALL
   SELECT 'ev.sql' AS name, 'Set session event' AS description, '@ev <event> <level>'||&nl||'@ev 10046 12' AS usage FROM dual UNION ALL
   SELECT 'event_hist.sql' AS name, 'Display a histogram of the number of waits from ASH (milliseconds)' AS description, '@ash/event_hist.sql <event> <filter_expression> <from_time> <to_time>'||&nl||'@ash/event_hist.sql log.file 1=1 sysdate-1/24 sysdate'||&nl||'@ash/event_hist.sql log.file|db.file "wait_class=''User I/O'' AND session_type=''FOREGROUND''" sysdate-1/24 sysdate' AS usage FROM dual UNION ALL
   SELECT 'event_hist_micro.sql' AS name, 'Display a histogram of the number of waits from ASH (microseconds)' AS description, '@ash/event_hist_micro <event> <filter_expression> <from_time> <to_time>'||&nl||'@ash/event_hist_micro log.file 1=1 sysdate-1/24 sysdate'||&nl||'@ash/event_hist_micro log.file|db.file "wait_class=''User I/O'' AND session_type=''FOREGROUND''" sysdate-1/24 sysdate' AS usage FROM dual UNION ALL
@@ -146,6 +147,7 @@ FROM (
   SELECT 'trig.sql' AS name, 'Display trigger information' AS description, '@trig [<owner>.]<trigger_name>'||&nl||'@trig sys.delete_entries'||&nl||'@trig sys.%' AS usage FROM dual UNION ALL
   SELECT 'ts.sql' AS name, 'Display tablespaces' AS description, '@ts <tablespace_name>'||&nl||'@ts soe'||&nl||'@ts %' AS usage FROM dual UNION ALL
   SELECT 'uds.sql' AS name, 'Display undo statistics' AS description, '@uds' AS usage FROM dual UNION ALL
+  SELECT 'vstat.sql' AS name, 'Display recent system metrics history from V$ in memory' AS description, '@vstat <from_time> <to_time>'||&nl||'@vstat sysdate-1/24 sysdate' AS usage FROM dual UNION ALL
   SELECT 'wrka.sql' AS name, 'Display PGA and TEMP usage' AS description, '@wrka <fileter_expression>'||&nl||'@wrka 1=1'||&nl||'@wrka sid=1000' AS usage FROM dual UNION ALL
   SELECT 'wrkasum.sql' AS name, 'Display summary of SQL workareas groupbed by opertion type (PGA and TEMP)' AS description, '@wrkasum <filter_expression>'||&nl||'@wrkasum sql_id=''7q729nhdgtsqq''' AS usage FROM dual UNION ALL
   SELECT 'x.sql' AS name, 'Display SQL execution plan for the last SQL statement' AS description, '@x' AS usage FROM dual UNION ALL
