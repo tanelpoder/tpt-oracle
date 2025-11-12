@@ -15,7 +15,7 @@ COL histogram       HEAD "Histogram"    FOR A10 TRUNCATE
 COL num_buckets     HEAD "# buckets"    FOR 999999
 COL low_value       HEAD "Low Value"    FOR A32
 COL high_value      HEAD "High Value"   FOR A32
-
+COL partition_name  HEAD PARTITION_NAME FOR A20
 WITH
     FUNCTION display_raw(rawval RAW, type VARCHAR2)
     RETURN VARCHAR2
