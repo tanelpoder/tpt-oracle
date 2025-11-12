@@ -46,6 +46,8 @@ FROM (
   SELECT 'date.sql' AS name, 'Display current date' AS description, '@date'||&nl||'@d sql'||&nl||'@d %' AS usage FROM dual UNION ALL
   SELECT 'ddl.sql' AS name, 'Extracts DDL statements for specified objects' AS description, '@ddl [<owner>.]<object_name>'||&nl||'@ddl sys.dba_users'||&nl||'@ddl sys.%tab%' AS usage FROM dual UNION ALL
   SELECT 'desc.sql' AS name, 'Describe object' AS description, '@desc <object_name>'||&nl||'@desc dba_tables' AS usage FROM dual UNION ALL
+  SELECT 'descxx.sql' AS name, 'Describe table with extended column info' AS description, '@descxx <object_name>'||&nl||'@descxx soe.orders' AS usage FROM dual UNION ALL
+  SELECT 'descpartxx.sql' AS name, 'Describe table partitions with extended column info' AS description, '@descpartxx <schema.table_name> <partition_name> <column_name>'||&nl||'@descpartxx soe.orders % ORDER_DATE' AS usage FROM dual UNION ALL
   SELECT 'devent_hist.sql' AS name, 'Display a histogram of the number of waits from AWR (milliseconds)' AS description, '@ash/devent_hist.sql <event> <filter_expression> <from_time> <to_time>'||&nl||'@ash/devent_hist.sql log_file 1=1 sysdate-1/24 sysdate'||&nl||'@ash/devent_hist.sql log.file|db.file "wait_class=''User I/O'' AND session_type=''FOREGROUND''" sysdate-1/24 sysdate' AS usage FROM dual UNION ALL
   SELECT 'df.sql' AS name, 'Display tablespace usage (GB)' AS description, '@df' AS usage FROM dual UNION ALL
   SELECT 'dfm.sql' AS name, 'Display tablespace usage (MB)' AS description, '@dfm' AS usage FROM dual UNION ALL
