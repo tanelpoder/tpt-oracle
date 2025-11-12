@@ -135,7 +135,7 @@ FROM (
   SELECT 'tabhist.sql' AS name, 'Display column histograms' AS description, '@tabhist [<owner>.]<table_name> <column_name>'||&nl||'@tabhist soe.orders order_mode'||&nl||'@tabhist soe.orders %' AS usage FROM dual UNION ALL
   SELECT 'tabhisthybrid.sql' AS name, 'Display hybrid histogram cardinality estimates for equality filter' AS description, '@tabhisthybrid [<owner>.]<table_name> <column_name>'||&nl||'@tabhisthybrid soe.customers account_mgr_id' AS usage FROM dual UNION ALL
   SELECT 'tabpart.sql' AS name, 'Display table partitions' AS description, '@tabpart [<owner>.]<table_name>'||&nl||'@tabpart soe.orders'||&nl||'@tabpart soe.%' AS usage FROM dual UNION ALL
-  SELECT 'tabsubpart' AS name, 'Display table subpartitions' AS description, '@tabsubpart [<owner>.]<table_name>'||&nl||'@tabsubpart soe.orders'||&nl||'@tabsubpart soe.%' AS usage FROM dual UNION ALL
+  SELECT 'tabsubpart.sql' AS name, 'Display table subpartitions' AS description, '@tabsubpart [<owner>.]<table_name>'||&nl||'@tabsubpart soe.orders'||&nl||'@tabsubpart soe.%' AS usage FROM dual UNION ALL
   SELECT 'ti.sql' AS name, 'Force new trace file' AS description, '@ti' AS usage FROM dual UNION ALL
   SELECT 'tlc.sql' AS name, 'Display top-level call names' AS description, '@tlc <call_name>'||&nl||'@tlc commit' AS usage FROM dual UNION ALL
   SELECT 'topseg.sql' AS name, 'Display top space users per tablespace' AS description, '@topseg <tablespace_name>'||&nl||'@topseg soe'||&nl||'@topseg %' AS usage FROM dual UNION ALL
