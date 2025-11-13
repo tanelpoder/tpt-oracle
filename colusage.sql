@@ -19,7 +19,8 @@ select
   , u.range_preds          
   , u.like_preds           
   , u.null_preds           
-  , u.timestamp           
+  , u.timestamp
+  , flags
 from
     sys.col_usage$ u
   , dba_objects    o
