@@ -90,5 +90,5 @@ AND upper(tc.table_name) LIKE
     AND UPPER(tc.column_name) LIKE UPPER('&3')
 ORDER BY
     tc.owner, tc.table_name, tc.column_id,
-    cs.partition_name
+    low_value, cs.partition_name
 /
