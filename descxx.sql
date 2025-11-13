@@ -39,9 +39,9 @@ WITH
         ELSIF (type = 'ROWID') THEN
             dbms_stats.convert_raw_value(rawval, cr);
             RETURN to_char(cr);
-        ELSIF (type = 'VARCHAR2') THEN
-            dbms_stats.convert_raw_value(rawval, cc);
-            RETURN to_char(cc);
+        ELSIF (type LIKE 'TIMESTAMP%') THEN -- no timestamp support, cast to DATE
+            dbms_stats.convert_raw_value(rawval, cd);
+            RETURN to_char(cd || ' (*date)');
         ELSE
             RETURN 'UNKNOWN DATATYPE';
         END IF;
