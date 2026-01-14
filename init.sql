@@ -183,7 +183,7 @@ col tpt_tempfile new_value _tpt_tempfile
 
 select 
     to_char(sysdate, 'YYYYMMDD-HH24MISS') seminar_logfile 
-  , instance_name||'-'||to_char(sysdate, 'YYYYMMDD-HH24MISS') tpt_tempfile
+  , REPLACE(instance_name,'$','')||'-'||to_char(sysdate, 'YYYYMMDD-HH24MISS') tpt_tempfile
 from v$instance;
 
 def seminar_logfile=&SQLPATH/logs/&_tpt_tempfile..log
