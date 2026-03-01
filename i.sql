@@ -48,6 +48,7 @@ select
   i.instance_number i_inst,
 	to_char(s.sid) 			i_sid, 
 	to_char(s.serial#)		i_serial, 
+	trim(p.spid)	i_spid, 
 	(select substr(banner, instr(banner, 'Release ')+8,10) from v$version where rownum = 1) i_ver,
 	(select  substr(substr(banner, instr(banner, 'Release ')+8),
 	 		1,
@@ -55,7 +56,6 @@ select
 	 from v$version 
 	 where rownum = 1) i_myoraver,
 	to_char(startup_time, 'YYYYMMDD') i_startup_day, 
-	trim(p.spid)	i_spid, 
 	trim(to_char(p.pid))		i_opid, 
 	s.process			i_cpid, 
 	s.saddr				saddr, 
