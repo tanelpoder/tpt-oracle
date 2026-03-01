@@ -43,7 +43,7 @@ col i_db_role head DB_ROLE FOR A25
 select 
 	s.username			i_username, 
 --  i.instance_name i_instance_name,
-  (CASE WHEN TO_NUMBER(SUBSTR(i.version, 1, instr(i.version,'.',1)-1)) >= 12 THEN (SELECT SYS_CONTEXT('userenv', 'con_name') FROM dual)||'-'||i.instance_name ELSE i.instance_name END) i_instance_name,
+  (CASE WHEN TO_NUMBER(SUBSTR(i.version, 1, instr(i.version,'.',1)-1)) >= 12 THEN (SELECT REPLACE(SYS_CONTEXT('userenv', 'con_name'),'$','') FROM dual)||'-'||i.instance_name ELSE i.instance_name END) i_instance_name,
 	i.host_name			i_host_name,
   i.instance_number i_inst,
 	to_char(s.sid) 			i_sid, 
