@@ -27,9 +27,11 @@ COL pct_child_vis HEAD "Visual" FOR A12
 COL aindex_id        HEAD "ID" FOR 9999
 COL aindex_parent_id HEAD "PID"  FOR 9999
 
+COL filter_pct FOR 999.9999999990
+COL sql_rows_exec FOR 999999999999.0
 
 PROMPT
-PROMPT -- Santa's Little (Index) Helper BETA v0.5 - by Tanel Poder ( https://tanelpoder.com ) 
+PROMPT -- Santa's Little (Index) Helper BETA v0.6 - by Tanel Poder ( https://tanelpoder.com ) 
 
 WITH 
 tab AS (SELECT /*+ NO_MERGE */ owner, table_name, num_rows 
@@ -103,6 +105,7 @@ SELECT
   , plan.cardinality
   , stat.executions
   , stat.elapsed_time
+  , stat.rows_processed
   , sq.session_state
   , sq.wait_class
   , sq.event
@@ -141,6 +144,7 @@ SELECT * FROM (
       , t.num_rows table_rows
       , ap.cardinality / NULLIF(t.num_rows,0) * 100 filter_pct
       , ap.executions sql_execs
+      , ap.rows_processed / NULLIF(ap.executions, 0) sql_rows_exec
       , ROUND(ap.elapsed_time / NULLIF(ap.executions,0) / 1000000,3) ela_sec_exec
       , ap.aindex_predicates
       , COUNT(DISTINCT ap.sql_id) dist_sqlids
@@ -166,6 +170,7 @@ SELECT * FROM (
       , t.num_rows
       , ap.cardinality
       , ap.executions
+      , ap.rows_processed
       , ap.elapsed_time
       , ap.aindex_predicates
 --      , ap.projection
