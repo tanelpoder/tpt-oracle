@@ -28,7 +28,7 @@ COL aindex_id        HEAD "ID" FOR 9999
 COL aindex_parent_id HEAD "PID"  FOR 9999
 
 COL filter_pct FOR 999.9999999990
-COL sql_rows_exec FOR 999999999999.0
+COL rows_ret_exec FOR 999999999999.0
 
 PROMPT
 PROMPT -- Santa's Little (Index) Helper BETA v0.6 - by Tanel Poder ( https://tanelpoder.com ) 
@@ -144,7 +144,7 @@ SELECT * FROM (
       , t.num_rows table_rows
       , ap.cardinality / NULLIF(t.num_rows,0) * 100 filter_pct
       , ap.executions sql_execs
-      , ap.rows_processed / NULLIF(ap.executions, 0) sql_rows_exec
+      , ap.rows_processed / NULLIF(ap.executions, 0) rows_ret_exec
       , ROUND(ap.elapsed_time / NULLIF(ap.executions,0) / 1000000,3) ela_sec_exec
       , ap.aindex_predicates
       , COUNT(DISTINCT ap.sql_id) dist_sqlids
