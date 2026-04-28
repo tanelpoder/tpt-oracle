@@ -35,7 +35,7 @@
 --   
 --------------------------------------------------------------------------------
 
-set timing on tab off verify off linesize 999 pagesize 5000 trimspool on trimout on null ""
+set tab off verify off linesize 999 pagesize 5000 trimspool on trimout on null ""
 
 COL wait_class FOR A20
 COL event FOR A40
