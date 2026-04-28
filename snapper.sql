@@ -50,7 +50,7 @@
 --
 --------------------------------------------------------------------------------
 --
---   The Session Snapper v4.34 ( USE AT YOUR OWN RISK !!! )
+--   The Session Snapper v4.35 ( USE AT YOUR OWN RISK !!! )
 --   (c) Tanel Poder ( https://tanelpoder.com )
 --
 --
@@ -482,7 +482,7 @@ declare
     -- trick for holding 32bit UNSIGNED event and stat_ids in 32bit SIGNED PLS_INTEGER
     pls_adjust constant number(10,0) := power(2,31) - 1;
 
-    type srec is record (ts timestamp, stype varchar2(4), inst_id number, sid number, statistic# number, value number, event_count number );
+    type srec is record (ts timestamp, stype varchar2(4), inst_id number, sid number, statistic# number, value number, event_count number, wait_class varchar2(64) );
     type stab is table of srec index by pls_integer;
     type ltab is table of srec index by varchar2(100); -- lookup tab for various average calculation
     s1 stab;
@@ -815,6 +815,24 @@ declare
     end get_delta;
 
   /*---------------------------------------------------
+   -- function to calculate total idle wait time for a session
+   ---------------------------------------------------*/
+    function get_idle_wait_time(p_inst_id in number, p_sid in number) return number
+    is
+        total_idle_time number := 0;
+        lv_str varchar2(1000);
+    begin
+        -- Sum up all wait events where wait_class = 'Idle'
+        for i in s2.first..s2.last loop
+            if s2(i).stype = 'WAIT' and s2(i).inst_id = p_inst_id and s2(i).sid = p_sid and s2(i).wait_class = 'Idle' then
+                lv_str := s2(i).stype||','||trim(to_char(s2(i).inst_id))||','||trim(to_char(s2(i).sid))||','||trim(to_char(s2(i).statistic#,'999999999999999999999999'));
+                total_idle_time := total_idle_time + get_delta(lv_str);
+            end if;
+        end loop;
+        return total_idle_time;
+    end get_idle_wait_time;
+
+  /*---------------------------------------------------
    -- delta helper function for convenience - it allows to specify any metric delta, if not specified then get current one
    ---------------------------------------------------*/
     function gd(c in srec, metric_type in varchar2 DEFAULT NULL, metric_name in varchar2 DEFAULT NULL) return number
@@ -895,146 +913,7 @@ declare
               when mn = 'DB time' or mn= 'background elapsed time' then ret := lpad(tptformat((get_seconds(d2 - d1)*1000000 - (
                                                                                                               gd(c) 
                                                                                                             /*+ gd(c, 'DB CPU', 'TIME') */
-                                                                                                            + gd(c, 'WAIT', 'VKTM Logical Idle Wait')
-                                                                                                            + gd(c, 'WAIT', 'VKTM Init Wait for GSGA')
-                                                                                                            + gd(c, 'WAIT', 'IORM Scheduler Slave Idle Wait')
-                                                                                                            + gd(c, 'WAIT', 'rdbms ipc message')
-                                                                                                            + gd(c, 'WAIT', 'i/o slave wait')
-                                                                                                            + gd(c, 'WAIT', 'OFS Receive Queue')
-                                                                                                            + gd(c, 'WAIT', 'OFS idle')
-                                                                                                            + gd(c, 'WAIT', 'VKRM Idle')
-                                                                                                            + gd(c, 'WAIT', 'wait for unread message on broadcast channel')
-                                                                                                            + gd(c, 'WAIT', 'wait for unread message on multiple broadcast channels')
-                                                                                                            + gd(c, 'WAIT', 'class slave wait')
-                                                                                                            + gd(c, 'WAIT', 'RMA: IPC0 completion sync')
-                                                                                                            + gd(c, 'WAIT', 'PING')
-                                                                                                            + gd(c, 'WAIT', 'watchdog main loop')
-                                                                                                            + gd(c, 'WAIT', 'process in prespawned state')
-                                                                                                            + gd(c, 'WAIT', 'pmon timer')
-                                                                                                            + gd(c, 'WAIT', 'pman timer')
-                                                                                                            + gd(c, 'WAIT', 'DNFS disp IO slave idle')
-                                                                                                            + gd(c, 'WAIT', 'DIAG idle wait')
-                                                                                                            + gd(c, 'WAIT', 'ges remote message')
-                                                                                                            + gd(c, 'WAIT', 'SCM slave idle')
-                                                                                                            + gd(c, 'WAIT', 'LMS CR slave timer')
-                                                                                                            + gd(c, 'WAIT', 'gcs remote message')
-                                                                                                            + gd(c, 'WAIT', 'gcs yield cpu')
-                                                                                                            + gd(c, 'WAIT', 'heartbeat monitor sleep')
-                                                                                                            + gd(c, 'WAIT', 'GCR sleep')
-                                                                                                            + gd(c, 'WAIT', 'SGA: MMAN sleep for component shrink')
-                                                                                                            + gd(c, 'WAIT', 'DBWR timer')
-                                                                                                            + gd(c, 'WAIT', 'Data Guard: Gap Manager')
-                                                                                                            + gd(c, 'WAIT', 'Data Guard: controlfile update')
-                                                                                                            + gd(c, 'WAIT', 'MRP redo arrival')
-                                                                                                            + gd(c, 'WAIT', 'Data Guard: Timer')
-                                                                                                            + gd(c, 'WAIT', 'LNS ASYNC archive log')
-                                                                                                            + gd(c, 'WAIT', 'LNS ASYNC dest activation')
-                                                                                                            + gd(c, 'WAIT', 'LNS ASYNC end of log')
-                                                                                                            + gd(c, 'WAIT', 'simulated log write delay')
-                                                                                                            + gd(c, 'WAIT', 'heartbeat redo informer')
-                                                                                                            + gd(c, 'WAIT', 'LGWR real time apply sync')
-                                                                                                            + gd(c, 'WAIT', 'LGWR worker group idle')
-                                                                                                            + gd(c, 'WAIT', 'parallel recovery slave idle wait')
-                                                                                                            + gd(c, 'WAIT', 'Backup Appliance waiting for work')
-                                                                                                            + gd(c, 'WAIT', 'Backup Appliance waiting restore start')
-                                                                                                            + gd(c, 'WAIT', 'Backup Appliance Surrogate wait')
-                                                                                                            + gd(c, 'WAIT', 'Backup Appliance Servlet wait')
-                                                                                                            + gd(c, 'WAIT', 'Backup Appliance Comm SGA setup wait')
-                                                                                                            + gd(c, 'WAIT', 'LogMiner builder: idle')
-                                                                                                            + gd(c, 'WAIT', 'LogMiner builder: branch')
-                                                                                                            + gd(c, 'WAIT', 'LogMiner preparer: idle')
-                                                                                                            + gd(c, 'WAIT', 'LogMiner reader: log (idle)')
-                                                                                                            + gd(c, 'WAIT', 'LogMiner reader: redo (idle)')
-                                                                                                            + gd(c, 'WAIT', 'LogMiner merger: idle')
-                                                                                                            + gd(c, 'WAIT', 'LogMiner client: transaction')
-                                                                                                            + gd(c, 'WAIT', 'LogMiner: other')
-                                                                                                            + gd(c, 'WAIT', 'LogMiner: activate')
-                                                                                                            + gd(c, 'WAIT', 'LogMiner: reset')
-                                                                                                            + gd(c, 'WAIT', 'LogMiner: find session')
-                                                                                                            + gd(c, 'WAIT', 'LogMiner: internal')
-                                                                                                            + gd(c, 'WAIT', 'Logical Standby Apply Delay')
-                                                                                                            + gd(c, 'WAIT', 'parallel recovery coordinator waits for slave cleanup')
-                                                                                                            + gd(c, 'WAIT', 'parallel recovery coordinator idle wait')
-                                                                                                            + gd(c, 'WAIT', 'parallel recovery control message reply')
-                                                                                                            + gd(c, 'WAIT', 'parallel recovery slave next change')
-                                                                                                            + gd(c, 'WAIT', 'nologging fetch slave idle')
-                                                                                                            + gd(c, 'WAIT', 'recovery sender idle')
-                                                                                                            + gd(c, 'WAIT', 'recovery receiver idle')
-                                                                                                            + gd(c, 'WAIT', 'recovery coordinator idle')
-                                                                                                            + gd(c, 'WAIT', 'recovery logmerger idle')
-                                                                                                            + gd(c, 'WAIT', 'block compare coord process idle')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq: Txn Recovery Start')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq: Txn Recovery Reply')
-                                                                                                            + gd(c, 'WAIT', 'fbar timer')
-                                                                                                            + gd(c, 'WAIT', 'smon timer')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq: Metadata Update')
-                                                                                                            + gd(c, 'WAIT', 'Space Manager: slave idle wait')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq: Index Merge Reply')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq: Index Merge Execute')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq: Index Merge Close')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq: kdcph_mai')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq: kdcphc_ack')
-                                                                                                            + gd(c, 'WAIT', 'imco timer')
-                                                                                                            + gd(c, 'WAIT', 'IMFS defer writes scheduler')
-                                                                                                            + gd(c, 'WAIT', 'memoptimize write drain idle')
-                                                                                                            + gd(c, 'WAIT', 'virtual circuit next request')
-                                                                                                            + gd(c, 'WAIT', 'shared server idle wait')
-                                                                                                            + gd(c, 'WAIT', 'dispatcher timer')
-                                                                                                            + gd(c, 'WAIT', 'cmon timer')
-                                                                                                            + gd(c, 'WAIT', 'pool server timer')
-                                                                                                            + gd(c, 'WAIT', 'lreg timer')
-                                                                                                            + gd(c, 'WAIT', 'JOX Jit Process Sleep')
-                                                                                                            + gd(c, 'WAIT', 'jobq slave wait')
-                                                                                                            + gd(c, 'WAIT', 'pipe get')
-                                                                                                            + gd(c, 'WAIT', 'PX Deque wait')
-                                                                                                            + gd(c, 'WAIT', 'PX Idle Wait')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq Credit: need buffer')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq Credit: send blkd')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq: Msg Fragment')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq: Parse Reply')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq: Execute Reply')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq: Execution Msg')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq: Table Q Normal')
-                                                                                                            + gd(c, 'WAIT', 'PX Deq: Table Q Sample')
-                                                                                                            + gd(c, 'WAIT', 'REPL Apply: txns')
-                                                                                                            + gd(c, 'WAIT', 'REPL Capture/Apply: messages')
-                                                                                                            + gd(c, 'WAIT', 'REPL Capture: archive log')
-                                                                                                            + gd(c, 'WAIT', 'single-task message')
-                                                                                                            + gd(c, 'WAIT', 'SQL*Net message from client')
-                                                                                                            + gd(c, 'WAIT', 'SQL*Net vector message from client')
-                                                                                                            + gd(c, 'WAIT', 'SQL*Net vector message from dblink')
-                                                                                                            + gd(c, 'WAIT', 'PL/SQL lock timer')
-                                                                                                            + gd(c, 'WAIT', 'Streams AQ: emn coordinator idle wait')
-                                                                                                            + gd(c, 'WAIT', 'EMON slave idle wait')
-                                                                                                            + gd(c, 'WAIT', 'Emon coordinator main loop')
-                                                                                                            + gd(c, 'WAIT', 'Emon slave main loop')
-                                                                                                            + gd(c, 'WAIT', 'Streams AQ: waiting for messages in the queue')
-                                                                                                            + gd(c, 'WAIT', 'Streams AQ: waiting for time management or cleanup tasks')
-                                                                                                            + gd(c, 'WAIT', 'Streams AQ: delete acknowledged messages')
-                                                                                                            + gd(c, 'WAIT', 'Streams AQ: deallocate messages from Streams Pool')
-                                                                                                            + gd(c, 'WAIT', 'Streams AQ: qmn coordinator idle wait')
-                                                                                                            + gd(c, 'WAIT', 'Streams AQ: qmn slave idle wait')
-                                                                                                            + gd(c, 'WAIT', 'AQ: 12c message cache init wait')
-                                                                                                            + gd(c, 'WAIT', 'AQ Cross Master idle')
-                                                                                                            + gd(c, 'WAIT', 'AQPC idle')
-                                                                                                            + gd(c, 'WAIT', 'Streams AQ: load balancer idle')
-                                                                                                            + gd(c, 'WAIT', 'Sharded  Queues : Part Maintenance idle')
-                                                                                                            + gd(c, 'WAIT', 'Sharded  Queues : Part Truncate idle')
-                                                                                                            + gd(c, 'WAIT', 'REPL Capture/Apply: RAC AQ qmn coordinator')
-                                                                                                            + gd(c, 'WAIT', 'Streams AQ: opt idle')
-                                                                                                            + gd(c, 'WAIT', 'HS message to agent')
-                                                                                                            + gd(c, 'WAIT', 'ASM background timer')
-                                                                                                            + gd(c, 'WAIT', 'ASM cluster membership changes')
-                                                                                                            + gd(c, 'WAIT', 'iowp msg')
-                                                                                                            + gd(c, 'WAIT', 'iowp file id')
-                                                                                                            + gd(c, 'WAIT', 'netp network')
-                                                                                                            + gd(c, 'WAIT', 'gopp msg')
-                                                                                                            + gd(c, 'WAIT', 'auto-sqltune: wait graph update')
-                                                                                                            + gd(c, 'WAIT', 'WCR: replay client notify')
-                                                                                                            + gd(c, 'WAIT', 'WCR: replay clock')
-                                                                                                            + gd(c, 'WAIT', 'WCR: replay paused')
-                                                                                                            + gd(c, 'WAIT', 'JS external job')
-                                                                                                            + gd(c, 'WAIT', 'cell worker idle')
+                                                                                                            + get_idle_wait_time(c.inst_id, c.sid)
                                                                                                           )) / (get_seconds(d2 - d1)*1000000) * 100
                                                                                            , 'STAT'), 10) || ' % unaccounted-for time*' ;
               else null;
@@ -1345,7 +1224,7 @@ declare
         select /* get_session_stats */ p_snapdate ts, snapper_stats.*
         bulk collect into p_stats
         from (
-                                         select 'STAT' stype, s.inst_id, s.sid, ss.statistic# - pls_adjust statistic#, ss.value, null event_count
+                                         select 'STAT' stype, s.inst_id, s.sid, ss.statistic# - pls_adjust statistic#, ss.value, null event_count, null wait_class
                                          from gv$session s, gv$sesstat ss
                                          where &sid_filter --(inst_id,sid) in (&snapper_sid)
                                          and s.inst_id = ss.inst_id
@@ -1362,7 +1241,7 @@ declare
                                                 en.event# + (select count(*) from v$statname) + 1 - pls_adjust,
                                                 nvl(se.time_waited_micro,0) + ( decode(se.event||s.state, s.event||'WAITING', 
                                                                                     CASE WHEN s.seconds_in_wait > 1300000000 THEN 0 ELSE s.seconds_in_wait END -- bug in v$session
-                                                                              , 0) * 1000000 ) value, total_waits event_count
+                                                                              , 0) * 1000000 ) value, total_waits event_count, se.wait_class
                                          from gv$session s, gv$session_event se, v$event_name en
                                          where &sid_filter
                                          and   s.sid = se.sid
@@ -1376,7 +1255,7 @@ declare
                                                            )
                                          --
                                          union all
-                                         select 'TIME' stype, s.inst_id, s.sid, st.stat_id - pls_adjust statistic#, st.value, null event_count
+                                         select 'TIME' stype, s.inst_id, s.sid, st.stat_id - pls_adjust statistic#, st.value, null event_count, null wait_class
                                          from gv$session s, gv$sess_time_model st
                                          where &sid_filter --(inst_id,sid) in (&snapper_sid)
                                          and s.inst_id = st.inst_id
@@ -1393,7 +1272,7 @@ declare
                                                    (select count(*) from v$statname) +
                                                    (select count(*) from v$event_name) +
                                                    1 - pls_adjust statistic#,
-                                               s.gets + s.immediate_gets value, null event_count
+                                               s.gets + s.immediate_gets value, null event_count, null wait_class
                                          from gv$latch s
                                          where &inst_filter
                                          and (lv_gather like '%l%' or lv_gather like '%a%')
@@ -1409,7 +1288,7 @@ declare
  &_IF_X_ACCESSIBLE &_IF_LOWER_THAN_ORA11           (select count(*) from v$event_name) +
  &_IF_X_ACCESSIBLE &_IF_LOWER_THAN_ORA11           (select count(*) from gv$latch) +
  &_IF_X_ACCESSIBLE &_IF_LOWER_THAN_ORA11           1 - pls_adjust statistic#,
- &_IF_X_ACCESSIBLE &_IF_LOWER_THAN_ORA11       s.why0+s.why1+s.why2 value, null event_count
+ &_IF_X_ACCESSIBLE &_IF_LOWER_THAN_ORA11       s.why0+s.why1+s.why2 value, null event_count, null wait_class
  &_IF_X_ACCESSIBLE &_IF_LOWER_THAN_ORA11 from x$kcbsw s, x$kcbwh w
  &_IF_X_ACCESSIBLE &_IF_LOWER_THAN_ORA11 where
  &_IF_X_ACCESSIBLE &_IF_LOWER_THAN_ORA11       s.indx = w.indx 
@@ -1423,7 +1302,7 @@ declare
  &_IF_X_ACCESSIBLE &_IF_ORA11_OR_HIGHER            (select count(*) from v$event_name) +
  &_IF_X_ACCESSIBLE &_IF_ORA11_OR_HIGHER            (select count(*) from gv$latch) +
  &_IF_X_ACCESSIBLE &_IF_ORA11_OR_HIGHER            1 - pls_adjust statistic#,
- &_IF_X_ACCESSIBLE &_IF_ORA11_OR_HIGHER        why.why0+why.why1+why.why2+sw.other_wait value, null event_count
+ &_IF_X_ACCESSIBLE &_IF_ORA11_OR_HIGHER        why.why0+why.why1+why.why2+sw.other_wait value, null event_count, null wait_class
  &_IF_X_ACCESSIBLE &_IF_ORA11_OR_HIGHER  from
  &_IF_X_ACCESSIBLE &_IF_ORA11_OR_HIGHER        x$kcbuwhy why,
  &_IF_X_ACCESSIBLE &_IF_ORA11_OR_HIGHER        x$kcbwh       dsc,
@@ -1447,7 +1326,7 @@ declare
                                                    (select count(*) from gv$latch) +
   &_IF_X_ACCESSIBLE                                (select count(*) from x$kcbwh) +
                                                    1 - pls_adjust statistic#,
-                                               s.total_req# value, null event_count
+                                               s.total_req# value, null event_count, null wait_class
                                          from gv$enqueue_stat s
                                          where &inst_filter
                                          and   (lv_gather like '%e%' or lv_gather like '%a%')
@@ -1459,7 +1338,7 @@ declare
             -- p_stats_string is a dbms_debug_vc2coll collection datatype for "persisting" stats values across snapper DB calls (for "before" and "after" snaps)
             p_stats_string := sys.dbms_debug_vc2coll();
             for s in p_stats.first..p_stats.last loop
-                -- type srec is record (stype varchar2(4), sid number, statistic# number, value number, event_count number );
+                -- type srec is record (ts timestamp, stype varchar2(4), inst_id number, sid number, statistic# number, value number, event_count number, wait_class varchar2(64) );
                 lstr := p_stats(s).stype||','||trim(to_char(p_stats(s).inst_id))||','||trim(to_char(p_stats(s).sid))||','||trim(to_char(p_stats(s).statistic#,'999999999999999999999999'));
                 l_stats(lstr) := p_stats(s);
 
@@ -1471,7 +1350,8 @@ declare
                                          TO_CHAR(p_stats(s).sid)                                         ||','||
                                          TRIM(TO_CHAR(p_stats(s).statistic#, '999999999999999999999999'))||','||
                                          TRIM(TO_CHAR(p_stats(s).value,      '999999999999999999999999'))||','||
-                                         TRIM(TO_CHAR(p_stats(s).event_count,'999999999999999999999999'));
+                                         TRIM(TO_CHAR(p_stats(s).event_count,'999999999999999999999999'))||','||
+                                         NVL(p_stats(s).wait_class, 'NULL');
                     --output('p_stats.p_stats_string='||p_stats_string(s));
                 end if;
             end loop; -- s in (p_stats)
@@ -1489,7 +1369,7 @@ declare
      lv_rec srec;
    begin
        p_snapdate := NULL;
-       --type srec is record (stype varchar2(4), sid number, statistic# number, value number, event_count number );
+       --type srec is record (ts timestamp, stype varchar2(4), inst_id number, sid number, statistic# number, value number, event_count number, wait_class varchar2(64) );
        for s in p_string_stats.first .. p_string_stats.last loop
            lv_rec.ts          := TO_TIMESTAMP(replace(regexp_substr(p_string_stats(s)||',', '(.*?),', 1, 1),',',''), 'YYYY-MM-DD HH24:MI:SS.FF');
            lv_rec.stype       :=              replace(regexp_substr(p_string_stats(s)||',', '(.*?),', 1, 2),',','');
@@ -1498,6 +1378,8 @@ declare
            lv_rec.statistic#  :=    TO_NUMBER(replace(regexp_substr(p_string_stats(s)||',', '(.*?),', 1, 5),',',''));
            lv_rec.value       :=    TO_NUMBER(replace(regexp_substr(p_string_stats(s)||',', '(.*?),', 1, 6),',',''));
            lv_rec.event_count :=    TO_NUMBER(replace(regexp_substr(p_string_stats(s)||',', '(.*?),', 1, 7),',',''));
+           lv_rec.wait_class  :=              replace(regexp_substr(p_string_stats(s)||',', '(.*?),', 1, 8),',','');
+           if lv_rec.wait_class = 'NULL' then lv_rec.wait_class := null; end if;
            --output('snap_from_stats_string.event_count = '||to_char(lv_rec.event_count));
 
            p_stats(s) := lv_rec;
@@ -1968,7 +1850,7 @@ begin
  
     if pagesize > 0 then
         output(' ');
-        output('-- Session Snapper v4.34 - by Tanel Poder ( https://tanelpoder.com/snapper ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)');
+        output('-- Session Snapper v4.35 - by Tanel Poder ( https://tanelpoder.com ) - Enjoy the Most Advanced Oracle Troubleshooting Script on the Planet! :)');
         output(' ');
     end if;
 
