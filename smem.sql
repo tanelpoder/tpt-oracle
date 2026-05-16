@@ -16,8 +16,20 @@
 --
 --------------------------------------------------------------------------------
 PROMPT Display session &1 memory usage from v$process_memory....
+
+COL smem_allocated HEAD ALLOCATED FOR 9,999,999,999,999
+COL smem_used HEAD USED FOR 9,999,999,999,999
+COL smem_max_allocated HEAD MAX_ALLOCATED FOR 9,999,999,999,999
+
 SELECT
-    s.sid,pm.*
+    s.sid
+  , pm.pid          
+  , pm.serial#      
+  , pm.category     
+  , pm.allocated      smem_allocated
+  , pm.used           smem_used     
+  , pm.max_allocated  smem_max_allocated
+--  , pm.con_id       
 FROM 
     v$session s
   , v$process p

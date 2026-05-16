@@ -15,8 +15,21 @@
 --
 --------------------------------------------------------------------------------
 PROMPT Display process memory usage for SPID &1....
+
+COL pmem_allocated HEAD ALLOCATED FOR 9,999,999,999,999
+COL pmem_used HEAD USED FOR 9,999,999,999,999
+COL pmem_max_allocated HEAD MAX_ALLOCATED FOR 9,999,999,999,999
+COL pmem_spid HEAD OSPID FOR A15
+
 SELECT
-    s.sid,p.spid,pm.*
+    s.sid
+  , p.spid           pmem_spid
+  , p.pid            opid
+  , p.serial#
+  , pm.category
+  , pm.used          pmem_used
+  , pm.allocated     pmem_allocated
+  , pm.max_allocated pmem_max_allocated
 FROM 
     v$session s
   , v$process p
