@@ -10,11 +10,18 @@
 --   3) You have to switch to the appropriate PDB to see monitored queries inside a PDB
 --
 -- DOP downgrade_reasons FROM X$QKSXA_REASON:
--- 
---  352: DOP downgrade due to adaptive DOP
---  353: DOP downgrade due to resource manager max DOP
---  354: DOP downgrade due to insufficient number of processes
---  355: DOP downgrade because PX servers failed to join
+--
+--  192  query coordinator did not used automatic DOP
+--  205  default DOP mismatch
+--  209  parallel execution mode DOP mismatch
+--  221  number of partitions much greater than DoP
+--  223  min number of hash partitions or sub-partitions greater than DoP
+--  352  DOP downgrade due to adaptive DOP
+--  353  DOP downgrade due to resource manager max DOP
+--  354  DOP downgrade due to insufficient number of processes
+--  355  DOP downgrade because slaves failed to join
+--  517  high NDV estimation of GROUP BY keys compared to DOP
+
 
 COL sqlmon_plan_op FOR A50
 COL plan_line_id HEAD ID FOR 9999
