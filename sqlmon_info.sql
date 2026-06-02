@@ -25,12 +25,17 @@
 
 COL sqlmon_plan_op FOR A50
 COL plan_line_id HEAD ID FOR 9999
+COL process_name HEAD PROCNAME FOR A10
+
+BREAK ON sid ON process_name SKIP 1
 
 SELECT
 --    s.sql_id
 --  , s.status
 --  , s.sql_exec_start
-    p.plan_line_id 
+    s.sid
+  , s.process_name
+  , p.plan_line_id 
   , LPAD(' ', p.plan_depth, ' ') || p.plan_operation || ' ' || p.plan_options sqlmon_plan_op
 --  , s.px_is_cross_instance
 --  , s.px_maxdop           
@@ -72,11 +77,12 @@ AND s.key = p.key
 -- filter
 AND s.con_id = SYS_CONTEXT('userenv', 'con_id')
 AND s.sql_id = '&1'
-AND s.px_qcsid IS NULL -- QC for PX queries (or serial)
+-- AND s.px_qcsid IS NULL -- QC for PX queries (or serial)
 -- AND p.otherstat_group_id IS NOT NULL
 AND s.sql_exec_start = (SELECT MAX(sql_exec_start) FROM gv$sql_monitor WHERE sql_id='&1')
 ORDER BY
     s.key
+  , s.sid
   , p.plan_line_id
 /
 
